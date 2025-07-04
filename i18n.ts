@@ -3,6 +3,7 @@ export type Locale = typeof locales[number];
 
 export const defaultLocale: Locale = 'en';
 
+
 export async function getMessages(locale: Locale) {
   switch (locale) {
     case 'ru':
@@ -13,3 +14,4 @@ export async function getMessages(locale: Locale) {
       return (await import('./messages/en.json')).default;
   }
 }
+

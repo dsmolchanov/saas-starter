@@ -22,8 +22,10 @@ This is a starter template for building a SaaS application using **Next.js** wit
 - Progress tracking per lesson
 - Subscription records synced with Stripe
 - Initial translation files for English, Russian and Spanish (Mexican)
+
 - Translations are loaded via next-intl provider. The locale is resolved from the
   `NEXT_LOCALE` cookie with English used as fallback.
+
 
 ## Tech Stack
 

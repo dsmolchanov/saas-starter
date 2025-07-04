@@ -32,7 +32,11 @@ export default async function RootLayout({
   const messages = await getMessages(locale);
 
   return (
+
     <html lang={locale} className="bg-white dark:bg-gray-950 text-black dark:text-white">
+
+ 
+
       <body className="min-h-[100dvh] bg-gray-50">
         <NextIntlClientProvider messages={messages} locale={locale}>
           <SWRConfig
