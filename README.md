@@ -22,6 +22,7 @@ This is a starter template for building a SaaS application using **Next.js** wit
 - Progress tracking per lesson
 - Subscription records synced with Stripe
 - Initial translation files for English, Russian and Spanish (Mexican)
+- Translations loaded via next-intl provider
 
 ## Tech Stack
 
