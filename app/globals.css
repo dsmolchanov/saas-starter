@@ -273,3 +273,24 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* --- Custom Palette for Dzen Yoga --- */
+:root {
+  --color-1: #f0e6d6;
+  --color-2: #d8c2b0;
+  --color-3: #b3c7a3;
+  --color-4: #74b4a5;
+  --color-5: #4a9cb0;
+
+  /* Map primary/secondary to palette */
+  --primary: 199 40% 47%; /* #4a9cb0 */
+  --primary-foreground: 0 0% 100%;
+  --secondary: 175 29% 56%; /* #74b4a5 */
+  --secondary-foreground: 0 0% 15%;
+  --background: 40 48% 92%; /* #f0e6d6 */
+  --foreground: 0 0% 10%;
+  --accent: 87 20% 78%; /* #d8c2b0 */
+  --accent-foreground: 0 0% 10%;
+  --muted: 96 18% 81%; /* #b3c7a3 (lightened) */
+  --muted-foreground: 0 0% 35%;
+}

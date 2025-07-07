@@ -15,6 +15,20 @@
       "when": 1751668370326,
       "tag": "0001_yoga_schema",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1751673100364,
+      "tag": "0002_black_hellion",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1751750153513,
+      "tag": "0003_superb_squadron_supreme",
+      "breakpoints": true
     }
   ]
 }

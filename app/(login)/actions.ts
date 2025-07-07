@@ -17,6 +17,7 @@ import {
   invitations
 } from '@/lib/db/schema';
 import { comparePasswords, hashPassword, setSession } from '@/lib/auth/session';
+import { createClient } from '@/lib/supabase/client';
 import { redirect } from 'next/navigation';
 import { cookies } from 'next/headers';
 import { createCheckoutSession } from '@/lib/payments/stripe';
@@ -395,6 +396,49 @@ const inviteTeamMemberSchema = z.object({
   email: z.string().email('Invalid email address'),
   role: z.enum(['member', 'owner'])
 });
+
+// ===== Supabase-based Auth Actions =====
+
+type SupabaseAuthState = { error?: string };
+
+export const supabaseSignIn = validatedAction(
+  signInSchema,
+  async (data, formData) => {
+    const { email, password } = data;
+    const supabase = createClient();
+    const { data: sessionData, error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) return { error: error.message };
+
+    // Find matching internal user row (created via trigger) and issue session cookie
+    const [internalUser] = await db.select().from(users).where(eq(users.email, email)).limit(1);
+    if (internalUser) {
+      await setSession(internalUser);
+    }
+
+    const redirectTo = (formData.get('redirect') as string) || '/';
+    redirect(redirectTo);
+  }
+);
+
+export const supabaseSignUp = validatedAction(
+  signUpSchema,
+  async (data) => {
+    const { email, password } = data;
+    const supabase = createClient();
+    const { error } = await supabase.auth.signUp({ email, password });
+    if (error) return { error: error.message };
+
+    // After trigger runs, fetch newly created internal user row
+    const [internalUser] = await db.select().from(users).where(eq(users.email, email)).limit(1);
+    if (internalUser) {
+      await setSession(internalUser);
+    }
+
+    redirect('/');
+  }
+);
+
+// ---- existing exports remain below ----
 
 export const inviteTeamMember = validatedActionWithUser(
   inviteTeamMemberSchema,

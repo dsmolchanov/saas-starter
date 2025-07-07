@@ -13,6 +13,7 @@ export const users = pgTable('users', {
   name: varchar('name', { length: 100 }),
   email: varchar('email', { length: 255 }).notNull().unique(),
   passwordHash: text('password_hash').notNull(),
+  avatarUrl: text('avatar_url'),
   role: varchar('role', { length: 20 }).notNull().default('member'),
   createdAt: timestamp('created_at').notNull().defaultNow(),
   updatedAt: timestamp('updated_at').notNull().defaultNow(),
@@ -96,9 +97,35 @@ export const lessons = pgTable('lessons', {
     .references(() => courses.id)
     .notNull(),
   title: varchar('title', { length: 150 }).notNull(),
-  durationMin: integer('duration_min'),
+  description: text('description'),
+  durationMin: integer('duration_min').notNull().default(0),
   videoPath: text('video_path'),
+  thumbnailUrl: text('thumbnail_url'),
+  difficulty: varchar('difficulty', { length: 20 }), // beginner, intermediate, advanced
+  intensity: varchar('intensity', { length: 20 }), // low, medium, high
+  style: varchar('style', { length: 50 }), // e.g., 'Vinyasa', 'Hatha', etc.
+  equipment: text('equipment'), // Comma-separated list of equipment
   orderIndex: integer('order_index'),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+  updatedAt: timestamp('updated_at').notNull().defaultNow(),
+});
+
+// Focus areas table (e.g., Core, Flexibility, Strength)
+export const focusAreas = pgTable('focus_areas', {
+  id: serial('id').primaryKey(),
+  name: varchar('name', { length: 50 }).notNull().unique(),
+  icon: varchar('icon', { length: 50 }),
+});
+
+// Junction table for many-to-many relationship between lessons and focus areas
+export const lessonFocusAreas = pgTable('lesson_focus_areas', {
+  id: serial('id').primaryKey(),
+  lessonId: integer('lesson_id')
+    .references(() => lessons.id)
+    .notNull(),
+  focusAreaId: integer('focus_area_id')
+    .references(() => focusAreas.id)
+    .notNull(),
 });
 
 export const progress = pgTable('progress', {
@@ -191,10 +218,26 @@ export const coursesRelations = relations(courses, ({ one, many }) => ({
   lessons: many(lessons),
 }));
 
-export const lessonsRelations = relations(lessons, ({ one }) => ({
+export const lessonsRelations = relations(lessons, ({ one, many }) => ({
   course: one(courses, {
     fields: [lessons.courseId],
     references: [courses.id],
+  }),
+  focusAreas: many(lessonFocusAreas),
+}));
+
+export const focusAreasRelations = relations(focusAreas, ({ many }) => ({
+  lessons: many(lessonFocusAreas),
+}));
+
+export const lessonFocusAreasRelations = relations(lessonFocusAreas, ({ one }) => ({
+  lesson: one(lessons, {
+    fields: [lessonFocusAreas.lessonId],
+    references: [lessons.id],
+  }),
+  focusArea: one(focusAreas, {
+    fields: [lessonFocusAreas.focusAreaId],
+    references: [focusAreas.id],
   }),
 }));
 

@@ -21,7 +21,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className="bg-white dark:bg-gray-950 text-black dark:text-white">
-      <body className="min-h-[100dvh] bg-gray-50">
+      <body suppressHydrationWarning className="min-h-[100dvh] bg-gray-50">
         <SWRConfig
           value={{
             fallback: {

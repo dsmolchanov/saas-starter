@@ -7,7 +7,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { CircleIcon, Loader2 } from 'lucide-react';
-import { signIn, signUp } from './actions';
+import { createClient } from '@/lib/supabase/client';
+import { supabaseSignIn as signIn, supabaseSignUp as signUp } from './actions';
 import { ActionState } from '@/lib/auth/middleware';
 
 export function Login({ mode = 'signin' }: { mode?: 'signin' | 'signup' }) {
@@ -34,6 +35,29 @@ export function Login({ mode = 'signin' }: { mode?: 'signin' | 'signup' }) {
       </div>
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+        {/* Google OAuth */}
+        <div className="mb-6">
+          <Button
+            type="button"
+            variant="outline"
+            className="w-full flex items-center justify-center gap-2 rounded-full"
+            onClick={async () => {
+              const supabase = createClient();
+              const origin = window.location.origin;
+              const target = redirect || '/my_practice';
+              await supabase.auth.signInWithOAuth({
+                provider: 'google',
+                options: {
+                  redirectTo: `${origin}/auth/callback?next=${encodeURIComponent(target)}`
+                }
+              });
+            }}
+          >
+            <svg className="h-5 w-5" viewBox="0 0 533.5 544.3"><path fill="#4285f4" d="m533.5 278.4c0-17.5-1.5-35.3-4.7-52.4h-254v99.1h144.1c-6.2 33.4-24.8 61.5-52.9 80.7l85.6 66.6c50.1-46.1 79-114.1 79-193z"/><path fill="#34a853" d="m279 544.3c71.6 0 132-23.7 176-64.3l-85.6-66.6c-23.8 16-54.4 25.2-90.4 25.2-69.4 0-128-46.8-149-109.5l-87.2 67.5c42.3 84.1 131 147.7 236.2 147.7z"/><path fill="#fbbc04" d="m130 329.1c-9.8-29.4-9.8-61.4 0-90.8l-87.2-67.5c-38.3 75.6-38.3 164.5 0 240.1z"/><path fill="#ea4335" d="m279 107.7c38.9-.6 76.4 13.9 105.1 40.7l78.6-78.6c-48.3-44.9-112.6-69.3-183.6-69.8-105.1 0-193.9 63.6-236.2 147.8l87.2 67.5c21-62.8 79.6-109.6 149-109.6z"/></svg>
+            Continue with Google
+          </Button>
+        </div>
+
         <form className="space-y-6" action={formAction}>
           <input type="hidden" name="redirect" value={redirect || ''} />
           <input type="hidden" name="priceId" value={priceId || ''} />
