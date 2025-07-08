@@ -16,7 +16,6 @@ export async function POST(req: NextRequest) {
     .insert(lessons)
     .values({
       courseId: null, // TODO course support later
-      teacherId: user.id,
       title,
       description,
       durationMin,
