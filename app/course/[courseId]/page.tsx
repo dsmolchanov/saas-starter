@@ -1,15 +1,11 @@
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 
-interface Props {
-  params: { courseId: string };
-}
-
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata({ params }: any): Promise<Metadata> {
   return { title: `Course ${params.courseId}` };
 }
 
-export default async function CoursePage({ params }: Props) {
+export default async function CoursePage({ params }: any) {
   const { courseId } = params;
 
   // TODO: fetch course details from Supabase here
