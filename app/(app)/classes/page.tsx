@@ -119,19 +119,19 @@ export default async function ClassesPage({ searchParams }: any) {
         {/* Active filters */}
         {hasFilters && (
           <div className="mb-6 flex flex-wrap items-center gap-2">
-            {selectedStyles.map(style => (
+            {selectedStyles.map((style: string) => (
               <Badge key={style} className="gap-1">
                 {style}
                 <X className="h-3 w-3" />
               </Badge>
             ))}
-            {selectedLevels.map(level => (
+            {selectedLevels.map((level: string) => (
               <Badge key={level} className="gap-1">
                 {level}
                 <X className="h-3 w-3" />
               </Badge>
             ))}
-            {selectedFocus.map(focus => (
+            {selectedFocus.map((focus: string) => (
               <Badge key={focus} className="gap-1">
                 {focus}
                 <X className="h-3 w-3" />
