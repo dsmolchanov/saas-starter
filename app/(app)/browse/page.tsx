@@ -8,6 +8,9 @@ import { BackButton } from '@/components/back-button';
 import { Button } from '@/components/ui/button';
 import { Home } from 'lucide-react';
 
+// Disable static prerendering for DB queries
+export const dynamic = 'force-dynamic';
+
 export default async function BrowsePage() {
   // Fetch featured teachers (instructors) with user data
   const featuredTeachers = await db.query.teachers.findMany({
