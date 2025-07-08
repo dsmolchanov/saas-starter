@@ -5,6 +5,7 @@ import {
   text,
   timestamp,
   integer,
+  uuid,
 } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
 
@@ -13,6 +14,7 @@ export const users = pgTable('users', {
   name: varchar('name', { length: 100 }),
   email: varchar('email', { length: 255 }).notNull().unique(),
   passwordHash: text('password_hash').notNull(),
+  authUid: uuid('auth_uid'),
   avatarUrl: text('avatar_url'),
   role: varchar('role', { length: 20 }).notNull().default('member'),
   createdAt: timestamp('created_at').notNull().defaultNow(),
@@ -94,8 +96,7 @@ export const courses = pgTable('courses', {
 export const lessons = pgTable('lessons', {
   id: serial('id').primaryKey(),
   courseId: integer('course_id')
-    .references(() => courses.id)
-    .notNull(),
+    .references(() => courses.id),
   title: varchar('title', { length: 150 }).notNull(),
   description: text('description'),
   durationMin: integer('duration_min').notNull().default(0),
