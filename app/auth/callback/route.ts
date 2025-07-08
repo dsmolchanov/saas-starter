@@ -48,13 +48,21 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    const redirectUrl = new URL(next, process.env.NEXT_PUBLIC_SITE_URL!);
-    console.log(`[Auth Callback] Redirecting to: ${redirectUrl.href}`);
-    return NextResponse.redirect(redirectUrl);
+    // Temporarily redirect to home with debug params
+    const debugUrl = new URL('/', process.env.NEXT_PUBLIC_SITE_URL!);
+    debugUrl.searchParams.set('debug_next', next);
+    const finalRedirectUrl = new URL(next, process.env.NEXT_PUBLIC_SITE_URL!);
+    debugUrl.searchParams.set('final_url', finalRedirectUrl.href);
+
+    return NextResponse.redirect(debugUrl);
   } catch (err) {
     console.error('OAuth callback error', err);
-    const redirectUrl = new URL('/', process.env.NEXT_PUBLIC_SITE_URL || request.url);
-    console.log(`[Auth Callback] Redirecting on error to: ${redirectUrl.href}`);
-    return NextResponse.redirect(redirectUrl);
+    // On error, also redirect with debug info
+    const errorUrl = new URL('/', process.env.NEXT_PUBLIC_SITE_URL || request.url);
+    errorUrl.searchParams.set('error', 'oauth_callback_failed');
+    if (err instanceof Error) {
+      errorUrl.searchParams.set('error_message', err.message);
+    }
+    return NextResponse.redirect(errorUrl);
   }
 } 
