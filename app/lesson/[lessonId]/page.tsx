@@ -1,15 +1,11 @@
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 
-interface Props {
-  params: { lessonId: string };
-}
-
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata({ params }: any): Promise<Metadata> {
   return { title: `Lesson ${params.lessonId}` };
 }
 
-export default async function LessonPage({ params }: Props) {
+export default async function LessonPage({ params }: any) {
   const { lessonId } = params;
 
   // TODO: fetch lesson details and video URL from Supabase here
