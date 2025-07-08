@@ -1,3 +1,6 @@
+// Disable static prerendering to avoid DB access at build time
+export const dynamic = 'force-dynamic';
+
 import { db } from '@/lib/db/drizzle';
 import { teachers } from '@/lib/db/schema';
 import { InstructorCard } from '@/components/instructor-card';

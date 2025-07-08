@@ -10,6 +10,8 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { MyPracticeUI } from '@/components/my-practice-ui';
 import Link from 'next/link';
 
+export const dynamic = 'force-dynamic';
+
 export default async function MyPracticePage() {
   const user = await getUser();
   
