@@ -8,9 +8,11 @@ import { eq } from 'drizzle-orm';
 
 export async function GET(request: NextRequest) {
   try {
+    console.log(`[Auth Callback] Request URL: ${request.url}`);
     const { searchParams } = new URL(request.url);
     const code = searchParams.get('code');
     const next = searchParams.get('next') || '/';
+    console.log(`[Auth Callback] 'next' param: ${next}`);
 
     // Map Next.js cookies helper to the interface expected by Supabase helper
     const cookieStore = await cookies();
@@ -46,9 +48,13 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    return NextResponse.redirect(new URL(next, request.url));
+    const redirectUrl = new URL(next, process.env.NEXT_PUBLIC_SITE_URL!);
+    console.log(`[Auth Callback] Redirecting to: ${redirectUrl.href}`);
+    return NextResponse.redirect(redirectUrl);
   } catch (err) {
     console.error('OAuth callback error', err);
-    return NextResponse.redirect(new URL('/', request.url));
+    const redirectUrl = new URL('/', process.env.NEXT_PUBLIC_SITE_URL || request.url);
+    console.log(`[Auth Callback] Redirecting on error to: ${redirectUrl.href}`);
+    return NextResponse.redirect(redirectUrl);
   }
 } 
