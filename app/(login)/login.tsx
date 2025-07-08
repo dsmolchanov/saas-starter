@@ -43,7 +43,7 @@ export function Login({ mode = 'signin' }: { mode?: 'signin' | 'signup' }) {
             className="w-full flex items-center justify-center gap-2 rounded-full"
             onClick={async () => {
               const supabase = createClient();
-              const origin = window.location.origin;
+              const origin = process.env.NEXT_PUBLIC_SITE_URL || window.location.origin;
               const target = redirect || '/my_practice';
               await supabase.auth.signInWithOAuth({
                 provider: 'google',
