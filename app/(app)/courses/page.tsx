@@ -6,6 +6,9 @@ import { Input } from '@/components/ui/input';
 import Image from 'next/image';
 import Link from 'next/link';
 
+// Disable static prerender to avoid DB access at build time
+export const dynamic = 'force-dynamic';
+
 export default async function CoursesPage() {
   const allCourses = await db.query.courses.findMany({
     with: {
