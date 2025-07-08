@@ -13,7 +13,7 @@ export async function GET(request: NextRequest) {
     const next = searchParams.get('next') || '/';
 
     // Map Next.js cookies helper to the interface expected by Supabase helper
-    const cookieStore = cookies();
+    const cookieStore = await cookies();
 
     const supabase = createServerClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -23,12 +23,6 @@ export async function GET(request: NextRequest) {
           get(name: string) {
             return cookieStore.get(name)?.value;
           },
-          set(name: string, value: string, options: any) {
-            cookieStore.set({ name, value, ...options });
-          },
-          remove(name: string, options: any) {
-            cookieStore.delete({ name, ...options });
-          }
         }
       }
     );
