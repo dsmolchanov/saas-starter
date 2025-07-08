@@ -7,16 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Filter, X, List, LayoutGrid } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 
-type SearchParams = {
-  searchParams?: {
-    type?: 'classes' | 'courses';
-    styles?: string[];
-    levels?: string[];
-    focus?: string[];
-  };
-};
-
-export default async function ClassesPage({ searchParams }: SearchParams) {
+export default async function ClassesPage({ searchParams }: any) {
   const type = searchParams?.type || 'classes';
   const selectedStyles = searchParams?.styles || [];
   const selectedLevels = searchParams?.levels || [];
