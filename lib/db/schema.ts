@@ -90,6 +90,7 @@ export const courses = pgTable('courses', {
   description: text('description'),
   level: varchar('level', { length: 50 }),
   coverUrl: text('cover_url'),
+  imageUrl: text('image_url'),
   isPublished: integer('is_published').notNull().default(0),
 });
 
@@ -102,6 +103,7 @@ export const lessons = pgTable('lessons', {
   durationMin: integer('duration_min').notNull().default(0),
   videoPath: text('video_path'),
   thumbnailUrl: text('thumbnail_url'),
+  imageUrl: text('image_url'),
   difficulty: varchar('difficulty', { length: 20 }), // beginner, intermediate, advanced
   intensity: varchar('intensity', { length: 20 }), // low, medium, high
   style: varchar('style', { length: 50 }), // e.g., 'Vinyasa', 'Hatha', etc.

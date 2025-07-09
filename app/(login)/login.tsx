@@ -45,10 +45,18 @@ export function Login({ mode = 'signin' }: { mode?: 'signin' | 'signup' }) {
               const supabase = createClient();
               const origin = process.env.NEXT_PUBLIC_SITE_URL || window.location.origin;
               const target = redirect || '/my_practice';
+              const redirectUrl = `${origin}/auth/callback?next=${encodeURIComponent(target)}`;
+              
+              console.log('OAuth Debug Info:');
+              console.log('- Origin:', origin);
+              console.log('- Target:', target);
+              console.log('- Redirect URL:', redirectUrl);
+              console.log('- Current URL:', window.location.href);
+              
               await supabase.auth.signInWithOAuth({
                 provider: 'google',
                 options: {
-                  redirectTo: `${origin}/auth/callback?next=${encodeURIComponent(target)}`
+                  redirectTo: redirectUrl
                 }
               });
             }}
