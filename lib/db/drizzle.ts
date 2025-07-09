@@ -10,6 +10,8 @@ if (!process.env.POSTGRES_URL) {
   throw new Error('POSTGRES_URL environment variable is not set');
 }
 
-export const client = postgres(process.env.POSTGRES_URL);
+const connectionString = `${process.env.POSTGRES_URL}?sslmode=require`;
+
+export const client = postgres(connectionString);
 export const db = drizzle(client, { schema });
 export const supabaseDb = drizzle(client, { schema: supabaseSchema });

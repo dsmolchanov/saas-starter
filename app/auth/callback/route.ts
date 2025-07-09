@@ -8,11 +8,9 @@ import { eq } from 'drizzle-orm';
 
 export async function GET(request: NextRequest) {
   try {
-    console.log(`[Auth Callback] Request URL: ${request.url}`);
     const { searchParams } = new URL(request.url);
     const code = searchParams.get('code');
     const next = searchParams.get('next') || '/';
-    console.log(`[Auth Callback] 'next' param: ${next}`);
 
     // Map Next.js cookies helper to the interface expected by Supabase helper
     const cookieStore = await cookies();
@@ -48,21 +46,11 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    // Temporarily redirect to home with debug params
-    const debugUrl = new URL('/', process.env.NEXT_PUBLIC_SITE_URL!);
-    debugUrl.searchParams.set('debug_next', next);
-    const finalRedirectUrl = new URL(next, process.env.NEXT_PUBLIC_SITE_URL!);
-    debugUrl.searchParams.set('final_url', finalRedirectUrl.href);
-
-    return NextResponse.redirect(debugUrl);
+    const redirectUrl = new URL(next, process.env.NEXT_PUBLIC_SITE_URL!);
+    return NextResponse.redirect(redirectUrl);
   } catch (err) {
     console.error('OAuth callback error', err);
-    // On error, also redirect with debug info
-    const errorUrl = new URL('/', process.env.NEXT_PUBLIC_SITE_URL || request.url);
-    errorUrl.searchParams.set('error', 'oauth_callback_failed');
-    if (err instanceof Error) {
-      errorUrl.searchParams.set('error_message', err.message);
-    }
-    return NextResponse.redirect(errorUrl);
+    const redirectUrl = new URL('/', process.env.NEXT_PUBLIC_SITE_URL || request.url);
+    return NextResponse.redirect(redirectUrl);
   }
 } 
