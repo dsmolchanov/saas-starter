@@ -9,6 +9,7 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { MyPracticeUI } from '@/components/my-practice-ui';
 import Link from 'next/link';
+import { ClearAuthErrors } from '@/components/clear-auth-errors';
 
 export const dynamic = 'force-dynamic';
 
@@ -60,6 +61,7 @@ export default async function MyPracticePage() {
 
   return (
     <div className="container mx-auto px-4 pb-20 pt-4 max-w-md">
+      <ClearAuthErrors />
       {/* Top bar */}
       <div className="flex items-center justify-center relative mb-6">
         <h1 className="text-lg font-semibold tracking-wide">MY PRACTICE</h1>
