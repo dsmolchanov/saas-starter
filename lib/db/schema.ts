@@ -170,6 +170,8 @@ export const teamsRelations = relations(teams, ({ many }) => ({
 export const usersRelations = relations(users, ({ many }) => ({
   teamMembers: many(teamMembers),
   invitationsSent: many(invitations),
+  playlists: many(playlists),
+  playlistItemsAdded: many(playlistItems, { relationName: 'playlistItemsAddedBy' }),
 }));
 
 export const invitationsRelations = relations(invitations, ({ one }) => ({
@@ -270,6 +272,61 @@ export const teachersRelations = relations(teachers, ({ one, many }) => ({
   courses: many(courses),
 }));
 
+// Playlists table - user-created playlists and system playlists (favorites, etc.)
+export const playlists = pgTable('playlists', {
+  id: serial('id').primaryKey(),
+  userId: integer('user_id')
+    .references(() => users.id)
+    .notNull(),
+  name: varchar('name', { length: 100 }).notNull(),
+  description: text('description'),
+  isPublic: integer('is_public').notNull().default(0), // 0 = private, 1 = public
+  isSystem: integer('is_system').notNull().default(0), // 0 = user-created, 1 = system (favorites, etc.)
+  playlistType: varchar('playlist_type', { length: 20 }).notNull().default('custom'), // 'favorites', 'custom', 'generated'
+  coverUrl: text('cover_url'),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+  updatedAt: timestamp('updated_at').notNull().defaultNow(),
+});
+
+// Playlist items - polymorphic relationship to lessons, courses, teachers
+export const playlistItems = pgTable('playlist_items', {
+  id: serial('id').primaryKey(),
+  playlistId: integer('playlist_id')
+    .references(() => playlists.id, { onDelete: 'cascade' })
+    .notNull(),
+  itemType: varchar('item_type', { length: 20 }).notNull(), // 'lesson', 'course', 'teacher'
+  itemId: integer('item_id').notNull(), // ID of the lesson/course/teacher
+  orderIndex: integer('order_index').notNull().default(0),
+  addedAt: timestamp('added_at').notNull().defaultNow(),
+  addedBy: integer('added_by').references(() => users.id), // Who added this item
+}, (table) => ({
+  // Unique constraint to prevent duplicate items in same playlist
+  uniquePlaylistItem: {
+    columns: [table.playlistId, table.itemType, table.itemId],
+    name: 'unique_playlist_item',
+  },
+}));
+
+export const playlistsRelations = relations(playlists, ({ one, many }) => ({
+  user: one(users, {
+    fields: [playlists.userId],
+    references: [users.id],
+  }),
+  items: many(playlistItems),
+}));
+
+export const playlistItemsRelations = relations(playlistItems, ({ one }) => ({
+  playlist: one(playlists, {
+    fields: [playlistItems.playlistId],
+    references: [playlists.id],
+  }),
+  addedBy: one(users, {
+    fields: [playlistItems.addedBy],
+    references: [users.id],
+    relationName: 'playlistItemsAddedBy',
+  }),
+}));
+
 export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;
 export type Team = typeof teams.$inferSelect;
@@ -292,6 +349,10 @@ export type Subscription = typeof subscriptions.$inferSelect;
 export type NewSubscription = typeof subscriptions.$inferInsert;
 export type Teacher = typeof teachers.$inferSelect;
 export type NewTeacher = typeof teachers.$inferInsert;
+export type Playlist = typeof playlists.$inferSelect;
+export type NewPlaylist = typeof playlists.$inferInsert;
+export type PlaylistItem = typeof playlistItems.$inferSelect;
+export type NewPlaylistItem = typeof playlistItems.$inferInsert;
 export type TeamDataWithMembers = Team & {
   teamMembers: (TeamMember & {
     user: Pick<User, 'id' | 'name' | 'email'>;

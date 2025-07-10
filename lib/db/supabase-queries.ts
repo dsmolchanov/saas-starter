@@ -1,137 +1,22 @@
-import { desc, and, eq, isNull, sql } from 'drizzle-orm';
-import { db } from './drizzle';
-import { activityLogs, teamMembers, teams, users, playlists, playlistItems, lessons, courses, teachers } from './schema';
-import { cookies } from 'next/headers';
-import { verifyToken } from '@/lib/auth/session';
+import { supabaseDb } from './drizzle';
+import { 
+  users, 
+  playlists, 
+  playlistItems, 
+  lessons, 
+  courses, 
+  teachers,
+  categories,
+  focusAreas,
+  lessonFocusAreas,
+  progress,
+  subscriptions
+} from './supabase-schema';
+import { sql, eq, and, desc } from 'drizzle-orm';
 
-export async function getUser() {
-  const sessionCookie = (await cookies()).get('session');
-  if (!sessionCookie || !sessionCookie.value) {
-    return null;
-  }
-
-  const sessionData = await verifyToken(sessionCookie.value);
-  if (
-    !sessionData ||
-    !sessionData.user ||
-    typeof sessionData.user.id !== 'number'
-  ) {
-    return null;
-  }
-
-  if (new Date(sessionData.expires) < new Date()) {
-    return null;
-  }
-
-  const user = await db
-    .select()
-    .from(users)
-    .where(and(eq(users.id, sessionData.user.id), isNull(users.deletedAt)))
-    .limit(1);
-
-  if (user.length === 0) {
-    return null;
-  }
-
-  return user[0];
-}
-
-export async function getTeamByStripeCustomerId(customerId: string) {
-  const result = await db
-    .select()
-    .from(teams)
-    .where(eq(teams.stripeCustomerId, customerId))
-    .limit(1);
-
-  return result.length > 0 ? result[0] : null;
-}
-
-export async function updateTeamSubscription(
-  teamId: number,
-  subscriptionData: {
-    stripeSubscriptionId: string | null;
-    stripeProductId: string | null;
-    planName: string | null;
-    subscriptionStatus: string;
-  }
-) {
-  await db
-    .update(teams)
-    .set({
-      ...subscriptionData,
-      updatedAt: new Date()
-    })
-    .where(eq(teams.id, teamId));
-}
-
-export async function getUserWithTeam(userId: number) {
-  const result = await db
-    .select({
-      user: users,
-      teamId: teamMembers.teamId
-    })
-    .from(users)
-    .leftJoin(teamMembers, eq(users.id, teamMembers.userId))
-    .where(eq(users.id, userId))
-    .limit(1);
-
-  return result[0];
-}
-
-export async function getActivityLogs() {
-  const user = await getUser();
-  if (!user) {
-    throw new Error('User not authenticated');
-  }
-
-  return await db
-    .select({
-      id: activityLogs.id,
-      action: activityLogs.action,
-      timestamp: activityLogs.timestamp,
-      ipAddress: activityLogs.ipAddress,
-      userName: users.name
-    })
-    .from(activityLogs)
-    .leftJoin(users, eq(activityLogs.userId, users.id))
-    .where(eq(activityLogs.userId, user.id))
-    .orderBy(desc(activityLogs.timestamp))
-    .limit(10);
-}
-
-export async function getTeamForUser() {
-  const user = await getUser();
-  if (!user) {
-    return null;
-  }
-
-  const result = await db.query.teamMembers.findFirst({
-    where: eq(teamMembers.userId, user.id),
-    with: {
-      team: {
-        with: {
-          teamMembers: {
-            with: {
-              user: {
-                columns: {
-                  id: true,
-                  name: true,
-                  email: true
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  });
-
-  return result?.team || null;
-}
-
-// Playlist queries
-export async function getUserPlaylists(userId: number) {
-  return await db
+// Playlist queries for Supabase (using UUIDs)
+export async function getUserPlaylistsSupabase(userId: string) {
+  return await supabaseDb
     .select({
       id: playlists.id,
       name: playlists.name,
@@ -151,8 +36,8 @@ export async function getUserPlaylists(userId: number) {
     .orderBy(playlists.isSystem, playlists.createdAt);
 }
 
-export async function getPlaylistWithItems(playlistId: number) {
-  const playlist = await db
+export async function getPlaylistWithItemsSupabase(playlistId: string) {
+  const playlist = await supabaseDb
     .select()
     .from(playlists)
     .where(eq(playlists.id, playlistId))
@@ -160,7 +45,7 @@ export async function getPlaylistWithItems(playlistId: number) {
 
   if (!playlist.length) return null;
 
-  const items = await db
+  const items = await supabaseDb
     .select({
       id: playlistItems.id,
       itemType: playlistItems.itemType,
@@ -215,14 +100,14 @@ export async function getPlaylistWithItems(playlistId: number) {
   };
 }
 
-export async function createPlaylist(data: {
-  userId: number;
+export async function createPlaylistSupabase(data: {
+  userId: string;
   name: string;
   description?: string;
   isPublic?: boolean;
   playlistType?: string;
 }) {
-  const [playlist] = await db
+  const [playlist] = await supabaseDb
     .insert(playlists)
     .values({
       userId: data.userId,
@@ -236,15 +121,15 @@ export async function createPlaylist(data: {
   return playlist;
 }
 
-export async function addToPlaylist(data: {
-  playlistId: number;
+export async function addToPlaylistSupabase(data: {
+  playlistId: string;
   itemType: 'lesson' | 'course' | 'teacher';
-  itemId: number;
-  addedBy: number;
+  itemId: string;
+  addedBy: string;
   orderIndex?: number;
 }) {
   // Check if item already exists in playlist
-  const existing = await db
+  const existing = await supabaseDb
     .select()
     .from(playlistItems)
     .where(
@@ -263,7 +148,7 @@ export async function addToPlaylist(data: {
   // If no order index provided, add to end
   let orderIndex = data.orderIndex;
   if (orderIndex === undefined) {
-    const lastItem = await db
+    const lastItem = await supabaseDb
       .select({ orderIndex: playlistItems.orderIndex })
       .from(playlistItems)
       .where(eq(playlistItems.playlistId, data.playlistId))
@@ -273,7 +158,7 @@ export async function addToPlaylist(data: {
     orderIndex = lastItem.length > 0 ? (lastItem[0].orderIndex || 0) + 1 : 0;
   }
 
-  const [item] = await db
+  const [item] = await supabaseDb
     .insert(playlistItems)
     .values({
       playlistId: data.playlistId,
@@ -287,8 +172,8 @@ export async function addToPlaylist(data: {
   return item;
 }
 
-export async function removeFromPlaylist(playlistId: number, itemType: string, itemId: number) {
-  return await db
+export async function removeFromPlaylistSupabase(playlistId: string, itemType: string, itemId: string) {
+  return await supabaseDb
     .delete(playlistItems)
     .where(
       and(
@@ -299,8 +184,8 @@ export async function removeFromPlaylist(playlistId: number, itemType: string, i
     );
 }
 
-export async function getFavoritesPlaylist(userId: number) {
-  let favoritesPlaylist = await db
+export async function getFavoritesPlaylistSupabase(userId: string) {
+  let favoritesPlaylist = await supabaseDb
     .select()
     .from(playlists)
     .where(
@@ -313,7 +198,7 @@ export async function getFavoritesPlaylist(userId: number) {
 
   // Create favorites playlist if it doesn't exist
   if (!favoritesPlaylist.length) {
-    const [newPlaylist] = await db
+    const [newPlaylist] = await supabaseDb
       .insert(playlists)
       .values({
         userId,
@@ -326,13 +211,13 @@ export async function getFavoritesPlaylist(userId: number) {
     favoritesPlaylist = [newPlaylist];
   }
 
-  return await getPlaylistWithItems(favoritesPlaylist[0].id);
+  return await getPlaylistWithItemsSupabase(favoritesPlaylist[0].id);
 }
 
-export async function addToFavorites(userId: number, itemType: 'lesson' | 'course' | 'teacher', itemId: number) {
-  const favoritesPlaylist = await getFavoritesPlaylist(userId);
+export async function addToFavoritesSupabase(userId: string, itemType: 'lesson' | 'course' | 'teacher', itemId: string) {
+  const favoritesPlaylist = await getFavoritesPlaylistSupabase(userId);
   
-  return await addToPlaylist({
+  return await addToPlaylistSupabase({
     playlistId: favoritesPlaylist.id,
     itemType,
     itemId,
@@ -340,14 +225,14 @@ export async function addToFavorites(userId: number, itemType: 'lesson' | 'cours
   });
 }
 
-export async function removeFromFavorites(userId: number, itemType: 'lesson' | 'course' | 'teacher', itemId: number) {
-  const favoritesPlaylist = await getFavoritesPlaylist(userId);
+export async function removeFromFavoritesSupabase(userId: string, itemType: 'lesson' | 'course' | 'teacher', itemId: string) {
+  const favoritesPlaylist = await getFavoritesPlaylistSupabase(userId);
   
-  return await removeFromPlaylist(favoritesPlaylist.id, itemType, itemId);
+  return await removeFromPlaylistSupabase(favoritesPlaylist.id, itemType, itemId);
 }
 
-export async function checkIfFavorite(userId: number, itemType: 'lesson' | 'course' | 'teacher', itemId: number) {
-  const favoritesPlaylist = await db
+export async function checkIfFavoriteSupabase(userId: string, itemType: 'lesson' | 'course' | 'teacher', itemId: string) {
+  const favoritesPlaylist = await supabaseDb
     .select({ id: playlists.id })
     .from(playlists)
     .where(
@@ -360,7 +245,7 @@ export async function checkIfFavorite(userId: number, itemType: 'lesson' | 'cour
 
   if (!favoritesPlaylist.length) return false;
 
-  const favorite = await db
+  const favorite = await supabaseDb
     .select()
     .from(playlistItems)
     .where(
@@ -374,3 +259,73 @@ export async function checkIfFavorite(userId: number, itemType: 'lesson' | 'cour
 
   return favorite.length > 0;
 }
+
+// Additional Supabase-specific queries
+export async function getBrowseDataSupabase() {
+  const [categoriesData, lessonsData, coursesData, teachersData, focusAreasData] = await Promise.all([
+    supabaseDb.select().from(categories),
+    supabaseDb
+      .select({
+        id: lessons.id,
+        title: lessons.title,
+        description: lessons.description,
+        durationMin: lessons.durationMin,
+        difficulty: lessons.difficulty,
+        intensity: lessons.intensity,
+        style: lessons.style,
+        equipment: lessons.equipment,
+        thumbnailUrl: lessons.thumbnailUrl,
+        imageUrl: lessons.imageUrl,
+        course: {
+          id: courses.id,
+          title: courses.title,
+        },
+      })
+      .from(lessons)
+      .leftJoin(courses, eq(lessons.courseId, courses.id)),
+    supabaseDb
+      .select({
+        id: courses.id,
+        title: courses.title,
+        description: courses.description,
+        level: courses.level,
+        imageUrl: courses.imageUrl,
+        teacher: {
+          id: users.id,
+          name: users.name,
+          avatarUrl: users.avatarUrl,
+        },
+        lessonCount: sql<number>`count(${lessons.id})::int`,
+      })
+      .from(courses)
+      .leftJoin(teachers, eq(courses.teacherId, teachers.id))
+      .leftJoin(users, eq(teachers.id, users.id))
+      .leftJoin(lessons, eq(courses.id, lessons.courseId))
+      .where(eq(courses.isPublished, 1))
+      .groupBy(courses.id, users.id),
+    supabaseDb
+      .select({
+        id: teachers.id,
+        bio: teachers.bio,
+        user: {
+          id: users.id,
+          name: users.name,
+          avatarUrl: users.avatarUrl,
+        },
+        courseCount: sql<number>`count(${courses.id})::int`,
+      })
+      .from(teachers)
+      .leftJoin(users, eq(teachers.id, users.id))
+      .leftJoin(courses, eq(teachers.id, courses.teacherId))
+      .groupBy(teachers.id, users.id),
+    supabaseDb.select().from(focusAreas),
+  ]);
+
+  return {
+    categories: categoriesData,
+    lessons: lessonsData,
+    courses: coursesData,
+    teachers: teachersData,
+    focusAreas: focusAreasData,
+  };
+} 

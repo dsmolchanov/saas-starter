@@ -46,11 +46,14 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    const redirectUrl = new URL(next, process.env.NEXT_PUBLIC_SITE_URL!);
+    // Use request origin for development to ensure localhost stays localhost
+    const origin = process.env.NEXT_PUBLIC_SITE_URL || new URL(request.url).origin;
+    const redirectUrl = new URL(next, origin);
     return NextResponse.redirect(redirectUrl);
   } catch (err) {
     console.error('OAuth callback error', err);
-    const redirectUrl = new URL('/', process.env.NEXT_PUBLIC_SITE_URL || request.url);
+    const origin = process.env.NEXT_PUBLIC_SITE_URL || new URL(request.url).origin;
+    const redirectUrl = new URL('/', origin);
     return NextResponse.redirect(redirectUrl);
   }
 } 

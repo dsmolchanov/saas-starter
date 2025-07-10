@@ -43,6 +43,7 @@ export function Login({ mode = 'signin' }: { mode?: 'signin' | 'signup' }) {
             className="w-full flex items-center justify-center gap-2 rounded-full"
             onClick={async () => {
               const supabase = createClient();
+              // Use environment variable if set, otherwise fall back to window.location.origin
               const origin = process.env.NEXT_PUBLIC_SITE_URL || window.location.origin;
               const target = redirect || '/my_practice';
               const redirectUrl = `${origin}/auth/callback?next=${encodeURIComponent(target)}`;
@@ -66,7 +67,7 @@ export function Login({ mode = 'signin' }: { mode?: 'signin' | 'signup' }) {
           </Button>
         </div>
 
-        <form className="space-y-6" action={formAction}>
+        <form className="space-y-6" action={formAction} suppressHydrationWarning>
           <input type="hidden" name="redirect" value={redirect || ''} />
           <input type="hidden" name="priceId" value={priceId || ''} />
           <input type="hidden" name="inviteId" value={inviteId || ''} />
@@ -77,7 +78,7 @@ export function Login({ mode = 'signin' }: { mode?: 'signin' | 'signup' }) {
             >
               Email
             </Label>
-            <div className="mt-1">
+            <div className="mt-1" suppressHydrationWarning>
               <Input
                 id="email"
                 name="email"
@@ -88,6 +89,7 @@ export function Login({ mode = 'signin' }: { mode?: 'signin' | 'signup' }) {
                 maxLength={50}
                 className="appearance-none rounded-full relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-orange-500 focus:border-orange-500 focus:z-10 sm:text-sm"
                 placeholder="Enter your email"
+                suppressHydrationWarning
               />
             </div>
           </div>
@@ -99,7 +101,7 @@ export function Login({ mode = 'signin' }: { mode?: 'signin' | 'signup' }) {
             >
               Password
             </Label>
-            <div className="mt-1">
+            <div className="mt-1" suppressHydrationWarning>
               <Input
                 id="password"
                 name="password"
@@ -113,6 +115,7 @@ export function Login({ mode = 'signin' }: { mode?: 'signin' | 'signup' }) {
                 maxLength={100}
                 className="appearance-none rounded-full relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-orange-500 focus:border-orange-500 focus:z-10 sm:text-sm"
                 placeholder="Enter your password"
+                suppressHydrationWarning
               />
             </div>
           </div>
