@@ -43,16 +43,14 @@ export function Login({ mode = 'signin' }: { mode?: 'signin' | 'signup' }) {
             className="w-full flex items-center justify-center gap-2 rounded-full"
             onClick={async () => {
               const supabase = createClient();
-              // Always use the current origin to stay on the same domain (dev or prod)
-              const origin = window.location.origin;
               const target = redirect || '/my_practice';
-              const redirectUrl = `${origin}/auth/callback?next=${encodeURIComponent(target)}`;
+              const redirectUrl = `${window.location.origin}/auth/callback?next=${encodeURIComponent(target)}`;
               
-              console.log('OAuth Debug Info:');
-              console.log('- Origin:', origin);
-              console.log('- Target:', target);
-              console.log('- Redirect URL:', redirectUrl);
-              console.log('- Current URL:', window.location.href);
+              console.log('OAuth Sign In:', {
+                target,
+                redirectUrl,
+                origin: window.location.origin
+              });
               
               await supabase.auth.signInWithOAuth({
                 provider: 'google',

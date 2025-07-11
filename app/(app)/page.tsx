@@ -1,7 +1,6 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Suspense } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -21,7 +20,6 @@ import {
   Sparkles,
   Music
 } from 'lucide-react';
-import { OAuthCallbackHandler } from './oauth-handler';
 
 export const metadata: Metadata = {
   title: 'Find Your Perfect Practice | Dzen Yoga',
@@ -32,9 +30,6 @@ export const metadata: Metadata = {
 export default function HomePage() {
   return (
     <>
-      <Suspense fallback={null}>
-        <OAuthCallbackHandler />
-      </Suspense>
       {/* Hero Section */}
       <section className="relative min-h-[90vh] overflow-hidden" style={{ background: `linear-gradient(135deg, var(--color-zen-5), var(--color-zen-4), var(--color-zen-3))` }}>
         <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?auto=format&fit=crop&w=2000&q=80')] bg-cover bg-center opacity-30" />

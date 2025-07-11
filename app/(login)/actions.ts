@@ -223,10 +223,21 @@ export const signUp = validatedAction(signUpSchema, async (data, formData) => {
 });
 
 export async function signOut() {
-  const user = (await getUser()) as User;
-  const userWithTeam = await getUserWithTeam(user.id);
-  await logActivity(userWithTeam?.teamId, user.id, ActivityType.SIGN_OUT);
+  try {
+    const user = (await getUser()) as User;
+    if (user) {
+      const userWithTeam = await getUserWithTeam(user.id);
+      await logActivity(userWithTeam?.teamId, user.id, ActivityType.SIGN_OUT);
+    }
+  } catch (error) {
+    console.error('Error logging sign out activity:', error);
+  }
+  
+  // Delete session cookie
   (await cookies()).delete('session');
+  
+  // Redirect to home page
+  redirect('/');
 }
 
 const updatePasswordSchema = z.object({

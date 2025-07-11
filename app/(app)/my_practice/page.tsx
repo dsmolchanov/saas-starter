@@ -8,6 +8,7 @@ import { Filter, List, Grip, ChevronDown } from 'lucide-react';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { MyPracticeUI } from '@/components/my-practice-ui';
+import { SignOutButton } from '@/components/sign-out-button';
 import Link from 'next/link';
 import { ClearAuthErrors } from '@/components/clear-auth-errors';
 
@@ -66,11 +67,16 @@ export default async function MyPracticePage() {
       {/* Top bar */}
       <div className="flex items-center justify-center relative mb-6">
         <h1 className="text-lg font-semibold tracking-wide">MY PRACTICE</h1>
-        <Avatar className="absolute right-0">
-          <AvatarFallback>
-            {user.name ? user.name.split(' ').map(n=>n[0]).join('').slice(0,2).toUpperCase() : 'U'}
-          </AvatarFallback>
-        </Avatar>
+        <div className="absolute right-0 flex flex-col items-center gap-2">
+          <Avatar>
+            <AvatarFallback>
+              {user.name ? user.name.split(' ').map(n=>n[0]).join('').slice(0,2).toUpperCase() : 'U'}
+            </AvatarFallback>
+          </Avatar>
+          <SignOutButton variant="ghost" size="sm" className="text-xs px-2 py-1 h-auto" showIcon={false}>
+            Sign Out
+          </SignOutButton>
+        </div>
       </div>
 
       <MyPracticeUI 
