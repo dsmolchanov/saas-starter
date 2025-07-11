@@ -11,6 +11,7 @@ import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Play, Clock, User, Target, Zap, Heart, Calendar, ArrowLeft } from 'lucide-react';
 import { FavoriteButton } from '@/components/favorite-button';
+import { VideoPlayer } from '@/components/video-player';
 
 // Disable static prerendering for DB queries
 export const dynamic = 'force-dynamic';
@@ -104,34 +105,14 @@ export default async function LessonPage({ params }: { params: Promise<{ lessonI
     <div className="min-h-screen bg-background">
       {/* Video Player Section */}
       <div className="relative w-full aspect-video bg-black">
-        {lesson.videoPath ? (
-          <video
-            className="w-full h-full object-cover"
-            controls
-            poster={thumbnailUrl}
-            preload="metadata"
-          >
-            <source src={lesson.videoPath} type="video/mp4" />
-            Your browser does not support the video tag.
-          </video>
-        ) : (
-          <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/20 to-primary/5">
-            {lesson.imageUrl || lesson.thumbnailUrl ? (
-              <Image
-                src={thumbnailUrl}
-                alt={lesson.title}
-                fill
-                className="object-cover"
-              />
-            ) : null}
-            <div className="absolute inset-0 flex items-center justify-center bg-black/20">
-              <div className="text-center text-white">
-                <Play className="w-16 h-16 mx-auto mb-4 opacity-80" />
-                <p className="text-lg">Video coming soon</p>
-              </div>
-            </div>
-          </div>
-        )}
+        <VideoPlayer
+          videoPath={lesson.videoPath}
+          videoUrl={(lesson as any).videoUrl}
+          videoType={(lesson as any).videoType}
+          thumbnailUrl={lesson.imageUrl || lesson.thumbnailUrl}
+          title={lesson.title}
+          className="w-full h-full"
+        />
         
         {/* Back button overlay */}
         <div className="absolute top-4 left-4 z-10">

@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
-import { ClassFileUpload } from '@/components/class-file-upload';
+import { ClassVideoInput } from '@/components/class-video-input';
 import { Plus, Play, Edit, Trash2, Clock } from 'lucide-react';
 
 interface ClassItem {
@@ -18,6 +18,8 @@ interface ClassItem {
   difficulty: string | null;
   intensity: string | null;
   videoPath: string | null;
+  videoUrl: string | null;
+  videoType: string | null;
   imageUrl: string | null;
   course: {
     id: string;
@@ -47,6 +49,8 @@ export function ClassManager({ userId }: ClassManagerProps) {
     difficulty: '',
     intensity: '',
     videoPath: '',
+    videoUrl: '',
+    videoType: '',
     imageUrl: '',
   });
   const [saving, setSaving] = useState(false);
@@ -75,6 +79,8 @@ export function ClassManager({ userId }: ClassManagerProps) {
       difficulty: '',
       intensity: '',
       videoPath: '',
+      videoUrl: '',
+      videoType: '',
       imageUrl: '',
     });
     setEditingClass(null);
@@ -96,6 +102,8 @@ export function ClassManager({ userId }: ClassManagerProps) {
       difficulty: classItem.difficulty || '',
       intensity: classItem.intensity || '',
       videoPath: classItem.videoPath || '',
+      videoUrl: classItem.videoUrl || '',
+      videoType: classItem.videoType || '',
       imageUrl: classItem.imageUrl || '',
     });
     setShowForm(true);
@@ -120,6 +128,8 @@ export function ClassManager({ userId }: ClassManagerProps) {
           ...formData,
           durationMin: parseInt(formData.durationMin),
           videoPath: formData.videoPath || null,
+          videoUrl: formData.videoUrl || null,
+          videoType: formData.videoType || null,
           imageUrl: formData.imageUrl || null,
         }),
       });
@@ -274,14 +284,21 @@ export function ClassManager({ userId }: ClassManagerProps) {
                 />
               </div>
 
-              {/* File Upload Section */}
+              {/* Video Upload Section */}
               <div className="border-t pt-6">
-                <ClassFileUpload
+                <ClassVideoInput
                   userId={userId}
                   initialVideoPath={formData.videoPath || undefined}
-                  initialImageUrl={formData.imageUrl || undefined}
-                  onVideoChange={(videoPath) => setFormData({...formData, videoPath: videoPath || ''})}
-                  onImageChange={(imageUrl) => setFormData({...formData, imageUrl: imageUrl || ''})}
+                  initialVideoUrl={formData.videoUrl || undefined}
+                  initialVideoType={formData.videoType || undefined}
+                  onVideoChange={(videoPath, videoUrl, videoType) => 
+                    setFormData({
+                      ...formData, 
+                      videoPath: videoPath || '', 
+                      videoUrl: videoUrl || '',
+                      videoType: videoType || ''
+                    })
+                  }
                 />
               </div>
 

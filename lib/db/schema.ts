@@ -89,7 +89,9 @@ export const classes = pgTable('classes', {
   title: varchar('title', { length: 150 }).notNull(),
   description: text('description'),
   durationMin: integer('duration_min').notNull().default(0),
-  videoPath: text('video_path'),
+  videoPath: text('video_path'), // For uploaded videos (legacy support)
+  videoUrl: text('video_url'), // For external URLs (YouTube, Vimeo, etc.)
+  videoType: varchar('video_type', { length: 20 }).default('upload'), // 'upload', 'youtube', 'vimeo', 'external'
   thumbnailUrl: text('thumbnail_url'),
   imageUrl: text('image_url'),
   difficulty: varchar('difficulty', { length: 20 }),
