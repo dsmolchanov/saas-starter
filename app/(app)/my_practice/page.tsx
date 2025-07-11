@@ -27,8 +27,9 @@ export default async function MyPracticePage() {
     );
   }
 
-  // Determine role
-  const isTeacher = (await db.select().from(teachers).where(eq(teachers.id, user.id)).limit(1)).length > 0;
+  // Determine role - check both teacher table and application status
+  const isTeacher = (await db.select().from(teachers).where(eq(teachers.id, user.id)).limit(1)).length > 0 || 
+                   user.teacherApplicationStatus === 'approved';
 
   // Get user's progress with class and course details
   const userProgress = await db
@@ -72,7 +73,15 @@ export default async function MyPracticePage() {
         </Avatar>
       </div>
 
-      <MyPracticeUI user={{ id: user.id, name: user.name || 'User', avatarUrl: (user as any).avatarUrl }} initialRole={isTeacher ? 'teacher' : 'student'} />
+      <MyPracticeUI 
+        user={{ 
+          id: user.id, 
+          name: user.name || 'User', 
+          avatarUrl: (user as any).avatarUrl,
+          teacherApplicationStatus: user.teacherApplicationStatus 
+        }} 
+        initialRole={isTeacher ? 'teacher' : 'student'} 
+      />
 
       {/* Tabs */}
       <Tabs defaultValue="completed" className="w-full">

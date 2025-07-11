@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
+import { ClassFileUpload } from '@/components/class-file-upload';
 import { Plus, Play, Edit, Trash2, Clock } from 'lucide-react';
 
 interface ClassItem {
@@ -16,6 +17,8 @@ interface ClassItem {
   durationMin: number;
   difficulty: string | null;
   intensity: string | null;
+  videoPath: string | null;
+  imageUrl: string | null;
   course: {
     id: string;
     title: string;
@@ -28,7 +31,11 @@ interface ClassItem {
   }>;
 }
 
-export function ClassManager() {
+interface ClassManagerProps {
+  userId: string;
+}
+
+export function ClassManager({ userId }: ClassManagerProps) {
   const [classes, setClasses] = useState<ClassItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
@@ -39,6 +46,8 @@ export function ClassManager() {
     durationMin: '',
     difficulty: '',
     intensity: '',
+    videoPath: '',
+    imageUrl: '',
   });
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
@@ -65,6 +74,8 @@ export function ClassManager() {
       durationMin: '',
       difficulty: '',
       intensity: '',
+      videoPath: '',
+      imageUrl: '',
     });
     setEditingClass(null);
     setShowForm(false);
@@ -84,6 +95,8 @@ export function ClassManager() {
       durationMin: classItem.durationMin.toString(),
       difficulty: classItem.difficulty || '',
       intensity: classItem.intensity || '',
+      videoPath: classItem.videoPath || '',
+      imageUrl: classItem.imageUrl || '',
     });
     setShowForm(true);
   };
@@ -106,6 +119,8 @@ export function ClassManager() {
         body: JSON.stringify({
           ...formData,
           durationMin: parseInt(formData.durationMin),
+          videoPath: formData.videoPath || null,
+          imageUrl: formData.imageUrl || null,
         }),
       });
 
@@ -256,6 +271,17 @@ export function ClassManager() {
                   onChange={(e) => setFormData({...formData, description: e.target.value})}
                   placeholder="Describe this class..."
                   rows={3}
+                />
+              </div>
+
+              {/* File Upload Section */}
+              <div className="border-t pt-6">
+                <ClassFileUpload
+                  userId={userId}
+                  initialVideoPath={formData.videoPath || undefined}
+                  initialImageUrl={formData.imageUrl || undefined}
+                  onVideoChange={(videoPath) => setFormData({...formData, videoPath: videoPath || ''})}
+                  onImageChange={(imageUrl) => setFormData({...formData, imageUrl: imageUrl || ''})}
                 />
               </div>
 

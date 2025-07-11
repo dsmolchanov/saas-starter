@@ -21,6 +21,7 @@ export const users = pgTable('users', {
   passwordHash: text('password_hash'),
   // Role can be 'student' or 'teacher' or 'admin'
   role: varchar('role', { length: 20 }).notNull().default('student'),
+  teacherApplicationStatus: varchar('teacher_application_status', { length: 20 }),
 });
 
 export const teams = pgTable('teams', {
@@ -137,6 +138,38 @@ export const teachers = pgTable('teachers', {
   revenueShare: integer('revenue_share').notNull().default(0),
 });
 
+export const teacherApplications = pgTable('teacher_applications', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  userId: uuid('user_id').references(() => users.id, { onDelete: 'cascade' }).notNull(),
+  
+  // Application data
+  experienceLevel: varchar('experience_level', { length: 50 }).notNull(),
+  trainingBackground: text('training_background').notNull(),
+  offlinePractice: text('offline_practice'),
+  regularStudentsCount: varchar('regular_students_count', { length: 50 }),
+  revenueModel: varchar('revenue_model', { length: 50 }).notNull(),
+  
+  // Additional info
+  motivation: text('motivation'),
+  additionalInfo: text('additional_info'),
+  
+  // Application status
+  status: varchar('status', { length: 20 }).notNull().default('pending'),
+  submittedAt: timestamp('submitted_at').notNull().defaultNow(),
+  reviewedAt: timestamp('reviewed_at'),
+  reviewedBy: uuid('reviewed_by').references(() => users.id),
+  reviewNotes: text('review_notes'),
+  
+  // Timestamps
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+  updatedAt: timestamp('updated_at').notNull().defaultNow(),
+}, (table) => ({
+  uniqueUserApplication: {
+    columns: [table.userId],
+    name: 'unique_user_teacher_application',
+  },
+}));
+
 export const playlists = pgTable('playlists', {
   id: uuid('id').defaultRandom().primaryKey(),
   userId: uuid('user_id').references(() => users.id).notNull(),
@@ -189,6 +222,10 @@ export const usersRelations = relations(users, ({ many, one }) => ({
     teacherProfile: one(teachers, {
         fields: [users.id],
         references: [teachers.id],
+    }),
+    teacherApplication: one(teacherApplications, {
+        fields: [users.id],
+        references: [teacherApplications.userId],
     }),
     coursesTaught: many(courses),
     progress: many(progress),
@@ -313,6 +350,17 @@ export const teachersRelations = relations(teachers, ({ one, many }) => ({
   courses: many(courses),
 }));
 
+export const teacherApplicationsRelations = relations(teacherApplications, ({ one }) => ({
+  user: one(users, {
+    fields: [teacherApplications.userId],
+    references: [users.id],
+  }),
+  reviewer: one(users, {
+    fields: [teacherApplications.reviewedBy],
+    references: [users.id],
+  }),
+}));
+
 export const playlistsRelations = relations(playlists, ({ one, many }) => ({
   user: one(users, {
     fields: [playlists.userId],
@@ -384,6 +432,8 @@ export type DailyUserMetric = typeof dailyUserMetrics.$inferSelect;
 export type NewDailyUserMetric = typeof dailyUserMetrics.$inferInsert;
 export type DailyTeacherMetric = typeof dailyTeacherMetrics.$inferSelect;
 export type NewDailyTeacherMetric = typeof dailyTeacherMetrics.$inferInsert;
+export type TeacherApplication = typeof teacherApplications.$inferSelect;
+export type NewTeacherApplication = typeof teacherApplications.$inferInsert;
 
 export type TeamDataWithMembers = Team & {
   teamMembers: (TeamMember & {

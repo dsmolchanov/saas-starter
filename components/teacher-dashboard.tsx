@@ -80,7 +80,7 @@ export function TeacherDashboard({ user }: TeacherDashboardProps) {
         </TabsContent>
 
         <TabsContent value="classes" className="space-y-6">
-          <ClassManager />
+          <ClassManager userId={user.id} />
         </TabsContent>
       </Tabs>
     </div>

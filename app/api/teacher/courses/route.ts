@@ -28,7 +28,7 @@ export async function GET() {
           },
         },
       },
-      orderBy: (courses, { desc }) => [desc(courses.createdAt)],
+      orderBy: (courses, { desc }) => [desc(courses.title)],
     });
 
     return NextResponse.json({ courses: teacherCourses });
