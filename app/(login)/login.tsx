@@ -43,8 +43,8 @@ export function Login({ mode = 'signin' }: { mode?: 'signin' | 'signup' }) {
             className="w-full flex items-center justify-center gap-2 rounded-full"
             onClick={async () => {
               const supabase = createClient();
-              // Use environment variable if set, otherwise fall back to window.location.origin
-              const origin = process.env.NEXT_PUBLIC_SITE_URL || window.location.origin;
+              // Always use the current origin to stay on the same domain (dev or prod)
+              const origin = window.location.origin;
               const target = redirect || '/my_practice';
               const redirectUrl = `${origin}/auth/callback?next=${encodeURIComponent(target)}`;
               

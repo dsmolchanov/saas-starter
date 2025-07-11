@@ -70,13 +70,20 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    // Use request origin for development to ensure localhost stays localhost
-    const origin = process.env.NEXT_PUBLIC_SITE_URL || new URL(request.url).origin;
+    // Always use the request origin to stay on the same domain (dev or prod)
+    const origin = new URL(request.url).origin;
     const redirectUrl = new URL(next, origin);
+    
+    console.log('OAuth callback redirect:', {
+      requestOrigin: origin,
+      targetPath: next,
+      finalRedirectUrl: redirectUrl.toString()
+    });
+    
     return NextResponse.redirect(redirectUrl);
   } catch (err) {
     console.error('OAuth callback error', err);
-    const origin = process.env.NEXT_PUBLIC_SITE_URL || new URL(request.url).origin;
+    const origin = new URL(request.url).origin;
     const redirectUrl = new URL('/', origin);
     return NextResponse.redirect(redirectUrl);
   }
