@@ -9,7 +9,7 @@ import Link from 'next/link';
 import { BackButton } from '@/components/back-button';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Home, Filter, Play, Clock, User } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -152,6 +152,9 @@ export default function BrowsePage() {
             <SheetContent side="bottom" className="h-[80vh]">
               <SheetHeader>
                 <SheetTitle>Filters</SheetTitle>
+                <SheetDescription>
+                  Filter classes by focus areas, difficulty levels, and yoga styles to find your perfect practice.
+                </SheetDescription>
               </SheetHeader>
               <div className="space-y-6 mt-6">
                 {/* Focus Areas */}

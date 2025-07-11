@@ -9,8 +9,6 @@ export const metadata: Metadata = {
   description: 'Discover yoga teachers you will love. Customize your practice with any duration, style and length.',
   icons: {
     icon: '/favicon.ico',
-    shortcut: '/favicon.ico',
-    apple: '/favicon.ico',
   },
 };
 
@@ -27,9 +25,6 @@ export default function RootLayout({
   return (
     <html lang="en" className="bg-white dark:bg-gray-950 text-black dark:text-white">
       <head>
-        <link rel="icon" href="/favicon.ico" sizes="any" />
-        <link rel="icon" href="/favicon.ico" type="image/x-icon" />
-        <link rel="shortcut icon" href="/favicon.ico" />
       </head>
       <body suppressHydrationWarning className="min-h-[100dvh] bg-gray-50">
         <SWRConfig

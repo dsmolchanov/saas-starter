@@ -195,7 +195,7 @@
 :root {
   /* Dzen Yoga Color Palette */
   --color-zen-1: #e8e8e8; /* Light gray */
-  --color-zen-2: #c7d6d4; /* Soft blue-gray */
+  --color-zen-2: #c7d6d4; /* Soft blue-gray */  
   --color-zen-3: #9fb2b0; /* Medium blue-gray */
   --color-zen-4: #6b9d9e; /* Teal */
   --color-zen-5: #3a7c82; /* Deep teal */
@@ -226,6 +226,15 @@
   --chart-4: hsl(182 32% 23%); /* Azure Radiance */
   --chart-5: hsl(154 48% 88%); /* Fog */
   --radius: 0.6rem;
+}
+
+/* Linear Gradient Classes */
+.zen-gradient {
+  background: linear-gradient(0.25turn, #e8e8e8, #c7d6d4, #9fb2b0, #6b9d9e, #3a7c82);
+}
+
+.zen-gradient-hover {
+  background: linear-gradient(0.25turn, #c7d6d4, #9fb2b0, #6b9d9e, #3a7c82, #2a5b5f);
 }
 
 /*

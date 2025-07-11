@@ -48,10 +48,10 @@ export default function HomePage() {
               Discover teachers you'll love, customize every aspect of your practice, and connect deeper with personalized guidance
             </p>
             <div className="flex flex-col sm:flex-row gap-6 justify-center">
-              <Button asChild size="lg" className="text-lg px-8 py-4 bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700">
+              <Button asChild size="lg" className="text-lg px-8 py-4 zen-gradient hover:zen-gradient-hover text-white transition-all duration-300">
                 <Link href="/sign-up">Start Your Journey Free</Link>
               </Button>
-              <Button asChild variant="outline" size="lg" className="text-lg px-8 py-4 border-white text-white hover:bg-white hover:text-purple-600">
+              <Button asChild variant="outline" size="lg" className="text-lg px-8 py-4 zen-gradient border-0 text-white hover:zen-gradient-hover transition-all duration-300">
                 <Link href="/browse">Explore Classes</Link>
               </Button>
             </div>
@@ -143,7 +143,7 @@ export default function HomePage() {
                 </div>
               </div>
               
-              <Button asChild className="bg-purple-600 hover:bg-purple-700">
+              <Button asChild className="zen-gradient hover:zen-gradient-hover text-white transition-all duration-300">
                 <Link href="/my_practice">
                   Explore My Practice <ArrowRight className="w-4 h-4 ml-2" />
                 </Link>
@@ -213,7 +213,7 @@ export default function HomePage() {
                 </div>
               </div>
               
-              <Button asChild className="bg-blue-600 hover:bg-blue-700">
+              <Button asChild className="zen-gradient hover:zen-gradient-hover text-white transition-all duration-300">
                 <Link href="/teachers">
                   Meet Our Teachers <ArrowRight className="w-4 h-4 ml-2" />
                 </Link>
@@ -308,7 +308,7 @@ export default function HomePage() {
             <Button asChild size="lg" className="text-lg px-8 py-4 bg-white hover:bg-gray-100" style={{ color: 'var(--color-zen-5)' }}>
               <Link href="/sign-up">Start Free Trial</Link>
             </Button>
-            <Button asChild variant="outline" size="lg" className="text-lg px-8 py-4 border-white text-white hover:bg-white hover:text-[var(--color-zen-5)]">
+            <Button asChild variant="outline" size="lg" className="text-lg px-8 py-4 zen-gradient border-0 text-white hover:zen-gradient-hover transition-all duration-300">
               <Link href="/browse">Browse All Classes</Link>
             </Button>
           </div>

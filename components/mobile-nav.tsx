@@ -3,7 +3,6 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Search, Activity } from 'lucide-react';
-import Image from 'next/image';
 import { cn } from '@/lib/utils';
 
 type NavItem = {
@@ -13,7 +12,7 @@ type NavItem = {
 };
 
 const LogoIcon = ({ className }: { className?: string }) => (
-  <Image src="/favicon.ico" alt="Dzen Yoga" width={20} height={20} className={cn('object-contain h-5 w-5', className)} />
+  <img src="/favicon.ico" alt="Dzen Yoga" width={20} height={20} className={cn('object-contain h-5 w-5', className)} />
 );
 
 const navItems: NavItem[] = [
