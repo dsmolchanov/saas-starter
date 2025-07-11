@@ -77,6 +77,7 @@ export default async function MyPracticePage() {
         user={{ 
           id: user.id, 
           name: user.name || 'User', 
+          email: user.email || null,
           avatarUrl: (user as any).avatarUrl,
           teacherApplicationStatus: user.teacherApplicationStatus 
         }} 

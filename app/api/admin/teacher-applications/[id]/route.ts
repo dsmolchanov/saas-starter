@@ -7,7 +7,7 @@ import { eq } from 'drizzle-orm';
 // PUT - Update application status (approve/reject)
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const user = await getUser();
@@ -21,9 +21,12 @@ export async function PUT(
       return NextResponse.json({ error: 'Invalid status. Must be "approved" or "rejected"' }, { status: 400 });
     }
 
+    // Await params before using them
+    const { id } = await params;
+
     // Get the application to get user details
     const application = await db.query.teacherApplications.findFirst({
-      where: eq(teacherApplications.id, params.id),
+      where: eq(teacherApplications.id, id),
       with: {
         user: true
       }
@@ -42,7 +45,7 @@ export async function PUT(
         reviewedAt: new Date(),
         reviewedBy: user.id,
       })
-      .where(eq(teacherApplications.id, params.id))
+      .where(eq(teacherApplications.id, id))
       .returning();
 
     // If approved, update user status and create teacher profile

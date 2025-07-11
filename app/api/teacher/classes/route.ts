@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getUser } from '@/lib/db/queries';
 import { db } from '@/lib/db/drizzle';
 import { classes, lessonFocusAreas, focusAreas, courses } from '@/lib/db/schema';
-import { eq, and } from 'drizzle-orm';
+import { eq, and, SQL } from 'drizzle-orm';
 
 // GET - Fetch teacher's classes
 export async function GET(request: NextRequest) {
@@ -13,14 +13,13 @@ export async function GET(request: NextRequest) {
     const searchParams = request.nextUrl.searchParams;
     const courseId = searchParams.get('courseId');
 
-    let whereClause = eq(classes.teacherId, user.id);
-    
+    const whereConditions = [eq(classes.teacherId, user.id)];
     if (courseId) {
-      whereClause = and(eq(classes.teacherId, user.id), eq(classes.courseId, courseId));
+      whereConditions.push(eq(classes.courseId, courseId));
     }
 
     const teacherClasses = await db.query.classes.findMany({
-      where: whereClause,
+      where: whereConditions.length === 1 ? whereConditions[0] : and(...whereConditions),
       with: {
         course: {
           columns: {

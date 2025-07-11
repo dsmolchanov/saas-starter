@@ -26,6 +26,7 @@ interface TeacherApplication {
 interface User {
   id: string;
   name: string;
+  email: string | null;
   avatarUrl?: string;
   teacherApplicationStatus?: string | null;
 }
