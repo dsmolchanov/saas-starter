@@ -31,7 +31,7 @@ export default function HomePage() {
   return (
     <>
       {/* Hero Section */}
-      <section className="relative min-h-[90vh] overflow-hidden bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900">
+      <section className="relative min-h-[90vh] overflow-hidden" style={{ background: `linear-gradient(135deg, var(--color-zen-5), var(--color-zen-4), var(--color-zen-3))` }}>
         <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?auto=format&fit=crop&w=2000&q=80')] bg-cover bg-center opacity-30" />
         <div className="relative container mx-auto px-4 py-20 flex flex-col justify-center min-h-[90vh]">
           <div className="max-w-4xl mx-auto text-center text-white">
@@ -51,7 +51,7 @@ export default function HomePage() {
               <Button asChild size="lg" className="text-lg px-8 py-4 bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700">
                 <Link href="/sign-up">Start Your Journey Free</Link>
               </Button>
-              <Button asChild variant="outline" size="lg" className="text-lg px-8 py-4 border-white/40 text-white hover:bg-white/10">
+              <Button asChild variant="outline" size="lg" className="text-lg px-8 py-4 border-white text-white hover:bg-white hover:text-purple-600">
                 <Link href="/browse">Explore Classes</Link>
               </Button>
             </div>
@@ -71,37 +71,37 @@ export default function HomePage() {
           
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
             <FeatureCard
-              icon={<Heart className="size-12 text-pink-500" />}
+              icon={<Heart className="size-12" style={{ color: 'var(--color-zen-5)' }} />}
               title="Teachers You Will Love"
               description="Handpicked instructors with unique teaching styles, from gentle beginners to advanced masters. Find your perfect match."
               image="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&w=500&q=80"
             />
             <FeatureCard
-              icon={<Settings className="size-12 text-blue-500" />}
+              icon={<Settings className="size-12" style={{ color: 'var(--color-zen-4)' }} />}
               title="Customize Your Practice"
               description="Filter by mood, energy level, focus areas, and personal goals. Your practice, perfectly tailored."
-              image="https://images.unsplash.com/photo-1506629905607-ce4bebada1fa?auto=format&fit=crop&w=500&q=80"
+              image="https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?auto=format&fit=crop&w=500&q=80"
             />
             <FeatureCard
-              icon={<Clock className="size-12 text-green-500" />}
+              icon={<Clock className="size-12" style={{ color: 'var(--color-zen-4)' }} />}
               title="Any Duration & Style"
               description="From 5-minute breathing exercises to 90-minute deep flows. Vinyasa, Yin, Power, Restorative - it's all here."
               image="https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?auto=format&fit=crop&w=500&q=80"
             />
             <FeatureCard
-              icon={<Video className="size-12 text-purple-500" />}
+              icon={<Video className="size-12" style={{ color: 'var(--color-zen-5)' }} />}
               title="Connect Deeper"
               description="Join live webinars, book private sessions, and get personalized feedback from your favorite teachers."
               image="https://images.unsplash.com/photo-1593810450967-f9c42742e326?auto=format&fit=crop&w=500&q=80"
             />
             <FeatureCard
-              icon={<Music className="size-12 text-orange-500" />}
+              icon={<Music className="size-12" style={{ color: 'var(--color-zen-4)' }} />}
               title="Playlists Like Spotify"
               description="Create custom playlists, save favorites, track recently played. Your yoga library, organized your way."
               image="https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?auto=format&fit=crop&w=500&q=80"
             />
             <FeatureCard
-              icon={<Users className="size-12 text-indigo-500" />}
+              icon={<Users className="size-12" style={{ color: 'var(--color-zen-5)' }} />}
               title="For The Whole Family"
               description="Kids yoga, prenatal classes, senior-friendly practices. Something special for every family member."
               image="https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?auto=format&fit=crop&w=500&q=80"
@@ -111,7 +111,7 @@ export default function HomePage() {
       </section>
 
       {/* Playlist Features */}
-      <section className="py-24 bg-gradient-to-r from-indigo-50 to-purple-50">
+      <section className="py-24" style={{ background: `linear-gradient(135deg, rgb(199, 214, 212, 0.3), rgb(159, 178, 176, 0.3))` }}>
         <div className="container mx-auto px-4">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div>
@@ -224,7 +224,7 @@ export default function HomePage() {
       </section>
 
       {/* Family Section */}
-      <section className="py-24 bg-gradient-to-r from-green-50 to-blue-50">
+      <section className="py-24" style={{ background: `linear-gradient(135deg, rgb(232, 232, 232, 0.5), rgb(199, 214, 212, 0.5))` }}>
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
             <Badge className="mb-4 bg-green-100 text-green-700 border-green-200">
@@ -296,7 +296,7 @@ export default function HomePage() {
       </section>
 
       {/* Final CTA */}
-      <section className="py-24 bg-gradient-to-r from-purple-600 to-blue-600 text-white">
+      <section className="py-24 text-white" style={{ background: `linear-gradient(135deg, var(--color-zen-5), var(--color-zen-4))` }}>
         <div className="container mx-auto px-4 text-center">
           <Sparkles className="w-16 h-16 mx-auto mb-6 text-yellow-300" />
           <h2 className="text-4xl md:text-5xl font-bold mb-6">Ready to Transform Your Practice?</h2>
@@ -305,10 +305,10 @@ export default function HomePage() {
           </p>
           
           <div className="flex flex-col sm:flex-row gap-6 justify-center">
-            <Button asChild size="lg" className="text-lg px-8 py-4 bg-white text-purple-600 hover:bg-gray-100">
+            <Button asChild size="lg" className="text-lg px-8 py-4 bg-white hover:bg-gray-100" style={{ color: 'var(--color-zen-5)' }}>
               <Link href="/sign-up">Start Free Trial</Link>
             </Button>
-            <Button asChild variant="outline" size="lg" className="text-lg px-8 py-4 border-white text-white hover:bg-white hover:text-purple-600">
+            <Button asChild variant="outline" size="lg" className="text-lg px-8 py-4 border-white text-white hover:bg-white hover:text-[var(--color-zen-5)]">
               <Link href="/browse">Browse All Classes</Link>
             </Button>
           </div>

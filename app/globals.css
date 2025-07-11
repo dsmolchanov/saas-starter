@@ -193,6 +193,13 @@
 */
 
 :root {
+  /* Dzen Yoga Color Palette */
+  --color-zen-1: #e8e8e8; /* Light gray */
+  --color-zen-2: #c7d6d4; /* Soft blue-gray */
+  --color-zen-3: #9fb2b0; /* Medium blue-gray */
+  --color-zen-4: #6b9d9e; /* Teal */
+  --color-zen-5: #3a7c82; /* Deep teal */
+  
   /* Zen Garden Palette - Light Mode */
   --background: hsl(0 0% 100%);
   --foreground: hsl(182 32% 23%); /* #2d5c59 - Azure Radiance */
