@@ -1,6 +1,6 @@
 import { desc, and, eq, isNull, sql } from 'drizzle-orm';
 import { db } from './drizzle';
-import { activityLogs, teamMembers, teams, users, playlists, playlistItems, lessons, courses, teachers } from './schema';
+import { activityLogs, teamMembers, teams, users, playlists, playlistItems, classes, courses, teachers } from './schema';
 import { cookies } from 'next/headers';
 import { verifyToken } from '@/lib/auth/session';
 
@@ -14,7 +14,7 @@ export async function getUser() {
   if (
     !sessionData ||
     !sessionData.user ||
-    typeof sessionData.user.id !== 'number'
+    typeof sessionData.user.id !== 'string'
   ) {
     return null;
   }
@@ -26,7 +26,7 @@ export async function getUser() {
   const user = await db
     .select()
     .from(users)
-    .where(and(eq(users.id, sessionData.user.id), isNull(users.deletedAt)))
+    .where(eq(users.id, sessionData.user.id))
     .limit(1);
 
   if (user.length === 0) {
@@ -47,7 +47,7 @@ export async function getTeamByStripeCustomerId(customerId: string) {
 }
 
 export async function updateTeamSubscription(
-  teamId: number,
+  teamId: string,
   subscriptionData: {
     stripeSubscriptionId: string | null;
     stripeProductId: string | null;
@@ -64,7 +64,7 @@ export async function updateTeamSubscription(
     .where(eq(teams.id, teamId));
 }
 
-export async function getUserWithTeam(userId: number) {
+export async function getUserWithTeam(userId: string) {
   const result = await db
     .select({
       user: users,
@@ -130,7 +130,7 @@ export async function getTeamForUser() {
 }
 
 // Playlist queries
-export async function getUserPlaylists(userId: number) {
+export async function getUserPlaylists(userId: string) {
   return await db
     .select({
       id: playlists.id,
@@ -151,7 +151,7 @@ export async function getUserPlaylists(userId: number) {
     .orderBy(playlists.isSystem, playlists.createdAt);
 }
 
-export async function getPlaylistWithItems(playlistId: number) {
+export async function getPlaylistWithItems(playlistId: string) {
   const playlist = await db
     .select()
     .from(playlists)
@@ -168,12 +168,12 @@ export async function getPlaylistWithItems(playlistId: number) {
       orderIndex: playlistItems.orderIndex,
       addedAt: playlistItems.addedAt,
       lesson: {
-        id: lessons.id,
-        title: lessons.title,
-        durationMin: lessons.durationMin,
-        difficulty: lessons.difficulty,
-        thumbnailUrl: lessons.thumbnailUrl,
-        imageUrl: lessons.imageUrl,
+        id: classes.id,
+        title: classes.title,
+        durationMin: classes.durationMin,
+        difficulty: classes.difficulty,
+        thumbnailUrl: classes.thumbnailUrl,
+        imageUrl: classes.imageUrl,
       },
       course: {
         id: courses.id,
@@ -185,15 +185,13 @@ export async function getPlaylistWithItems(playlistId: number) {
       teacher: {
         id: teachers.id,
         bio: teachers.bio,
-        user: {
-          id: users.id,
-          name: users.name,
-          avatarUrl: users.avatarUrl,
-        },
+        userId: users.id,
+        userName: users.name,
+        userAvatarUrl: users.avatarUrl,
       },
     })
     .from(playlistItems)
-    .leftJoin(lessons, and(eq(playlistItems.itemType, 'lesson'), eq(playlistItems.itemId, lessons.id)))
+    .leftJoin(classes, and(eq(playlistItems.itemType, 'lesson'), eq(playlistItems.itemId, classes.id)))
     .leftJoin(courses, and(eq(playlistItems.itemType, 'course'), eq(playlistItems.itemId, courses.id)))
     .leftJoin(teachers, and(eq(playlistItems.itemType, 'teacher'), eq(playlistItems.itemId, teachers.id)))
     .leftJoin(users, eq(teachers.id, users.id))
@@ -216,7 +214,7 @@ export async function getPlaylistWithItems(playlistId: number) {
 }
 
 export async function createPlaylist(data: {
-  userId: number;
+  userId: string;
   name: string;
   description?: string;
   isPublic?: boolean;
@@ -237,10 +235,10 @@ export async function createPlaylist(data: {
 }
 
 export async function addToPlaylist(data: {
-  playlistId: number;
+  playlistId: string;
   itemType: 'lesson' | 'course' | 'teacher';
-  itemId: number;
-  addedBy: number;
+  itemId: string;
+  addedBy: string;
   orderIndex?: number;
 }) {
   // Check if item already exists in playlist
@@ -287,7 +285,7 @@ export async function addToPlaylist(data: {
   return item;
 }
 
-export async function removeFromPlaylist(playlistId: number, itemType: string, itemId: number) {
+export async function removeFromPlaylist(playlistId: string, itemType: string, itemId: string) {
   return await db
     .delete(playlistItems)
     .where(
@@ -299,7 +297,7 @@ export async function removeFromPlaylist(playlistId: number, itemType: string, i
     );
 }
 
-export async function getFavoritesPlaylist(userId: number) {
+export async function getFavoritesPlaylist(userId: string) {
   let favoritesPlaylist = await db
     .select()
     .from(playlists)
@@ -329,8 +327,12 @@ export async function getFavoritesPlaylist(userId: number) {
   return await getPlaylistWithItems(favoritesPlaylist[0].id);
 }
 
-export async function addToFavorites(userId: number, itemType: 'lesson' | 'course' | 'teacher', itemId: number) {
+export async function addToFavorites(userId: string, itemType: 'lesson' | 'course' | 'teacher', itemId: string) {
   const favoritesPlaylist = await getFavoritesPlaylist(userId);
+  
+  if (!favoritesPlaylist) {
+    throw new Error('Failed to create or retrieve favorites playlist');
+  }
   
   return await addToPlaylist({
     playlistId: favoritesPlaylist.id,
@@ -340,13 +342,17 @@ export async function addToFavorites(userId: number, itemType: 'lesson' | 'cours
   });
 }
 
-export async function removeFromFavorites(userId: number, itemType: 'lesson' | 'course' | 'teacher', itemId: number) {
+export async function removeFromFavorites(userId: string, itemType: 'lesson' | 'course' | 'teacher', itemId: string) {
   const favoritesPlaylist = await getFavoritesPlaylist(userId);
+  
+  if (!favoritesPlaylist) {
+    throw new Error('Failed to create or retrieve favorites playlist');
+  }
   
   return await removeFromPlaylist(favoritesPlaylist.id, itemType, itemId);
 }
 
-export async function checkIfFavorite(userId: number, itemType: 'lesson' | 'course' | 'teacher', itemId: number) {
+export async function checkIfFavorite(userId: string, itemType: 'lesson' | 'course' | 'teacher', itemId: string) {
   const favoritesPlaylist = await db
     .select({ id: playlists.id })
     .from(playlists)

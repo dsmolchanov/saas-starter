@@ -100,7 +100,7 @@ function TeamMembers() {
     FormData
   >(removeTeamMember, {});
 
-  const getUserDisplayName = (user: Pick<User, 'id' | 'name' | 'email'>) => {
+  const getUserDisplayName = (user: Pick<User, 'id' | 'name'> & { email?: string | null }) => {
     return user.name || user.email || 'Unknown User';
   };
 

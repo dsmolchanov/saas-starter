@@ -11,6 +11,6 @@ export async function POST(req: NextRequest) {
   const { url } = await req.json();
   if (!url) return NextResponse.json({ error: 'missing url' }, { status: 400 });
 
-  await db.update(users).set({ avatarUrl: url, updatedAt: new Date() }).where(eq(users.id, user.id));
+  await db.update(users).set({ avatarUrl: url }).where(eq(users.id, user.id));
   return NextResponse.json({ success: true });
 } 

@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { db } from '@/lib/db/drizzle';
-import { lessons, courses, users, focusAreas } from '@/lib/db/schema';
+import { classes, courses, users, focusAreas, teachers } from '@/lib/db/schema';
 import { eq } from 'drizzle-orm';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -10,17 +10,18 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Play, Clock, User, Target, Zap, Heart, Calendar, ArrowLeft } from 'lucide-react';
+import { FavoriteButton } from '@/components/favorite-button';
 
 // Disable static prerendering for DB queries
 export const dynamic = 'force-dynamic';
 
 export async function generateMetadata({ params }: { params: Promise<{ lessonId: string }> }): Promise<Metadata> {
   const { lessonId: lessonIdStr } = await params;
-  const lessonId = parseInt(lessonIdStr);
+  const lessonId = lessonIdStr;
   
   try {
-    const lesson = await db.query.lessons.findFirst({
-      where: eq(lessons.id, lessonId),
+    const lesson = await db.query.classes.findFirst({
+      where: eq(classes.id, lessonId),
       columns: {
         title: true,
         description: true,
@@ -42,15 +43,15 @@ export async function generateMetadata({ params }: { params: Promise<{ lessonId:
 
 export default async function LessonPage({ params }: { params: Promise<{ lessonId: string }> }) {
   const { lessonId: lessonIdStr } = await params;
-  const lessonId = parseInt(lessonIdStr);
+  const lessonId = lessonIdStr;
 
-  if (isNaN(lessonId)) {
+  if (!lessonId) {
     return notFound();
   }
 
   // Fetch lesson with course and teacher information
-  const lesson = await db.query.lessons.findFirst({
-    where: eq(lessons.id, lessonId),
+  const lesson = await db.query.classes.findFirst({
+    where: eq(classes.id, lessonId),
     with: {
       course: {
         with: {
@@ -59,6 +60,21 @@ export default async function LessonPage({ params }: { params: Promise<{ lessonI
               id: true,
               name: true,
               avatarUrl: true,
+            },
+          },
+        },
+      },
+      teacher: {
+        columns: {
+          id: true,
+          name: true,
+          avatarUrl: true,
+        },
+        with: {
+          teacherProfile: {
+            columns: {
+              bio: true,
+              instagramUrl: true,
             },
           },
         },
@@ -220,24 +236,39 @@ export default async function LessonPage({ params }: { params: Promise<{ lessonI
           {/* Sidebar */}
           <div className="space-y-6">
             {/* Instructor */}
-            {lesson.course?.teacher && (
-              <div className="bg-muted/30 rounded-lg p-6">
-                <h3 className="font-semibold mb-4">Your Instructor</h3>
-                <Link href="/teachers" className="group">
-                  <div className="flex items-center gap-3 mb-4">
-                    <Avatar className="w-12 h-12">
-                      <AvatarImage src={lesson.course.teacher.avatarUrl || undefined} />
-                      <AvatarFallback>
-                        <User className="w-6 h-6" />
+            {lesson.teacher && (
+              <div className="bg-gradient-to-br from-primary/5 to-primary/10 rounded-lg p-6 border border-primary/20">
+                <h3 className="font-semibold mb-4 text-primary">Your Instructor</h3>
+                <Link href={`/teacher/${lesson.teacher.id}`} className="group block">
+                  <div className="text-center mb-4">
+                    <Avatar className="w-20 h-20 mx-auto mb-3 ring-2 ring-primary/20 ring-offset-2">
+                      <AvatarImage 
+                        src={lesson.teacher.avatarUrl || undefined} 
+                        className="object-cover"
+                      />
+                      <AvatarFallback className="bg-primary/10 text-primary text-xl font-medium">
+                        {lesson.teacher.name ? lesson.teacher.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() : 'YT'}
                       </AvatarFallback>
                     </Avatar>
                     <div>
-                      <p className="font-medium group-hover:text-primary transition-colors">
-                        {lesson.course.teacher.name || 'Instructor'}
+                      <p className="font-semibold text-lg group-hover:text-primary transition-colors mb-1">
+                        {lesson.teacher.name || 'Yoga Instructor'}
                       </p>
-                      <p className="text-sm text-muted-foreground">Yoga Teacher</p>
+                      <p className="text-sm text-muted-foreground mb-3">Certified Yoga Teacher</p>
+                      {lesson.teacher.teacherProfile?.bio && (
+                        <p className="text-sm text-muted-foreground line-clamp-3 leading-relaxed">
+                          {lesson.teacher.teacherProfile.bio}
+                        </p>
+                      )}
                     </div>
                   </div>
+                  {lesson.teacher.teacherProfile?.instagramUrl && (
+                    <div className="pt-3 border-t border-primary/20">
+                      <p className="text-xs text-center text-muted-foreground">
+                        Follow on Instagram
+                      </p>
+                    </div>
+                  )}
                 </Link>
               </div>
             )}
@@ -279,10 +310,7 @@ export default async function LessonPage({ params }: { params: Promise<{ lessonI
 
             {/* Action Buttons */}
             <div className="space-y-3">
-              <Button className="w-full" size="lg">
-                <Heart className="w-4 h-4 mr-2" />
-                Add to Favorites
-              </Button>
+              <FavoriteButton lessonId={lessonId} />
               <Button variant="outline" className="w-full" size="lg">
                 <Calendar className="w-4 h-4 mr-2" />
                 Schedule Practice
@@ -311,3 +339,4 @@ export default async function LessonPage({ params }: { params: Promise<{ lessonI
     </div>
   );
 }
+

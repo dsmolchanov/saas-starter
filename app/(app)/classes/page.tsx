@@ -1,5 +1,5 @@
 import { db } from '@/lib/db/drizzle';
-import { lessons, lessonFocusAreas, focusAreas, courses } from '@/lib/db/schema';
+import { classes, lessonFocusAreas, focusAreas, courses } from '@/lib/db/schema';
 import { eq, and, inArray, sql } from 'drizzle-orm';
 import { ClassCard } from '@/components/class-card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -7,16 +7,17 @@ import { Button } from '@/components/ui/button';
 import { Filter, X, List, LayoutGrid } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 
-export default async function ClassesPage({ searchParams }: any) {
-  const type = searchParams?.type || 'classes';
-  const selectedStyles = searchParams?.styles || [];
-  const selectedLevels = searchParams?.levels || [];
-  const selectedFocus = searchParams?.focus || [];
+export default async function ClassesPage({ searchParams }: { searchParams: Promise<{ [key: string]: string | string[] | undefined }> }) {
+  const params = await searchParams;
+  const type = params?.type || 'classes';
+  const selectedStyles = Array.isArray(params?.styles) ? params.styles : params?.styles ? [params.styles] : [];
+  const selectedLevels = Array.isArray(params?.levels) ? params.levels : params?.levels ? [params.levels] : [];
+  const selectedFocus = Array.isArray(params?.focus) ? params.focus : params?.focus ? [params.focus] : [];
 
   // Fetch classes or courses based on the selected tab
-  const [classes, allCourses] = await Promise.all([
+  const [classesData, allCourses] = await Promise.all([
     // Fetch classes
-    type === 'classes' ? db.query.lessons.findMany({
+    type === 'classes' ? db.query.classes.findMany({
       with: {
         course: {
           with: {
@@ -29,15 +30,15 @@ export default async function ClassesPage({ searchParams }: any) {
           },
         },
       },
-      where: (lessons, { and, inArray }) => {
+      where: (classes, { and, inArray }) => {
         const conditions = [];
         
         if (selectedStyles.length > 0) {
-          conditions.push(inArray(lessons.style, selectedStyles));
+          conditions.push(inArray(classes.style, selectedStyles));
         }
         
         if (selectedLevels.length > 0) {
-          conditions.push(inArray(lessons.difficulty, selectedLevels));
+          conditions.push(inArray(classes.difficulty, selectedLevels));
         }
         
         if (selectedFocus.length > 0) {
@@ -55,9 +56,9 @@ export default async function ClassesPage({ searchParams }: any) {
     type === 'courses' ? db.query.courses.findMany({
       with: {
         teacher: true,
-        lessons: {
+        classes: {
           limit: 1,
-          orderBy: (lessons, { asc }) => [asc(lessons.orderIndex)],
+          orderBy: (classes, { asc }) => [asc(classes.orderIndex)],
         },
       },
       limit: 12,
@@ -66,13 +67,13 @@ export default async function ClassesPage({ searchParams }: any) {
   
   // Get all available filters
   const [styles, levels, focusAreasList] = await Promise.all([
-    db.selectDistinct({ style: lessons.style })
-      .from(lessons)
-      .where(sql`${lessons.style} IS NOT NULL`),
+    db.selectDistinct({ style: classes.style })
+      .from(classes)
+      .where(sql`${classes.style} IS NOT NULL`),
       
-    db.selectDistinct({ level: lessons.difficulty })
-      .from(lessons)
-      .where(sql`${lessons.difficulty} IS NOT NULL`),
+    db.selectDistinct({ level: classes.difficulty })
+      .from(classes)
+      .where(sql`${classes.difficulty} IS NOT NULL`),
       
     db.select()
       .from(focusAreas)
@@ -144,7 +145,7 @@ export default async function ClassesPage({ searchParams }: any) {
         )}
 
         <TabsContent value="classes" className="mt-0">
-          {classes.length === 0 ? (
+          {classesData.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-12 text-center">
               <h3 className="text-xl font-medium">No classes found</h3>
               <p className="text-muted-foreground mt-2">
@@ -153,7 +154,7 @@ export default async function ClassesPage({ searchParams }: any) {
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {classes.map((lesson) => (
+              {classesData.map((lesson) => (
                 <ClassCard
                   key={lesson.id}
                   id={lesson.id}
@@ -187,7 +188,7 @@ export default async function ClassesPage({ searchParams }: any) {
                   id={course.id}
                   title={course.title}
                   instructor={course.teacher?.name || 'Instructor'}
-                  duration={course.lessons?.[0]?.durationMin || 0}
+                  duration={course.classes?.[0]?.durationMin || 0}
                   difficulty={course.level || 'All Levels'}
                   intensity="moderate"
                   focusAreas={[]}

@@ -1,5 +1,5 @@
 import { db } from '@/lib/db/drizzle';
-import { progress, lessons, courses } from '@/lib/db/schema';
+import { progress, classes, courses } from '@/lib/db/schema';
 import { teachers } from '@/lib/db/schema';
 import { eq, desc } from 'drizzle-orm';
 import { getUser } from '@/lib/db/queries';
@@ -30,16 +30,16 @@ export default async function MyPracticePage() {
   // Determine role
   const isTeacher = (await db.select().from(teachers).where(eq(teachers.id, user.id)).limit(1)).length > 0;
 
-  // Get user's progress with lesson and course details
+  // Get user's progress with class and course details
   const userProgress = await db
     .select({
       id: progress.id,
       completedAt: progress.completedAt,
       lesson: {
-        id: lessons.id,
-        title: lessons.title,
-        durationMin: lessons.durationMin,
-        courseId: lessons.courseId,
+        id: classes.id,
+        title: classes.title,
+        durationMin: classes.durationMin,
+        courseId: classes.courseId,
       },
       course: {
         id: courses.id,
@@ -49,8 +49,8 @@ export default async function MyPracticePage() {
     })
     .from(progress)
     .where(eq(progress.userId, user.id))
-    .leftJoin(lessons, eq(progress.lessonId, lessons.id))
-    .leftJoin(courses, eq(lessons.courseId, courses.id))
+    .leftJoin(classes, eq(progress.classId, classes.id))
+    .leftJoin(courses, eq(classes.courseId, courses.id))
     .orderBy(desc(progress.completedAt))
     .limit(10);
 

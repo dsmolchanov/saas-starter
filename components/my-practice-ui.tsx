@@ -6,7 +6,7 @@ import { PhotoUpload } from '@/components/photo-upload';
 import { TeacherProfileForm } from '@/components/teacher-profile-form';
 import { LessonUploadForm } from '@/components/lesson-upload-form';
 
-export function MyPracticeUI({ user, initialRole }: { user: { id: number; name: string; avatarUrl?: string }, initialRole: 'student' | 'teacher' }) {
+export function MyPracticeUI({ user, initialRole }: { user: { id: string; name: string; avatarUrl?: string }, initialRole: 'student' | 'teacher' }) {
   const [role, setRole] = useState<'student' | 'teacher'>(initialRole);
 
   return (

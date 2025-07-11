@@ -10,7 +10,7 @@ import { Separator } from '@/components/ui/separator';
 
 export default async function ClassPage({ params }: any) {
   const lesson = await db.query.lessons.findFirst({
-    where: eq(lessons.id, parseInt(params.id)),
+    where: eq(lessons.id, params.id),
     with: {
       course: {
         with: {

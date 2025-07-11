@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getUser } from '@/lib/db/queries';
 import { db } from '@/lib/db/drizzle';
-import { lessons, lessonFocusAreas } from '@/lib/db/schema';
+import { classes, lessonFocusAreas } from '@/lib/db/schema';
 import { eq } from 'drizzle-orm';
 
 export async function POST(req: NextRequest) {
@@ -11,11 +11,12 @@ export async function POST(req: NextRequest) {
   const body = await req.json();
   const { title, description, durationMin, video_url, focus_area_ids = [] } = body;
 
-  // Create lesson linked to teacher (teacherId = user.id)
+  // Create class linked to teacher (teacherId = user.id)
   const [lesson] = await db
-    .insert(lessons)
+    .insert(classes)
     .values({
       courseId: null, // TODO course support later
+      teacherId: user.id,
       title,
       description,
       durationMin,
@@ -25,7 +26,7 @@ export async function POST(req: NextRequest) {
 
   if (focus_area_ids.length > 0) {
     await db.insert(lessonFocusAreas).values(
-      focus_area_ids.map((fid: number) => ({ lessonId: lesson.id, focusAreaId: fid }))
+      focus_area_ids.map((fid: string) => ({ classId: lesson.id, focusAreaId: fid }))
     );
   }
 

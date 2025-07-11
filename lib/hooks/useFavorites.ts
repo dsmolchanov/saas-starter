@@ -4,7 +4,7 @@ import { useState, useCallback } from 'react';
 
 interface FavoriteItem {
   itemType: 'lesson' | 'course' | 'teacher';
-  itemId: number;
+  itemId: string;
 }
 
 export function useFavorites() {

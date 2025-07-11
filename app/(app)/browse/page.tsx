@@ -33,8 +33,8 @@ interface Lesson {
   title: string;
   description: string | null;
   durationMin: number;
-  imageUrl: string | null;
-  thumbnailUrl: string | null;
+  imageUrl: string | null; // High-res image for detailed views (800px+)
+  thumbnailUrl: string | null; // Smaller image for grid/card views (400px)
   difficulty: string | null;
   intensity: string | null;
   style: string | null;
@@ -47,8 +47,8 @@ interface Course {
   title: string;
   description: string | null;
   level: string | null;
-  coverUrl: string | null;
-  imageUrl: string | null;
+  coverUrl: string | null; // High-res cover image (800px+)
+  imageUrl: string | null; // Smaller course image (400px)
   teacher: {
     id: number;
     name: string | null;
@@ -322,7 +322,7 @@ export default function BrowsePage() {
         </div>
 
         <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide">
-          {filteredLessons.slice(0, 10).map((lesson) => (
+          {filteredLessons.slice(0, 10).map((lesson, index) => (
             <div key={lesson.id} className="flex-shrink-0 w-64">
               <Link href={`/lesson/${lesson.id}`}>
                 <div className="aspect-video rounded-lg overflow-hidden bg-muted mb-3 relative group">
@@ -331,6 +331,8 @@ export default function BrowsePage() {
                       src={lesson.imageUrl || lesson.thumbnailUrl || ''}
                       alt={lesson.title}
                       fill
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                      priority={index < 2}
                       className="object-cover group-hover:scale-105 transition-transform"
                     />
                   ) : (
@@ -386,7 +388,7 @@ export default function BrowsePage() {
         </div>
 
         <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide">
-          {filteredCourses.slice(0, 10).map((course) => (
+          {filteredCourses.slice(0, 10).map((course, index) => (
             <div key={course.id} className="flex-shrink-0 w-64">
               <Link href="/courses">
                 <div className="aspect-video rounded-lg overflow-hidden bg-muted mb-3 relative group">
@@ -395,6 +397,8 @@ export default function BrowsePage() {
                       src={course.imageUrl || course.coverUrl || ''}
                       alt={course.title}
                       fill
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                      priority={index < 2}
                       className="object-cover group-hover:scale-105 transition-transform"
                     />
                   ) : (

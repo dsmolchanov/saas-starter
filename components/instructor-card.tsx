@@ -2,7 +2,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 
 type InstructorCardProps = {
-  id: number;
+  id: string;
   name: string | null;
   imageUrl?: string | null;
   bio?: string | null;
@@ -14,7 +14,7 @@ export function InstructorCard({ id, name, imageUrl, bio, className = '' }: Inst
   
   return (
     <Link 
-      href={`/instructors/${id}`}
+      href={`/teacher/${id}`}
       className={`group block ${className}`}
     >
       <div className="aspect-square rounded-full overflow-hidden bg-muted mb-3">

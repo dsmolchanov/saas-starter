@@ -5,7 +5,7 @@ import { Badge } from './ui/badge';
 import Image from 'next/image';
 
 type ClassCardProps = {
-  id: number;
+  id: string;
   title: string;
   instructor: string;
   duration: number;

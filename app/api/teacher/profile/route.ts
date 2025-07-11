@@ -13,16 +13,44 @@ export async function GET() {
 }
 
 export async function POST(request: NextRequest) {
-  const user = await getUser();
-  if (!user) return NextResponse.json({ error: 'unauthenticated' }, { status: 401 });
+  try {
+    const user = await getUser();
+    if (!user) return NextResponse.json({ error: 'unauthenticated' }, { status: 401 });
 
-  const body = await request.json();
-  const { bio, instagram_url } = body;
+    const body = await request.json();
+    const { bio, instagram_url } = body;
 
-  await db
-    .insert(teachers)
-    .values({ id: user.id, bio, instagramUrl: instagram_url })
-    .onConflictDoUpdate({ target: teachers.id, set: { bio, instagramUrl: instagram_url } });
+    // Validate input
+    const trimmedBio = bio?.trim() || null;
+    const trimmedInstagram = instagram_url?.trim() || null;
 
-  return NextResponse.json({ success: true });
+    // Validate Instagram username format if provided
+    if (trimmedInstagram) {
+      // Remove @ if present and validate
+      const cleanUsername = trimmedInstagram.replace('@', '');
+      if (!/^[a-zA-Z0-9._]+$/.test(cleanUsername)) {
+        return NextResponse.json({ 
+          error: 'Instagram username can only contain letters, numbers, dots, and underscores' 
+        }, { status: 400 });
+      }
+      if (cleanUsername.length < 1 || cleanUsername.length > 30) {
+        return NextResponse.json({ 
+          error: 'Instagram username must be between 1 and 30 characters' 
+        }, { status: 400 });
+      }
+    }
+
+    await db
+      .insert(teachers)
+      .values({ id: user.id, bio: trimmedBio, instagramUrl: trimmedInstagram })
+      .onConflictDoUpdate({ 
+        target: teachers.id, 
+        set: { bio: trimmedBio, instagramUrl: trimmedInstagram } 
+      });
+
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error('Error updating teacher profile:', error);
+    return NextResponse.json({ error: 'Failed to update profile' }, { status: 500 });
+  }
 } 

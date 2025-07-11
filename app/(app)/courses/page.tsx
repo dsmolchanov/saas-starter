@@ -23,7 +23,7 @@ export default async function CoursesPage() {
     where: (teachers, { inArray }) => 
       inArray(
         teachers.id,
-        allCourses.map(c => c.teacherId).filter(Boolean) as number[]
+        allCourses.map(c => c.teacherId).filter(Boolean) as string[]
       ),
     with: {
       user: {

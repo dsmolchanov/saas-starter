@@ -5,6 +5,7 @@ import { createClient } from '@/lib/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { useRouter } from 'next/navigation';
 
 const FOCUS_AREAS = [
   { id: 1, name: 'Core' },
@@ -14,7 +15,7 @@ const FOCUS_AREAS = [
   { id: 5, name: 'Mobility' }
 ];
 
-export function LessonUploadForm({ userId }: { userId: number }) {
+export function LessonUploadForm({ userId }: { userId: string }) {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [duration, setDuration] = useState(0);

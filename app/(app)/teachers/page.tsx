@@ -45,17 +45,19 @@ export default async function TeachersPage() {
       </div>
 
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">
-        {allTeachers.map((teacher) => {
-          const user = teacher.user || { name: 'Instructor' };
-          return (
-            <InstructorCard
-              key={teacher.id}
-              id={teacher.id}
-              name={user.name}
-              bio={teacher.bio || 'Yoga Instructor'}
-            />
-          );
-        })}
+        {allTeachers
+          .filter((teacher) => teacher.user && teacher.user.id) // Only show teachers with valid user records
+          .map((teacher) => {
+            const user = teacher.user!; // Safe to use ! after filter
+            return (
+              <InstructorCard
+                key={teacher.id}
+                id={user.id}
+                name={user.name}
+                bio={teacher.bio || 'Yoga Instructor'}
+              />
+            );
+          })}
       </div>
     </div>
   );

@@ -41,7 +41,7 @@ export async function POST(request: NextRequest) {
     let result;
     if (action === 'add') {
       try {
-        result = await addToFavorites(user.id, itemType, parseInt(itemId));
+        result = await addToFavorites(user.id, itemType, itemId);
       } catch (error) {
         if (error instanceof Error && error.message.includes('already exists')) {
           return NextResponse.json({ error: 'Item already in favorites' }, { status: 409 });
@@ -49,7 +49,7 @@ export async function POST(request: NextRequest) {
         throw error;
       }
     } else {
-      result = await removeFromFavorites(user.id, itemType, parseInt(itemId));
+      result = await removeFromFavorites(user.id, itemType, itemId);
     }
 
     return NextResponse.json({ success: true, result });

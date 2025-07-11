@@ -4,10 +4,10 @@ import { useRef, useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { Button } from '@/components/ui/button';
 
-export function PhotoUpload({ userId, initialUrl }: { userId: number; initialUrl?: string }) {
+export function PhotoUpload({ userId, initialUrl }: { userId: string; initialUrl?: string }) {
   const inputRef = useRef<HTMLInputElement>(null);
-  const [url, setUrl] = useState(initialUrl);
   const [uploading, setUploading] = useState(false);
+  const [avatarUrl, setAvatarUrl] = useState<string | undefined>(initialUrl);
 
   async function handleFile(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -26,7 +26,7 @@ export function PhotoUpload({ userId, initialUrl }: { userId: number; initialUrl
       return;
     }
     const { data } = supabase.storage.from('images').getPublicUrl(filePath);
-    setUrl(data.publicUrl);
+    setAvatarUrl(data.publicUrl);
     // Save URL to DB
     await fetch('/api/user/avatar', {
       method: 'POST',
@@ -38,9 +38,9 @@ export function PhotoUpload({ userId, initialUrl }: { userId: number; initialUrl
 
   return (
     <div className="mt-4 flex flex-col items-center gap-3">
-      {url && (
+      {avatarUrl && (
         // eslint-disable-next-line @next/next/no-img-element
-        <img src={url} alt="Avatar" className="w-24 h-24 rounded-full object-cover" />
+        <img src={avatarUrl} alt="Avatar" className="w-24 h-24 rounded-full object-cover" />
       )}
       <input
         type="file"
@@ -56,7 +56,7 @@ export function PhotoUpload({ userId, initialUrl }: { userId: number; initialUrl
         disabled={uploading}
         onClick={() => inputRef.current?.click()}
       >
-        {uploading ? 'Uploading...' : url ? 'Change Photo' : 'Upload Photo'}
+        {uploading ? 'Uploading...' : avatarUrl ? 'Change Photo' : 'Upload Photo'}
       </Button>
     </div>
   );

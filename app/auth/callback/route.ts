@@ -23,6 +23,12 @@ export async function GET(request: NextRequest) {
           get(name: string) {
             return cookieStore.get(name)?.value;
           },
+          set(name: string, value: string, options: any) {
+            cookieStore.set({ name, value, ...options });
+          },
+          remove(name: string, options: any) {
+            cookieStore.set({ name, value: '', ...options });
+          },
         }
       }
     );
@@ -36,12 +42,30 @@ export async function GET(request: NextRequest) {
     } = await supabase.auth.getUser();
 
     if (supaUser?.email) {
-      const [internal] = await db
+      let [internal] = await db
         .select()
         .from(users)
         .where(eq(users.email, supaUser.email))
         .limit(1);
+      
+      // If user doesn't exist in our database, create them
+      if (!internal) {
+        console.log('Creating user in database:', supaUser.email);
+        const [newUser] = await db
+          .insert(users)
+          .values({
+            id: supaUser.id, // Use the Supabase auth user ID
+            name: supaUser.user_metadata?.full_name || supaUser.email,
+            email: supaUser.email,
+            avatarUrl: supaUser.user_metadata?.avatar_url,
+            role: 'student'
+          })
+          .returning();
+        internal = newUser;
+      }
+      
       if (internal) {
+        console.log('Setting session for user:', internal.email);
         await setSession(internal);
       }
     }

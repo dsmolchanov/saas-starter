@@ -1,6 +1,10 @@
 import { createClient } from '@supabase/supabase-js';
 import fs from 'fs';
 import path from 'path';
+import * as dotenv from 'dotenv';
+// Load variables from .env.local first (Next.js convention) and fall back to .env
+dotenv.config({ path: '.env.local' });
+dotenv.config();
 
 async function setupSupabase() {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
