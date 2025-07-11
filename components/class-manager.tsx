@@ -322,7 +322,34 @@ export function ClassManager({ userId }: ClassManagerProps) {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {classes.map((classItem) => (
-            <Card key={classItem.id} className="group hover:shadow-md transition-shadow">
+            <Card key={classItem.id} className="group hover:shadow-md transition-shadow overflow-hidden">
+              {/* Class Thumbnail */}
+              <div className="relative aspect-video bg-muted">
+                {classItem.imageUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={classItem.imageUrl}
+                    alt={classItem.title}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center bg-primary/10">
+                    <Play className="w-8 h-8 text-primary/50" />
+                  </div>
+                )}
+                <div className="absolute bottom-2 right-2 bg-black/70 text-white text-xs px-2 py-1 rounded">
+                  {classItem.durationMin}m
+                </div>
+                {classItem.videoPath && (
+                  <div className="absolute top-2 left-2">
+                    <div className="bg-green-500/80 text-white text-xs px-2 py-1 rounded flex items-center gap-1">
+                      <Play className="w-3 h-3" />
+                      Video
+                    </div>
+                  </div>
+                )}
+              </div>
+
               <CardHeader className="pb-3">
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
@@ -330,10 +357,6 @@ export function ClassManager({ userId }: ClassManagerProps) {
                       {classItem.title}
                     </CardTitle>
                     <div className="flex items-center gap-2 mb-2">
-                      <Badge variant="outline" className="gap-1">
-                        <Clock className="w-3 h-3" />
-                        {classItem.durationMin}m
-                      </Badge>
                       {classItem.difficulty && (
                         <Badge variant="secondary">
                           {classItem.difficulty}

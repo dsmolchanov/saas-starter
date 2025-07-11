@@ -75,8 +75,9 @@ export function ClassFileUpload({
       }
 
       const { data } = supabase.storage.from('images').getPublicUrl(filePath);
-      setImageUrl(data.publicUrl);
-      onImageChange(data.publicUrl);
+      const publicUrl = data.publicUrl;
+      setImageUrl(publicUrl);
+      onImageChange(publicUrl);
     } catch (error) {
       console.error('Error uploading image:', error);
       alert('Failed to upload image. Please try again.');

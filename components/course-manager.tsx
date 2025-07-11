@@ -288,26 +288,47 @@ export function CourseManager() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {courses.map((course) => (
-            <Card key={course.id} className="group hover:shadow-md transition-shadow">
+            <Card key={course.id} className="group hover:shadow-md transition-shadow overflow-hidden">
+              {/* Course Thumbnail */}
+              <div className="relative aspect-video bg-muted">
+                {course.coverUrl || course.imageUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={course.coverUrl || course.imageUrl || ''}
+                    alt={course.title}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center bg-primary/10">
+                    <BookOpen className="w-8 h-8 text-primary/50" />
+                  </div>
+                )}
+                <div className="absolute top-2 left-2">
+                  <Badge variant={course.isPublished ? "default" : "secondary"}>
+                    {course.isPublished ? 'Published' : 'Draft'}
+                  </Badge>
+                </div>
+                <div className="absolute bottom-2 right-2 bg-black/70 text-white text-xs px-2 py-1 rounded">
+                  {course.classes.length} {course.classes.length === 1 ? 'class' : 'classes'}
+                </div>
+              </div>
+
               <CardHeader className="pb-3">
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-2">
-                      <Badge variant={course.isPublished ? "default" : "secondary"}>
-                        {course.isPublished ? 'Published' : 'Draft'}
-                      </Badge>
                       <Badge variant="outline">
                         {course.category.title}
                       </Badge>
+                      {course.level && (
+                        <Badge variant="outline" className="text-xs">
+                          {course.level}
+                        </Badge>
+                      )}
                     </div>
                     <CardTitle className="text-lg mb-1 line-clamp-2">
                       {course.title}
                     </CardTitle>
-                    {course.level && (
-                      <Badge variant="outline" className="text-xs">
-                        {course.level}
-                      </Badge>
-                    )}
                   </div>
                 </div>
                 {course.description && (
@@ -468,13 +489,13 @@ export function CourseManager() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="imageUrl">Course Image URL (optional)</Label>
+              <Label htmlFor="coverUrl">Course Cover Image URL (optional)</Label>
               <Input
-                id="imageUrl"
+                id="coverUrl"
                 type="url"
-                value={formData.imageUrl}
-                onChange={(e) => setFormData({...formData, imageUrl: e.target.value})}
-                placeholder="https://example.com/image.jpg"
+                value={formData.coverUrl}
+                onChange={(e) => setFormData({...formData, coverUrl: e.target.value})}
+                placeholder="https://example.com/cover.jpg"
               />
             </div>
 
