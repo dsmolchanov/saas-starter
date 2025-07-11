@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Search, BookOpen, Activity } from 'lucide-react';
+import { Search, Activity } from 'lucide-react';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
 
@@ -19,8 +19,7 @@ const LogoIcon = ({ className }: { className?: string }) => (
 const navItems: NavItem[] = [
   { name: 'Home', href: '/', icon: LogoIcon },
   { name: 'Browse', href: '/browse', icon: Search },
-  { name: 'Practice', href: '/my_practice', icon: Activity },
-  { name: 'Courses', href: '/courses', icon: BookOpen },
+  { name: 'My Practice', href: '/my_practice', icon: Activity },
 ];
 
 export function MobileNav() {
