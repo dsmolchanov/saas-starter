@@ -5,8 +5,13 @@ import { getUser, getTeamForUser } from '@/lib/db/queries';
 import { SWRConfig } from 'swr';
 
 export const metadata: Metadata = {
-  title: 'Next.js SaaS Starter',
-  description: 'Get started quickly with Next.js, Postgres, and Stripe.'
+  title: 'Dzen Yoga - Find Your Perfect Practice',
+  description: 'Discover yoga teachers you will love. Customize your practice with any duration, style and length.',
+  icons: {
+    icon: '/favicon.ico',
+    shortcut: '/favicon.ico',
+    apple: '/favicon.ico',
+  },
 };
 
 export const viewport: Viewport = {
@@ -21,6 +26,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className="bg-white dark:bg-gray-950 text-black dark:text-white">
+      <head>
+        <link rel="icon" href="/favicon.ico" sizes="any" />
+        <link rel="icon" href="/favicon.ico" type="image/x-icon" />
+        <link rel="shortcut icon" href="/favicon.ico" />
+      </head>
       <body suppressHydrationWarning className="min-h-[100dvh] bg-gray-50">
         <SWRConfig
           value={{

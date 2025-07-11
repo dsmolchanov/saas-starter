@@ -13,7 +13,7 @@ type NavItem = {
 };
 
 const LogoIcon = ({ className }: { className?: string }) => (
-  <Image src="/logo.svg" alt="Dzen Yoga" width={24} height={24} className={cn('object-contain h-5 w-5', className)} />
+  <Image src="/favicon.ico" alt="Dzen Yoga" width={20} height={20} className={cn('object-contain h-5 w-5', className)} />
 );
 
 const navItems: NavItem[] = [
