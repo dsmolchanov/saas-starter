@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, FormEvent } from 'react';
+import { useEffect, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -48,22 +48,32 @@ export function AdminDashboard() {
     load();
   }, []);
 
-  async function handleSubmit(e: FormEvent<HTMLFormElement>, id: string) {
-    e.preventDefault();
-    const form = e.currentTarget;
-    const formData = new FormData(form);
-    const status = formData.get('status') as string;
-    const reviewNotes = formData.get('reviewNotes') as string;
-    await fetch(`/api/admin/teacher-applications/${id}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ status, reviewNotes }),
-    });
-    // refresh
-    const res = await fetch('/api/admin/teacher-applications');
-    if (res.ok) {
-      const data = await res.json();
-      setApplications(data.applications || []);
+
+
+  async function handleStatusUpdate(id: string, status: 'approved' | 'rejected', reviewNotes: string) {
+    try {
+      const response = await fetch(`/api/admin/teacher-applications/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status, reviewNotes }),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        console.error('Error updating application:', error);
+        alert(`Error: ${error.error || 'Failed to update application'}`);
+        return;
+      }
+
+      // refresh applications list
+      const res = await fetch('/api/admin/teacher-applications');
+      if (res.ok) {
+        const data = await res.json();
+        setApplications(data.applications || []);
+      }
+    } catch (error) {
+      console.error('Network error:', error);
+      alert('Network error occurred. Please try again.');
     }
   }
 
@@ -192,28 +202,39 @@ export function AdminDashboard() {
 
             {application.status === 'pending' && (
               <div className="border-t pt-4">
-                <form onSubmit={(e) => handleSubmit(e, application.id)} className="space-y-4">
+                <div className="space-y-4">
                   <div>
                     <Label htmlFor={`notes-${application.id}`}>Review Notes (Optional)</Label>
                     <Textarea
                       id={`notes-${application.id}`}
-                      name="reviewNotes"
                       placeholder="Add any feedback or notes for the applicant..."
                       rows={3}
                       className="mt-2"
                     />
                   </div>
                   <div className="flex gap-3">
-                    <Button type="submit" name="status" value="approved" className="bg-green-600 hover:bg-green-700">
+                    <Button 
+                      onClick={() => {
+                        const notes = (document.getElementById(`notes-${application.id}`) as HTMLTextAreaElement)?.value || '';
+                        handleStatusUpdate(application.id, 'approved', notes);
+                      }}
+                      className="bg-green-600 hover:bg-green-700"
+                    >
                       <CheckCircle className="w-4 h-4 mr-2" />
                       Approve
                     </Button>
-                    <Button type="submit" name="status" value="rejected" variant="destructive">
+                    <Button 
+                      onClick={() => {
+                        const notes = (document.getElementById(`notes-${application.id}`) as HTMLTextAreaElement)?.value || '';
+                        handleStatusUpdate(application.id, 'rejected', notes);
+                      }}
+                      variant="destructive"
+                    >
                       <XCircle className="w-4 h-4 mr-2" />
                       Reject
                     </Button>
                   </div>
-                </form>
+                </div>
               </div>
             )}
 
