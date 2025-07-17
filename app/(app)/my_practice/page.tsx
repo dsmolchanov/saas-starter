@@ -8,6 +8,7 @@ import { Filter, List, Grip, ChevronDown } from 'lucide-react';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { MyPracticeUI } from '@/components/my-practice-ui';
+import { AdminDashboard } from '@/components/admin-dashboard';
 import { SignOutButton } from '@/components/sign-out-button';
 import Link from 'next/link';
 import { ClearAuthErrors } from '@/components/clear-auth-errors';
@@ -28,8 +29,32 @@ export default async function MyPracticePage() {
     );
   }
 
+  const isAdmin = user.role === 'admin';
+
+  if (isAdmin) {
+    return (
+      <div className="container mx-auto px-4 pb-20 pt-4 max-w-2xl">
+        <ClearAuthErrors />
+        <div className="flex items-center justify-center relative mb-6">
+          <h1 className="text-lg font-semibold tracking-wide">ADMIN DASHBOARD</h1>
+          <div className="absolute right-0 flex flex-col items-center gap-2">
+            <Avatar>
+              <AvatarFallback>
+                {user.name ? user.name.split(' ').map(n=>n[0]).join('').slice(0,2).toUpperCase() : 'A'}
+              </AvatarFallback>
+            </Avatar>
+            <SignOutButton variant="ghost" size="sm" className="text-xs px-2 py-1 h-auto" showIcon={false}>
+              Sign Out
+            </SignOutButton>
+          </div>
+        </div>
+        <AdminDashboard />
+      </div>
+    );
+  }
+
   // Determine role - check both teacher table and application status
-  const isTeacher = (await db.select().from(teachers).where(eq(teachers.id, user.id)).limit(1)).length > 0 || 
+  const isTeacher = (await db.select().from(teachers).where(eq(teachers.id, user.id)).limit(1)).length > 0 ||
                    user.teacherApplicationStatus === 'approved';
 
   // Get user's progress with class and course details
