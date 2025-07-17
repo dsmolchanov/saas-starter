@@ -9,6 +9,7 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { MyPracticeUI } from '@/components/my-practice-ui';
 import { AdminDashboard } from '@/components/admin-dashboard';
+import { TeacherDashboard } from '@/components/teacher-dashboard';
 import { SignOutButton } from '@/components/sign-out-button';
 import Link from 'next/link';
 import { ClearAuthErrors } from '@/components/clear-auth-errors';
@@ -29,35 +30,11 @@ export default async function MyPracticePage() {
     );
   }
 
-  const isAdmin = user.role === 'admin';
-
-  if (isAdmin) {
-    return (
-      <div className="container mx-auto px-4 pb-20 pt-4 max-w-2xl">
-        <ClearAuthErrors />
-        <div className="flex items-center justify-center relative mb-6">
-          <h1 className="text-lg font-semibold tracking-wide">ADMIN DASHBOARD</h1>
-          <div className="absolute right-0 flex flex-col items-center gap-2">
-            <Avatar>
-              <AvatarFallback>
-                {user.name ? user.name.split(' ').map(n=>n[0]).join('').slice(0,2).toUpperCase() : 'A'}
-              </AvatarFallback>
-            </Avatar>
-            <SignOutButton variant="ghost" size="sm" className="text-xs px-2 py-1 h-auto" showIcon={false}>
-              Sign Out
-            </SignOutButton>
-          </div>
-        </div>
-        <AdminDashboard />
-      </div>
-    );
-  }
-
-  // Determine role - check both teacher table and application status
+  const isAdmin = ['admin', 'owner'].includes(user.role);
   const isTeacher = (await db.select().from(teachers).where(eq(teachers.id, user.id)).limit(1)).length > 0 ||
                    user.teacherApplicationStatus === 'approved';
 
-  // Get user's progress with class and course details
+  // Get user's progress with class and course details for student view
   const userProgress = await db
     .select({
       id: progress.id,
@@ -86,24 +63,9 @@ export default async function MyPracticePage() {
   const totalSessions = userProgress.length;
   const daysActive = new Set(userProgress.map(p => p.completedAt.toISOString().split('T')[0])).size;
 
-  return (
+  // Component for student practice view
+  const StudentPracticeView = () => (
     <div className="container mx-auto px-4 pb-20 pt-4 max-w-md">
-      <ClearAuthErrors />
-      {/* Top bar */}
-      <div className="flex items-center justify-center relative mb-6">
-        <h1 className="text-lg font-semibold tracking-wide">MY PRACTICE</h1>
-        <div className="absolute right-0 flex flex-col items-center gap-2">
-          <Avatar>
-            <AvatarFallback>
-              {user.name ? user.name.split(' ').map(n=>n[0]).join('').slice(0,2).toUpperCase() : 'U'}
-            </AvatarFallback>
-          </Avatar>
-          <SignOutButton variant="ghost" size="sm" className="text-xs px-2 py-1 h-auto" showIcon={false}>
-            Sign Out
-          </SignOutButton>
-        </div>
-      </div>
-
       <MyPracticeUI 
         user={{ 
           id: user.id, 
@@ -112,7 +74,7 @@ export default async function MyPracticePage() {
           avatarUrl: (user as any).avatarUrl,
           teacherApplicationStatus: user.teacherApplicationStatus 
         }} 
-        initialRole={isTeacher ? 'teacher' : 'student'} 
+        initialRole='student'
       />
 
       {/* Tabs */}
@@ -174,7 +136,6 @@ export default async function MyPracticePage() {
           {userProgress.length === 0 ? (
             <p className="text-center text-xl text-muted-foreground font-medium py-20">NO VIDEOS HERE YET...</p>
           ) : (
-            // TODO: map progress list cards similar to earlier implementation
             <div className="space-y-4">
               {/* progress cards to be implemented */}
             </div>
@@ -192,6 +153,176 @@ export default async function MyPracticePage() {
           <p className="text-center py-20 text-muted-foreground">Coming soon</p>
         </TabsContent>
       </Tabs>
+    </div>
+  );
+
+  // Component for teacher view
+  const TeacherPracticeView = () => (
+    <div className="container mx-auto px-4 pb-20 pt-4 max-w-2xl">
+      <MyPracticeUI 
+        user={{ 
+          id: user.id, 
+          name: user.name || 'User', 
+          email: user.email || null,
+          avatarUrl: (user as any).avatarUrl,
+          teacherApplicationStatus: user.teacherApplicationStatus 
+        }} 
+        initialRole='teacher'
+      />
+      <TeacherDashboard user={{
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        avatarUrl: (user as any).avatarUrl
+      }} />
+    </div>
+  );
+
+  // Component for admin view
+  const AdminPracticeView = () => (
+    <div className="container mx-auto px-4 pb-20 pt-4 max-w-2xl">
+      <AdminDashboard />
+    </div>
+  );
+
+  // If admin, show role switching interface
+  if (isAdmin) {
+    return (
+      <div className="min-h-screen">
+        <ClearAuthErrors />
+        
+        {/* Header with avatar and sign out */}
+        <div className="border-b bg-white sticky top-0 z-10">
+          <div className="container mx-auto px-4 py-4">
+            <div className="flex items-center justify-between">
+              <h1 className="text-lg font-semibold tracking-wide">MY PRACTICE</h1>
+              <div className="flex items-center gap-3">
+                <Avatar>
+                  <AvatarFallback>
+                    {user.name ? user.name.split(' ').map(n=>n[0]).join('').slice(0,2).toUpperCase() : 'A'}
+                  </AvatarFallback>
+                </Avatar>
+                <SignOutButton variant="ghost" size="sm" className="text-xs px-2 py-1 h-auto" showIcon={false}>
+                  Sign Out
+                </SignOutButton>
+              </div>
+            </div>
+
+            {/* Role switching tabs for admins */}
+            <Tabs defaultValue="admin" className="w-full mt-4">
+              <TabsList className="w-full justify-start bg-transparent border-b border-border rounded-none p-0">
+                <TabsTrigger 
+                  value="admin" 
+                  className="data-[state=active]:border-b-2 border border-transparent rounded-none py-2 px-4 text-sm tracking-wide uppercase"
+                >
+                  Admin View
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="teacher" 
+                  className="data-[state=active]:border-b-2 border border-transparent rounded-none py-2 px-4 text-sm tracking-wide uppercase"
+                >
+                  Teacher View
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="student" 
+                  className="data-[state=active]:border-b-2 border border-transparent rounded-none py-2 px-4 text-sm tracking-wide uppercase"
+                >
+                  Student View
+                </TabsTrigger>
+              </TabsList>
+
+              <TabsContent value="admin" className="mt-6">
+                <AdminPracticeView />
+              </TabsContent>
+
+              <TabsContent value="teacher" className="mt-6">
+                <TeacherPracticeView />
+              </TabsContent>
+
+              <TabsContent value="student" className="mt-6">
+                <StudentPracticeView />
+              </TabsContent>
+            </Tabs>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // If teacher (but not admin), show teacher/student role switching
+  if (isTeacher) {
+    return (
+      <div className="min-h-screen">
+        <ClearAuthErrors />
+        
+        {/* Header with avatar and sign out */}
+        <div className="border-b bg-white sticky top-0 z-10">
+          <div className="container mx-auto px-4 py-4">
+            <div className="flex items-center justify-between">
+              <h1 className="text-lg font-semibold tracking-wide">MY PRACTICE</h1>
+              <div className="flex items-center gap-3">
+                <Avatar>
+                  <AvatarFallback>
+                    {user.name ? user.name.split(' ').map(n=>n[0]).join('').slice(0,2).toUpperCase() : 'T'}
+                  </AvatarFallback>
+                </Avatar>
+                <SignOutButton variant="ghost" size="sm" className="text-xs px-2 py-1 h-auto" showIcon={false}>
+                  Sign Out
+                </SignOutButton>
+              </div>
+            </div>
+
+            {/* Role switching tabs for teachers */}
+            <Tabs defaultValue="teacher" className="w-full mt-4">
+              <TabsList className="w-full justify-start bg-transparent border-b border-border rounded-none p-0">
+                <TabsTrigger 
+                  value="teacher" 
+                  className="data-[state=active]:border-b-2 border border-transparent rounded-none py-2 px-4 text-sm tracking-wide uppercase"
+                >
+                  Teacher View
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="student" 
+                  className="data-[state=active]:border-b-2 border border-transparent rounded-none py-2 px-4 text-sm tracking-wide uppercase"
+                >
+                  Student View
+                </TabsTrigger>
+              </TabsList>
+
+              <TabsContent value="teacher" className="mt-6">
+                <TeacherPracticeView />
+              </TabsContent>
+
+              <TabsContent value="student" className="mt-6">
+                <StudentPracticeView />
+              </TabsContent>
+            </Tabs>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Non-admin, non-teacher users (students) see their student view
+  return (
+    <div className="container mx-auto px-4 pb-20 pt-4 max-w-md">
+      <ClearAuthErrors />
+      {/* Top bar */}
+      <div className="flex items-center justify-center relative mb-6">
+        <h1 className="text-lg font-semibold tracking-wide">MY PRACTICE</h1>
+        <div className="absolute right-0 flex flex-col items-center gap-2">
+          <Avatar>
+            <AvatarFallback>
+              {user.name ? user.name.split(' ').map(n=>n[0]).join('').slice(0,2).toUpperCase() : 'U'}
+            </AvatarFallback>
+          </Avatar>
+          <SignOutButton variant="ghost" size="sm" className="text-xs px-2 py-1 h-auto" showIcon={false}>
+            Sign Out
+          </SignOutButton>
+        </div>
+      </div>
+
+      <StudentPracticeView />
     </div>
   );
 }
