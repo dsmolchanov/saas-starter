@@ -17,7 +17,7 @@ import {
   invitations
 } from '@/lib/db/schema';
 import { comparePasswords, hashPassword, setSession } from '@/lib/auth/session';
-import { createClient } from '@/lib/supabase/client';
+import { createServerSupabaseClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
 import { cookies } from 'next/headers';
 import { createCheckoutSession } from '@/lib/payments/stripe';
@@ -415,7 +415,7 @@ export const supabaseSignIn = validatedAction(
   signInSchema,
   async (data, formData) => {
     const { email, password } = data;
-    const supabase = createClient();
+    const supabase = await createServerSupabaseClient();
     const { data: sessionData, error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) return { error: error.message };
 
@@ -434,7 +434,7 @@ export const supabaseSignUp = validatedAction(
   signUpSchema,
   async (data) => {
     const { email, password } = data;
-    const supabase = createClient();
+    const supabase = await createServerSupabaseClient();
     const { error } = await supabase.auth.signUp({ email, password });
     if (error) return { error: error.message };
 
