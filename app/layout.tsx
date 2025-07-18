@@ -4,8 +4,6 @@ import { getUser, getTeamForUser } from '@/lib/db/queries';
 import { SWRConfig } from 'swr';
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';
-import { notFound } from 'next/navigation';
-import { locales } from '../i18n';
 
 export const metadata: Metadata = {
   title: 'Dzen Yoga - Find Your Perfect Practice',
@@ -29,12 +27,9 @@ export default async function RootLayout({
   // Get locale from params or use default
   const resolvedParams = params ? await params : {};
   const locale = resolvedParams.locale || 'ru';
-  
-  // Validate that the incoming `locale` parameter is valid
-  if (!locales.includes(locale as any)) notFound();
 
   // Get messages for the locale
-  const messages = await getMessages({ locale });
+  const messages = await getMessages();
 
   return (
     <html lang={locale} className="bg-white dark:bg-gray-950 text-black dark:text-white">
