@@ -6,11 +6,12 @@ import { locales, defaultLocale } from './i18n';
 
 const protectedRoutes = '/dashboard';
 
-// Create the i18n middleware
+// Create the i18n middleware with more specific configuration
 const intlMiddleware = createMiddleware({
   locales,
   defaultLocale,
-  localePrefix: 'as-needed', // Only add locale prefix for non-default locales
+  localePrefix: 'as-needed',
+  localeDetection: false, // Disable automatic locale detection to avoid header usage
   pathnames: {
     '/': '/',
     '/my_practice': '/my_practice',
@@ -24,20 +25,21 @@ const intlMiddleware = createMiddleware({
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   
-  // Skip middleware for API routes, static files, and internal Next.js routes
+  // Skip middleware for API routes, static files, internal Next.js routes, and error pages
   if (
     pathname.startsWith('/api/') ||
     pathname.startsWith('/_next/') ||
     pathname.startsWith('/_vercel/') ||
-    pathname.includes('.')
+    pathname.startsWith('/_not-found') ||
+    pathname === '/favicon.ico' ||
+    pathname.includes('.') ||
+    pathname === '/robots.txt' ||
+    pathname === '/sitemap.xml'
   ) {
     return NextResponse.next();
   }
   
-  // Handle i18n routing first
-  const intlResponse = intlMiddleware(request);
-  
-  // Check if this is a protected route
+  // Check if this is a protected route before applying i18n
   const sessionCookie = request.cookies.get('session');
   const isProtectedRoute = pathname.startsWith(protectedRoutes);
 
@@ -45,55 +47,71 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL('/sign-in', request.url));
   }
 
-  // Start with the i18n response or create a new one
-  let res = intlResponse || NextResponse.next();
+  // Apply i18n middleware
+  try {
+    const intlResponse = intlMiddleware(request);
+    let res = intlResponse || NextResponse.next();
 
-  // Handle session refresh for authenticated users
-  if (sessionCookie && request.method === 'GET') {
-    try {
-      const parsed = await verifyToken(sessionCookie.value);
-      const expiresInOneDay = new Date(Date.now() + 24 * 60 * 60 * 1000);
+    // Handle session refresh for authenticated users
+    if (sessionCookie && request.method === 'GET') {
+      try {
+        const parsed = await verifyToken(sessionCookie.value);
+        const expiresInOneDay = new Date(Date.now() + 24 * 60 * 60 * 1000);
 
-      // If we got an intl response, we need to clone it to modify cookies
-      if (intlResponse) {
-        res = NextResponse.next();
-        // Copy any headers from the intl response
-        intlResponse.headers.forEach((value, key) => {
-          res.headers.set(key, value);
+        // If we got an intl response, we need to clone it to modify cookies
+        if (intlResponse) {
+          res = NextResponse.next();
+          // Copy any headers from the intl response
+          intlResponse.headers.forEach((value, key) => {
+            res.headers.set(key, value);
+          });
+          // Handle potential redirects from intl middleware
+          if (intlResponse.status >= 300 && intlResponse.status < 400) {
+            res = NextResponse.redirect(intlResponse.headers.get('location') || request.url);
+          }
+        }
+
+        res.cookies.set({
+          name: 'session',
+          value: await signToken({
+            ...parsed,
+            expires: expiresInOneDay.toISOString()
+          }),
+          httpOnly: true,
+          secure: true,
+          sameSite: 'lax',
+          expires: expiresInOneDay
         });
-        // Handle potential redirects from intl middleware
-        if (intlResponse.status >= 300 && intlResponse.status < 400) {
-          res = NextResponse.redirect(intlResponse.headers.get('location') || request.url);
+      } catch (error) {
+        console.error('Error updating session:', error);
+        res.cookies.delete('session');
+        if (isProtectedRoute) {
+          return NextResponse.redirect(new URL('/sign-in', request.url));
         }
       }
-
-      res.cookies.set({
-        name: 'session',
-        value: await signToken({
-          ...parsed,
-          expires: expiresInOneDay.toISOString()
-        }),
-        httpOnly: true,
-        secure: true,
-        sameSite: 'lax',
-        expires: expiresInOneDay
-      });
-    } catch (error) {
-      console.error('Error updating session:', error);
-      res.cookies.delete('session');
-      if (isProtectedRoute) {
-        return NextResponse.redirect(new URL('/sign-in', request.url));
-      }
     }
-  }
 
-  return res;
+    return res;
+  } catch (error) {
+    console.error('Middleware error:', error);
+    return NextResponse.next();
+  }
 }
 
 export const config = {
-  // Match all pathnames except for
-  // - … if they start with `/api`, `/_next` or `/_vercel`
-  // - … the ones containing a dot (e.g. `favicon.ico`)
-  matcher: ['/((?!api|_next|_vercel|.*\\..*).*)'],
+  // More specific matcher that excludes problematic paths
+  matcher: [
+    /*
+     * Match all request paths except for the ones starting with:
+     * - api (API routes)
+     * - _next/static (static files)
+     * - _next/image (image optimization files)
+     * - favicon.ico (favicon file)
+     * - robots.txt
+     * - sitemap.xml
+     * - _not-found
+     */
+    '/((?!api|_next/static|_next/image|favicon.ico|robots.txt|sitemap.xml|_not-found).*)',
+  ],
   runtime: 'nodejs'
 };
