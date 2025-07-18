@@ -1,4 +1,158 @@
 {
   "homeTitle": "Build Your Yoga Practice",
-  "homeSubtitle": "Practice anytime, anywhere with video lessons"
+  "homeSubtitle": "Practice anytime, anywhere with video lessons",
+  
+  "common": {
+    "signIn": "Sign In",
+    "signOut": "Sign Out",
+    "signUp": "Sign Up",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "create": "Create",
+    "approve": "Approve",
+    "reject": "Reject",
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "email": "Email",
+    "password": "Password",
+    "name": "Name",
+    "title": "Title",
+    "description": "Description",
+    "submit": "Submit",
+    "close": "Close"
+  },
+
+  "navigation": {
+    "myPractice": "My Practice",
+    "browse": "Browse",
+    "teachers": "Teachers",
+    "courses": "Courses",
+    "classes": "Classes"
+  },
+
+  "auth": {
+    "signInToAccount": "Sign in to your account",
+    "createAccount": "Create your account",
+    "signInWithGoogle": "Sign in with Google",
+    "orContinueWith": "or continue with",
+    "forgotPassword": "Forgot password?",
+    "noAccount": "Don't have an account?",
+    "alreadyHaveAccount": "Already have an account?",
+    "signUpHere": "Sign up here",
+    "signInHere": "Sign in here"
+  },
+
+  "myPractice": {
+    "title": "MY PRACTICE",
+    "adminView": "Admin View",
+    "teacherView": "Teacher View",
+    "studentView": "Student View",
+    "completed": "COMPLETED",
+    "classes": "CLASSES",
+    "series": "SERIES",
+    "playlists": "MY PLAYLISTS",
+    "activeDays": "ACTIVE DAYS",
+    "weekStreak": "WEEK STREAK",
+    "totalTime": "TOTAL TIME",
+    "filters": "FILTERS",
+    "last30Days": "LAST 30 DAYS",
+    "newest": "NEWEST",
+    "noVideosYet": "NO VIDEOS HERE YET...",
+    "comingSoon": "Coming soon",
+    "stats": {
+      "completed": "COMPLETED",
+      "activeDays": "ACTIVE DAYS",
+      "weekStreak": "WEEK STREAK",
+      "totalTime": "TOTAL TIME"
+    }
+  },
+
+  "teacher": {
+    "becomeTeacher": "Become a Teacher",
+    "sharePassion": "Share your passion for yoga and earn revenue by teaching on our platform",
+    "createCourses": "Create Courses",
+    "structuredLearning": "Build structured learning experiences",
+    "globalReach": "Global Reach",
+    "teachWorldwide": "Teach students worldwide",
+    "revenueShare": "Revenue Share Model",
+    "earn70Percent": "Earn 70% of subscription revenue from students who attend your classes each month",
+    "requestToBeTeacher": "Request to be a Teacher",
+    "applicationProcess": "Application process takes 5-10 minutes. We'll review within 2-3 business days",
+    "application": {
+      "title": "Teacher Application",
+      "status": "Application Status",
+      "submittedOn": "Submitted on",
+      "pending": "PENDING",
+      "approved": "APPROVED",
+      "rejected": "REJECTED",
+      "underReview": "UNDER REVIEW",
+      "whatsNext": "What's next?",
+      "reviewTime": "• Review process typically takes 2-3 business days",
+      "emailNotification": "• We'll email you with the decision",
+      "accessTools": "• If approved, you'll get immediate access to teacher tools",
+      "underReviewText": "Your application is currently under detailed review. We'll update you soon!",
+      "congratulations": "Congratulations! Your teacher application has been approved. You now have access to all teacher features",
+      "accessDashboard": "Access Teacher Dashboard",
+      "rejected": "Unfortunately, your application was not approved at this time. You can submit a new application after addressing any feedback",
+      "submitNew": "Submit New Application"
+    }
+  },
+
+  "admin": {
+    "title": "ADMIN DASHBOARD",
+    "unauthorizedAccess": "Unauthorized - Admin access required",
+    "teacherApplications": "Teacher Applications",
+    "noApplicationsYet": "No Applications Yet",
+    "applicationsWillAppear": "Teacher applications will appear here when users submit them",
+    "experienceLevel": "Experience Level",
+    "regularStudents": "Regular Students",
+    "revenueModel": "Revenue Model",
+    "trainingBackground": "Training Background",
+    "currentPractice": "Current Practice",
+    "motivation": "Motivation",
+    "additionalInfo": "Additional Information",
+    "reviewNotes": "Review Notes (Optional)",
+    "addFeedback": "Add any feedback or notes for the applicant...",
+    "reviewNotesLabel": "Review Notes",
+    "reviewedOn": "Reviewed on"
+  },
+
+  "teacherDashboard": {
+    "profile": "Profile",
+    "courses": "Courses",
+    "classes": "Classes",
+    "analytics": "Analytics",
+    "welcomeTeacher": "Welcome, Teacher!",
+    "manageContent": "Manage your content and track student progress",
+    "profileForm": {
+      "bio": "Bio",
+      "bioPlaceholder": "Tell us about your yoga experience, training, and teaching philosophy...",
+      "instagram": "Instagram Username",
+      "instagramPlaceholder": "your_username",
+      "saveProfile": "Save Profile",
+      "saving": "Saving...",
+      "profileSaved": "Profile saved successfully!",
+      "invalidInstagram": "Instagram username can only contain letters, numbers, dots, and underscores",
+      "instagramLength": "Instagram username must be between 1 and 30 characters"
+    }
+  },
+
+  "errors": {
+    "unauthenticated": "Unauthenticated",
+    "failedToLoad": "Failed to load",
+    "failedToSave": "Failed to save",
+    "failedToDelete": "Failed to delete",
+    "networkError": "Network error occurred. Please try again",
+    "tryAgain": "Please try again"
+  },
+
+  "language": {
+    "switch": "Switch Language",
+    "russian": "Русский",
+    "english": "English",
+    "spanish": "Español"
+  }
 }

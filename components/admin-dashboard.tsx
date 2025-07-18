@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -30,6 +31,7 @@ interface TeacherApplication {
 }
 
 export function AdminDashboard() {
+  const t = useTranslations();
   const [applications, setApplications] = useState<TeacherApplication[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -48,8 +50,6 @@ export function AdminDashboard() {
     load();
   }, []);
 
-
-
   async function handleStatusUpdate(id: string, status: 'approved' | 'rejected', reviewNotes: string) {
     try {
       const response = await fetch(`/api/admin/teacher-applications/${id}`, {
@@ -61,7 +61,7 @@ export function AdminDashboard() {
       if (!response.ok) {
         const error = await response.json();
         console.error('Error updating application:', error);
-        alert(`Error: ${error.error || 'Failed to update application'}`);
+        alert(`${t('common.error')}: ${error.error || t('errors.failedToSave')}`);
         return;
       }
 
@@ -73,7 +73,7 @@ export function AdminDashboard() {
       }
     } catch (error) {
       console.error('Network error:', error);
-      alert('Network error occurred. Please try again.');
+      alert(t('errors.networkError'));
     }
   }
 
@@ -95,21 +95,21 @@ export function AdminDashboard() {
     return (
       <Badge variant={variant} className="flex items-center gap-1">
         {getStatusIcon(status)}
-        {status.toUpperCase()}
+        {t(`teacher.application.${status}`)}
       </Badge>
     );
   };
 
   if (loading) {
-    return <p className="text-center py-20">Loading...</p>;
+    return <p className="text-center py-20">{t('common.loading')}</p>;
   }
 
   if (applications.length === 0) {
     return (
       <Card>
         <CardContent className="p-8 text-center">
-          <h3 className="text-lg font-semibold mb-2">No Applications Yet</h3>
-          <p className="text-muted-foreground">Teacher applications will appear here when users submit them.</p>
+          <h3 className="text-lg font-semibold mb-2">{t('admin.noApplicationsYet')}</h3>
+          <p className="text-muted-foreground">{t('admin.applicationsWillAppear')}</p>
         </CardContent>
       </Card>
     );
@@ -144,21 +144,21 @@ export function AdminDashboard() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               <div className="space-y-2">
                 <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                  Experience Level
+                  {t('admin.experienceLevel')}
                 </Label>
                 <p className="text-sm capitalize">{application.experienceLevel.replace('_', ' ')}</p>
               </div>
               {application.regularStudentsCount && (
                 <div className="space-y-2">
                   <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                    Regular Students
+                    {t('admin.regularStudents')}
                   </Label>
                   <p className="text-sm">{application.regularStudentsCount}</p>
                 </div>
               )}
               <div className="space-y-2">
                 <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                  Revenue Model
+                  {t('admin.revenueModel')}
                 </Label>
                 <p className="text-sm capitalize">{application.revenueModel.replace('_', ' ')}</p>
               </div>
@@ -167,7 +167,7 @@ export function AdminDashboard() {
             <div className="space-y-4">
               <div>
                 <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                  Training Background
+                  {t('admin.trainingBackground')}
                 </Label>
                 <p className="text-sm mt-1">{application.trainingBackground}</p>
               </div>
@@ -175,7 +175,7 @@ export function AdminDashboard() {
               {application.offlinePractice && (
                 <div>
                   <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                    Current Practice
+                    {t('admin.currentPractice')}
                   </Label>
                   <p className="text-sm mt-1">{application.offlinePractice}</p>
                 </div>
@@ -184,7 +184,7 @@ export function AdminDashboard() {
               {application.motivation && (
                 <div>
                   <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                    Motivation
+                    {t('admin.motivation')}
                   </Label>
                   <p className="text-sm mt-1">{application.motivation}</p>
                 </div>
@@ -193,7 +193,7 @@ export function AdminDashboard() {
               {application.additionalInfo && (
                 <div>
                   <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                    Additional Information
+                    {t('admin.additionalInfo')}
                   </Label>
                   <p className="text-sm mt-1">{application.additionalInfo}</p>
                 </div>
@@ -204,10 +204,10 @@ export function AdminDashboard() {
               <div className="border-t pt-4">
                 <div className="space-y-4">
                   <div>
-                    <Label htmlFor={`notes-${application.id}`}>Review Notes (Optional)</Label>
+                    <Label htmlFor={`notes-${application.id}`}>{t('admin.reviewNotes')}</Label>
                     <Textarea
                       id={`notes-${application.id}`}
-                      placeholder="Add any feedback or notes for the applicant..."
+                      placeholder={t('admin.addFeedback')}
                       rows={3}
                       className="mt-2"
                     />
@@ -221,7 +221,7 @@ export function AdminDashboard() {
                       className="bg-green-600 hover:bg-green-700"
                     >
                       <CheckCircle className="w-4 h-4 mr-2" />
-                      Approve
+                      {t('common.approve')}
                     </Button>
                     <Button 
                       onClick={() => {
@@ -231,7 +231,7 @@ export function AdminDashboard() {
                       variant="destructive"
                     >
                       <XCircle className="w-4 h-4 mr-2" />
-                      Reject
+                      {t('common.reject')}
                     </Button>
                   </div>
                 </div>
@@ -241,12 +241,12 @@ export function AdminDashboard() {
             {application.status !== 'pending' && application.reviewNotes && (
               <div className="border-t pt-4">
                 <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                  Review Notes
+                  {t('admin.reviewNotesLabel')}
                 </Label>
                 <p className="text-sm mt-1">{application.reviewNotes}</p>
                 {application.reviewedAt && (
                   <p className="text-xs text-muted-foreground mt-2">
-                    Reviewed on {new Date(application.reviewedAt).toLocaleDateString()}
+                    {t('admin.reviewedOn')} {new Date(application.reviewedAt).toLocaleDateString()}
                   </p>
                 )}
               </div>
