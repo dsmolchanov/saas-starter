@@ -46,10 +46,8 @@ export default async function RootLayout({
           <SWRConfig
             value={{
               fallback: {
-                // We do NOT await here
-                // Only components that read this data will suspend
-                '/api/user': getUser(),
-                '/api/team': getTeamForUser()
+                // Don't pre-load user data during static generation
+                // This will be loaded client-side on demand
               }
             }}
           >

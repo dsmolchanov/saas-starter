@@ -17,6 +17,7 @@ import { ClearAuthErrors } from '@/components/clear-auth-errors';
 import { useTranslations } from 'next-intl';
 import { getTranslations } from 'next-intl/server';
 
+// This page needs dynamic rendering for user authentication and i18n
 export const dynamic = 'force-dynamic';
 
 export default async function MyPracticePage() {

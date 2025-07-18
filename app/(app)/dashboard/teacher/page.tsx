@@ -1,4 +1,4 @@
-// Disable static prerendering to ensure auth works
+// This page needs dynamic rendering for user authentication
 export const dynamic = 'force-dynamic';
 
 import { getUser } from '@/lib/db/queries';
