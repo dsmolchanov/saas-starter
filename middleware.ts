@@ -10,11 +10,29 @@ const protectedRoutes = '/dashboard';
 const intlMiddleware = createMiddleware({
   locales,
   defaultLocale,
-  localePrefix: 'as-needed' // Only add locale prefix for non-default locales
+  localePrefix: 'as-needed', // Only add locale prefix for non-default locales
+  pathnames: {
+    '/': '/',
+    '/my_practice': '/my_practice',
+    '/browse': '/browse',
+    '/teachers': '/teachers',
+    '/courses': '/courses',
+    '/classes': '/classes'
+  }
 });
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
+  
+  // Skip middleware for API routes, static files, and internal Next.js routes
+  if (
+    pathname.startsWith('/api/') ||
+    pathname.startsWith('/_next/') ||
+    pathname.startsWith('/_vercel/') ||
+    pathname.includes('.')
+  ) {
+    return NextResponse.next();
+  }
   
   // Handle i18n routing first
   const intlResponse = intlMiddleware(request);

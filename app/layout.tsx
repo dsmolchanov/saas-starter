@@ -4,6 +4,7 @@ import { getUser, getTeamForUser } from '@/lib/db/queries';
 import { SWRConfig } from 'swr';
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';
+import { locales } from '../i18n';
 
 export const metadata: Metadata = {
   title: 'Dzen Yoga - Find Your Perfect Practice',
@@ -16,6 +17,11 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   maximumScale: 1
 };
+
+// Generate static params for all locales
+export function generateStaticParams() {
+  return locales.map((locale) => ({ locale }));
+}
 
 export default async function RootLayout({
   children,
