@@ -24,10 +24,11 @@ export default async function RootLayout({
   params
 }: {
   children: React.ReactNode;
-  params?: { locale?: string };
+  params?: Promise<{ locale?: string }>;
 }) {
   // Get locale from params or use default
-  const locale = params?.locale || 'ru';
+  const resolvedParams = params ? await params : {};
+  const locale = resolvedParams.locale || 'ru';
   
   // Validate that the incoming `locale` parameter is valid
   if (!locales.includes(locale as any)) notFound();
