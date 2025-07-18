@@ -1,9 +1,11 @@
-import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 
-export async function generateMetadata({ params }: any): Promise<Metadata> {
-  return { title: `Course ${params.courseId}` };
-}
+export const metadata = {
+  title: 'Course'
+};
+
+// This page needs dynamic rendering for dynamic routes and i18n
+export const dynamic = 'force-dynamic';
 
 export default async function CoursePage({ params }: any) {
   const { courseId } = params;

@@ -6,6 +6,9 @@ import { NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';
 import { locales } from '../i18n';
 
+// Force all pages to use dynamic rendering to avoid i18n static generation issues
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = {
   title: 'Dzen Yoga - Find Your Perfect Practice',
   description: 'Discover yoga teachers you will love. Customize your practice with any duration, style and length.',
@@ -34,8 +37,14 @@ export default async function RootLayout({
   const resolvedParams = params ? await params : {};
   const locale = resolvedParams.locale || 'ru';
 
-  // Get messages for the locale
-  const messages = await getMessages();
+  // Get messages for the locale with fallback
+  let messages = {};
+  try {
+    messages = await getMessages();
+  } catch {
+    // Fallback to empty messages if loading fails during build
+    messages = {};
+  }
 
   return (
     <html lang={locale} className="bg-white dark:bg-gray-950 text-black dark:text-white">

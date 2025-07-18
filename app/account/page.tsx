@@ -4,6 +4,9 @@ export const metadata: Metadata = {
   title: 'Account'
 };
 
+// This page needs dynamic rendering for i18n
+export const dynamic = 'force-dynamic';
+
 export default function AccountPage() {
   return (
     <div className="container mx-auto py-10">

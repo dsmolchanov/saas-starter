@@ -2,10 +2,15 @@ import createNextIntlPlugin from 'next-intl/plugin';
 
 const withNextIntl = createNextIntlPlugin('./i18n/request.ts');
 
-export default withNextIntl({
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  output: 'standalone', // Force server-side rendering
+  
   experimental: {
     nodeMiddleware: true,
+    ppr: false, // Disable partial prerendering to avoid i18n conflicts
   },
+  
   images: {
     remotePatterns: [
       {
@@ -22,4 +27,6 @@ export default withNextIntl({
       },
     ],
   },
-}); 
+};
+
+export default withNextIntl(nextConfig); 

@@ -7,6 +7,9 @@ import { Button } from '@/components/ui/button';
 import { Filter, X, List, LayoutGrid } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 
+// This page needs dynamic rendering for search params and i18n
+export const dynamic = 'force-dynamic';
+
 export default async function ClassesPage({ searchParams }: { searchParams: Promise<{ [key: string]: string | string[] | undefined }> }) {
   const params = await searchParams;
   const type = params?.type || 'classes';

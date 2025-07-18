@@ -27,6 +27,9 @@ export const metadata: Metadata = {
     'Discover yoga teachers you will love. Customize your practice with any duration, style and length. Connect deeper through webinars and private classes. Create playlists for the whole family.'
 };
 
+// This page needs dynamic rendering for i18n
+export const dynamic = 'force-dynamic';
+
 export default function HomePage() {
   return (
     <>
