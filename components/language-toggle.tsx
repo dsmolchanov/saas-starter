@@ -28,8 +28,11 @@ export function LanguageToggle() {
   const currentLanguage = languages.find(lang => lang.code === locale) || languages[0];
 
   const switchLanguage = (newLocale: string) => {
+    // Handle null pathname case
+    const currentPath = pathname || '/';
+    
     // Remove current locale from pathname if it exists
-    const pathnameWithoutLocale = pathname.replace(/^\/[a-z]{2}(-[A-Z]{2})?/, '') || '/';
+    const pathnameWithoutLocale = currentPath.replace(/^\/[a-z]{2}(-[A-Z]{2})?/, '') || '/';
     
     // Add new locale to pathname (except for default locale 'ru')
     const newPath = newLocale === 'ru' 
