@@ -37,13 +37,13 @@ export default async function RootLayout({
   const resolvedParams = params ? await params : {};
   const locale = resolvedParams.locale || 'ru';
 
-  // Get messages for the locale with fallback
+  // Get messages for the locale with error handling
   let messages = {};
   try {
     messages = await getMessages();
-  } catch {
-    // Fallback to empty messages if loading fails during build
-    messages = {};
+  } catch (error) {
+    console.warn('Failed to load i18n messages:', error);
+    // Continue with empty messages object
   }
 
   return (

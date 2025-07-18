@@ -3,14 +3,13 @@ import createMiddleware from 'next-intl/middleware';
 import { signToken, verifyToken } from '@/lib/auth/session';
 import { locales, defaultLocale } from './i18n';
 
-// Create the intl middleware with more restrictive configuration
+// Create a separate intl middleware for routes that need i18n
 const intlMiddleware = createMiddleware({
   locales,
   defaultLocale,
   localePrefix: 'as-needed',
-  localeDetection: false, // Disable automatic locale detection to avoid header usage
+  localeDetection: false,
   pathnames: {
-    '/': '/',
     '/my_practice': '/my_practice',
     '/teachers': '/teachers',
     '/courses': '/courses',
@@ -37,14 +36,39 @@ export async function middleware(request: NextRequest) {
     pathname.includes('favicon.ico') ||
     pathname.includes('robots.txt') ||
     pathname.includes('sitemap.xml') ||
-    pathname === '/_not-found'
+    pathname === '/_not-found' ||
+    pathname === '/' // Skip root route completely
   ) {
-    return NextResponse.next();
+    // Handle session refresh without i18n
+    const response = NextResponse.next();
+    const sessionCookie = request.cookies.get('session');
+    
+    if (sessionCookie && request.method === 'GET') {
+      try {
+        const parsed = await verifyToken(sessionCookie.value);
+        const expiresInOneDay = new Date(Date.now() + 24 * 60 * 60 * 1000);
+        
+        response.cookies.set({
+          name: 'session',
+          value: await signToken({
+            ...parsed,
+            expires: expiresInOneDay.toISOString()
+          }),
+          httpOnly: true,
+          secure: true,
+          sameSite: 'lax',
+          expires: expiresInOneDay
+        });
+      } catch (error) {
+        console.error('Error updating session:', error);
+      }
+    }
+    
+    return response;
   }
 
-  // Only apply i18n to a very limited set of routes
+  // Only apply i18n to specific routes that need it
   if (
-    pathname === '/' || 
     pathname.startsWith('/my_practice') ||
     pathname.startsWith('/teachers') ||
     pathname.startsWith('/courses') ||
