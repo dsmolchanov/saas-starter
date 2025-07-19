@@ -17,7 +17,13 @@ export async function GET(request: NextRequest) {
       next = '/';
     }
 
-    console.log('Auth callback received:', { code: code?.substring(0, 10) + '...', next });
+    console.log('Auth callback received:', { 
+      url: request.url,
+      code: code?.substring(0, 10) + '...', 
+      next,
+      origin,
+      searchParams: Object.fromEntries(searchParams.entries())
+    });
 
     if (code) {
       // Map Next.js cookies helper to the interface expected by Supabase helper
@@ -86,6 +92,14 @@ export async function GET(request: NextRequest) {
       // Handle redirects according to Supabase recommendations
       const forwardedHost = request.headers.get('x-forwarded-host'); // original origin before load balancer
       const isLocalEnv = process.env.NODE_ENV === 'development';
+      
+      console.log('Redirect logic:', {
+        isLocalEnv,
+        forwardedHost,
+        origin,
+        next,
+        finalUrl: isLocalEnv ? `${origin}${next}` : forwardedHost ? `https://${forwardedHost}${next}` : `${origin}${next}`
+      });
       
       if (isLocalEnv) {
         // we can be sure that there is no load balancer in between, so no need to watch for X-Forwarded-Host

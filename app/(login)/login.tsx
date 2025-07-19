@@ -44,6 +44,11 @@ export function Login({ mode = 'signin' }: { mode?: 'signin' | 'signup' }) {
             onClick={async () => {
               const supabase = createClient();
               const target = redirect || '/my_practice';
+              
+              // Store the intended destination in localStorage before OAuth
+              localStorage.setItem('oauth_redirect_target', target);
+              
+              // Include the next parameter directly in the callback URL path to avoid it being lost
               const redirectUrl = `${window.location.origin}/auth/callback?next=${encodeURIComponent(target)}`;
               
               console.log('OAuth Sign In:', {
