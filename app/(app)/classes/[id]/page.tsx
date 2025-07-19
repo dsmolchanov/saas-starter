@@ -7,10 +7,81 @@ import { Play, Clock, Heart, Share2, MessageSquare, Bookmark } from 'lucide-reac
 import Image from 'next/image';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
+import { VideoPlayer } from '@/components/video-player';
+import { headers } from 'next/headers';
 
-export default async function ClassPage({ params }: any) {
+// Locale detection function
+async function getCurrentLocale(): Promise<string> {
+  const headersList = await headers();
+  const pathname = headersList.get('x-pathname') || '';
+  if (pathname.startsWith('/en')) return 'en';
+  if (pathname.startsWith('/es-MX')) return 'es-MX';
+  return 'ru'; // default
+}
+
+// Locale-aware translations for class detail page
+function getTranslations(locale: string = 'ru') {
+  const translations = {
+    ru: {
+      intensity: 'Интенсивность',
+      noDescriptionAvailable: 'Описание недоступно',
+      classDetails: 'Детали занятия',
+      focusAreas: 'Области фокуса',
+      equipment: 'Оборудование',
+      instructor: 'Инструктор',
+      course: 'Курс',
+      follow: 'Подписаться',
+      upNext: 'Далее',
+      nextLesson: 'Следующий урок',
+      min: 'мин',
+      hour: 'ч',
+      hourShort: 'ч',
+      minuteShort: 'м'
+    },
+    en: {
+      intensity: 'Intensity',
+      noDescriptionAvailable: 'No description available',
+      classDetails: 'Class Details',
+      focusAreas: 'Focus Areas',
+      equipment: 'Equipment',
+      instructor: 'Instructor',
+      course: 'Course',
+      follow: 'Follow',
+      upNext: 'Up Next',
+      nextLesson: 'Next Lesson',
+      min: 'min',
+      hour: 'hour',
+      hourShort: 'h',
+      minuteShort: 'm'
+    },
+    'es-MX': {
+      intensity: 'Intensidad',
+      noDescriptionAvailable: 'Descripción no disponible',
+      classDetails: 'Detalles de la Clase',
+      focusAreas: 'Áreas de Enfoque',
+      equipment: 'Equipo',
+      instructor: 'Instructor',
+      course: 'Curso',
+      follow: 'Seguir',
+      upNext: 'A Continuación',
+      nextLesson: 'Siguiente Lección',
+      min: 'min',
+      hour: 'hora',
+      hourShort: 'h',
+      minuteShort: 'm'
+    }
+  };
+  
+  return translations[locale as keyof typeof translations] || translations.ru;
+}
+
+export default async function ClassPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  const currentLocale = await getCurrentLocale();
+  const t = getTranslations(currentLocale);
+  
   const lesson = await db.query.lessons.findFirst({
-    where: eq(lessons.id, params.id),
+    where: eq(lessons.id, id),
     with: {
       course: {
         with: {
@@ -29,8 +100,12 @@ export default async function ClassPage({ params }: any) {
     notFound();
   }
 
-  // Format duration
-  const duration = `${Math.floor(lesson.durationMin / 60)}h ${lesson.durationMin % 60}m`;
+  // Format duration with locale-aware text
+  const hours = Math.floor(lesson.durationMin / 60);
+  const minutes = lesson.durationMin % 60;
+  const duration = hours > 0 
+    ? `${hours}${t.hourShort} ${minutes}${t.minuteShort}`
+    : `${minutes}${t.minuteShort}`;
   
   // Get focus areas as an array of strings
   const focusAreaNames = lesson.focusAreas.map(fa => fa.focusArea.name);
@@ -40,22 +115,19 @@ export default async function ClassPage({ params }: any) {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Main content */}
         <div className="lg:col-span-2">
-          <div className="bg-black rounded-xl aspect-video relative overflow-hidden">
-            {/* Replace with actual video player */}
-            <div className="absolute inset-0 flex items-center justify-center">
-              <Button size="lg" className="rounded-full w-16 h-16 p-0">
-                <Play className="h-8 w-8 ml-1" />
-              </Button>
-            </div>
-            <div className="absolute bottom-4 right-4 bg-black/70 text-white px-3 py-1 rounded-full text-sm">
-              {duration}
-            </div>
-          </div>
+          <VideoPlayer
+            videoPath={lesson.videoPath}
+            videoUrl={lesson.videoUrl}
+            videoType={lesson.videoType}
+            thumbnailUrl={lesson.thumbnailUrl}
+            title={lesson.title}
+            className="rounded-xl"
+          />
 
           <div className="mt-6">
             <div className="flex flex-wrap gap-2 mb-4">
               <Badge variant="secondary" className="text-sm">{lesson.difficulty}</Badge>
-              <Badge variant="secondary" className="text-sm">{lesson.intensity} Intensity</Badge>
+              <Badge variant="secondary" className="text-sm">{lesson.intensity} {t.intensity}</Badge>
               {lesson.style && (
                 <Badge variant="secondary" className="text-sm">{lesson.style}</Badge>
               )}
@@ -63,7 +135,7 @@ export default async function ClassPage({ params }: any) {
 
             <h1 className="text-3xl font-bold mb-2">{lesson.title}</h1>
             <p className="text-muted-foreground mb-6">
-              {lesson.description || 'No description available'}
+              {lesson.description || t.noDescriptionAvailable}
             </p>
 
             <div className="flex items-center gap-4 text-sm text-muted-foreground mb-6">
@@ -84,11 +156,11 @@ export default async function ClassPage({ params }: any) {
             <Separator className="my-6" />
 
             <div className="space-y-4">
-              <h3 className="font-semibold text-lg">Class Details</h3>
+              <h3 className="font-semibold text-lg">{t.classDetails}</h3>
               
               {focusAreaNames.length > 0 && (
                 <div>
-                  <h4 className="text-sm font-medium text-muted-foreground mb-2">Focus Areas</h4>
+                  <h4 className="text-sm font-medium text-muted-foreground mb-2">{t.focusAreas}</h4>
                   <div className="flex flex-wrap gap-2">
                     {focusAreaNames.map((area) => (
                       <Badge key={area} variant="outline" className="text-sm">
@@ -101,7 +173,7 @@ export default async function ClassPage({ params }: any) {
 
               {lesson.equipment && (
                 <div>
-                  <h4 className="text-sm font-medium text-muted-foreground mb-2">Equipment</h4>
+                  <h4 className="text-sm font-medium text-muted-foreground mb-2">{t.equipment}</h4>
                   <p className="text-sm">{lesson.equipment}</p>
                 </div>
               )}
@@ -120,20 +192,20 @@ export default async function ClassPage({ params }: any) {
               </div>
               <div>
                 <h4 className="font-medium">
-                  {lesson.course?.teacher?.name || 'Instructor'}
+                  {lesson.course?.teacher?.name || t.instructor}
                 </h4>
                 <p className="text-sm text-muted-foreground">
-                  {lesson.course?.title || 'Course'}
+                  {lesson.course?.title || t.course}
                 </p>
               </div>
             </div>
             <Button variant="outline" className="w-full">
-              Follow
+              {t.follow}
             </Button>
           </div>
 
           <div className="bg-card rounded-lg p-6 space-y-4">
-            <h3 className="font-semibold">Up Next</h3>
+            <h3 className="font-semibold">{t.upNext}</h3>
             <div className="space-y-4">
               {[1, 2, 3].map((i) => (
                 <div key={i} className="flex items-center gap-3 p-2 rounded-lg hover:bg-muted/50 cursor-pointer">
@@ -141,8 +213,8 @@ export default async function ClassPage({ params }: any) {
                     {/* Thumbnail placeholder */}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium truncate">Next Lesson {i}</p>
-                    <p className="text-xs text-muted-foreground">15 min</p>
+                    <p className="text-sm font-medium truncate">{t.nextLesson} {i}</p>
+                    <p className="text-xs text-muted-foreground">15 {t.min}</p>
                   </div>
                 </div>
               ))}

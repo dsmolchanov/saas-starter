@@ -17,6 +17,8 @@ export async function GET(request: NextRequest) {
       next = '/';
     }
 
+    console.log('Auth callback received:', { code: code?.substring(0, 10) + '...', next });
+
     if (code) {
       // Map Next.js cookies helper to the interface expected by Supabase helper
       const cookieStore = await cookies();
@@ -41,62 +43,67 @@ export async function GET(request: NextRequest) {
 
       const { error } = await supabase.auth.exchangeCodeForSession(code);
       
-      if (!error) {
-        // Get user data after successful session exchange
-        const {
-          data: { user: supaUser }
-        } = await supabase.auth.getUser();
+      if (error) {
+        console.error('Supabase auth exchange error:', error);
+        // Redirect to login with error
+        return NextResponse.redirect(`${origin}/login?error=auth_failed&next=${encodeURIComponent(next)}`);
+      }
+      
+      // Get user data after successful session exchange
+      const {
+        data: { user: supaUser }
+      } = await supabase.auth.getUser();
 
-        if (supaUser?.email) {
-          let [internal] = await db
-            .select()
-            .from(users)
-            .where(eq(users.email, supaUser.email))
-            .limit(1);
-          
-          // If user doesn't exist in our database, create them
-          if (!internal) {
-            console.log('Creating user in database:', supaUser.email);
-            const [newUser] = await db
-              .insert(users)
-              .values({
-                id: supaUser.id, // Use the Supabase auth user ID
-                name: supaUser.user_metadata?.full_name || supaUser.email,
-                email: supaUser.email,
-                avatarUrl: supaUser.user_metadata?.avatar_url,
-                role: 'student'
-              })
-              .returning();
-            internal = newUser;
-          }
-          
-          if (internal) {
-            console.log('Setting session for user:', internal.email);
-            await setSession(internal);
-          }
-        }
-
-        // Handle redirects according to Supabase recommendations
-        const forwardedHost = request.headers.get('x-forwarded-host'); // original origin before load balancer
-        const isLocalEnv = process.env.NODE_ENV === 'development';
+      if (supaUser?.email) {
+        let [internal] = await db
+          .select()
+          .from(users)
+          .where(eq(users.email, supaUser.email))
+          .limit(1);
         
-        if (isLocalEnv) {
-          // we can be sure that there is no load balancer in between, so no need to watch for X-Forwarded-Host
-          return NextResponse.redirect(`${origin}${next}`);
-        } else if (forwardedHost) {
-          return NextResponse.redirect(`https://${forwardedHost}${next}`);
-        } else {
-          return NextResponse.redirect(`${origin}${next}`);
+        // If user doesn't exist in our database, create them
+        if (!internal) {
+          console.log('Creating user in database:', supaUser.email);
+          const [newUser] = await db
+            .insert(users)
+            .values({
+              id: supaUser.id, // Use the Supabase auth user ID
+              name: supaUser.user_metadata?.full_name || supaUser.email,
+              email: supaUser.email,
+              avatarUrl: supaUser.user_metadata?.avatar_url,
+              role: 'student'
+            })
+            .returning();
+          internal = newUser;
         }
+        
+        if (internal) {
+          console.log('Setting session for user:', internal.email);
+          await setSession(internal);
+        }
+      }
+
+      // Handle redirects according to Supabase recommendations
+      const forwardedHost = request.headers.get('x-forwarded-host'); // original origin before load balancer
+      const isLocalEnv = process.env.NODE_ENV === 'development';
+      
+      if (isLocalEnv) {
+        // we can be sure that there is no load balancer in between, so no need to watch for X-Forwarded-Host
+        return NextResponse.redirect(`${origin}${next}`);
+      } else if (forwardedHost) {
+        return NextResponse.redirect(`https://${forwardedHost}${next}`);
+      } else {
+        return NextResponse.redirect(`${origin}${next}`);
       }
     }
 
     // return the user to an error page with instructions
-    console.error('OAuth callback error: No code provided or exchange failed');
-    return NextResponse.redirect(`${origin}/`);
+    console.error('OAuth callback error: No code provided');
+    return NextResponse.redirect(`${origin}/login?error=no_code&next=${encodeURIComponent(next)}`);
   } catch (err) {
-    console.error('OAuth callback error', err);
+    console.error('OAuth callback unexpected error:', err);
     const { origin } = new URL(request.url);
-    return NextResponse.redirect(`${origin}/`);
+    const next = new URL(request.url).searchParams.get('next') ?? '/';
+    return NextResponse.redirect(`${origin}/login?error=callback_error&next=${encodeURIComponent(next)}`);
   }
 } 

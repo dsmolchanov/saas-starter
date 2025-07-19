@@ -1,13 +1,103 @@
 "use client";
 
-import { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
-import { Clock, CheckCircle, XCircle, User, Mail, Calendar } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { 
+  Users, 
+  BookOpen, 
+  GraduationCap, 
+  CheckCircle, 
+  XCircle, 
+  Clock,
+  User,
+  Mail,
+  Calendar,
+  MessageSquare
+} from 'lucide-react';
+
+// Simple fallback translations for when next-intl context is not available
+const getFallbackTranslations = (locale: string = 'ru') => {
+  const translations = {
+    ru: {
+      adminDashboard: 'Админ панель',
+      teacherApplications: 'Заявки преподавателей',
+      pending: 'Ожидает',
+      approved: 'Одобрено', 
+      rejected: 'Отклонено',
+      approve: 'Одобрить',
+      reject: 'Отклонить',
+      viewApplication: 'Просмотреть заявку',
+      noApplications: 'Заявки не найдены',
+      loading: 'Загрузка...',
+      name: 'Имя',
+      email: 'Email',
+      submittedAt: 'Подано',
+      status: 'Статус',
+      actions: 'Действия',
+      experience: 'Уровень опыта',
+      certifications: 'Подготовка',
+      bio: 'Дополнительная информация',
+      reviewNotes: 'Заметки для проверки',
+      addFeedback: 'Добавить отзыв...',
+      reviewNotesLabel: 'Заметки по проверке',
+      reviewedOn: 'Проверено'
+    },
+    en: {
+      adminDashboard: 'Admin Dashboard',
+      teacherApplications: 'Teacher Applications',
+      pending: 'Pending',
+      approved: 'Approved', 
+      rejected: 'Rejected',
+      approve: 'Approve',
+      reject: 'Reject',
+      viewApplication: 'View Application',
+      noApplications: 'No applications found',
+      loading: 'Loading...',
+      name: 'Name',
+      email: 'Email',
+      submittedAt: 'Submitted',
+      status: 'Status',
+      actions: 'Actions',
+      experience: 'Experience Level',
+      certifications: 'Training Background',
+      bio: 'Additional Info',
+      reviewNotes: 'Review Notes',
+      addFeedback: 'Add feedback...',
+      reviewNotesLabel: 'Review Notes',
+      reviewedOn: 'Reviewed on'
+    },
+    'es-MX': {
+      adminDashboard: 'Panel Administrador',
+      teacherApplications: 'Solicitudes de Profesores',
+      pending: 'Pendiente',
+      approved: 'Aprobado', 
+      rejected: 'Rechazado',
+      approve: 'Aprobar',
+      reject: 'Rechazar',
+      viewApplication: 'Ver solicitud',
+      noApplications: 'No se encontraron solicitudes',
+      loading: 'Cargando...',
+      name: 'Nombre',
+      email: 'Email',
+      submittedAt: 'Enviado',
+      status: 'Estado',
+      actions: 'Acciones',
+      experience: 'Nivel de Experiencia',
+      certifications: 'Preparación',
+      bio: 'Información Adicional',
+      reviewNotes: 'Notas de Revisión',
+      addFeedback: 'Agregar comentario...',
+      reviewNotesLabel: 'Notas de Revisión',
+      reviewedOn: 'Revisado el'
+    }
+  };
+  
+  return translations[locale as keyof typeof translations] || translations.ru;
+};
 
 interface TeacherApplication {
   id: string;
@@ -19,7 +109,7 @@ interface TeacherApplication {
   revenueModel: string;
   motivation?: string;
   additionalInfo?: string;
-  status: string;
+  status: 'pending' | 'approved' | 'rejected';
   submittedAt: string;
   reviewedAt?: string;
   reviewNotes?: string;
@@ -30,8 +120,24 @@ interface TeacherApplication {
   };
 }
 
-export function AdminDashboard() {
-  const t = useTranslations();
+interface AdminDashboardProps {
+  locale?: string;
+}
+
+// Hook to safely use translations with fallback
+function useSafeTranslations(locale: string = 'ru') {
+  try {
+    return useTranslations();
+  } catch {
+    return (key: string) => {
+      const fallback = getFallbackTranslations(locale);
+      return fallback[key as keyof typeof fallback] || key;
+    };
+  }
+}
+
+export function AdminDashboard({ locale = 'ru' }: AdminDashboardProps = {}) {
+  const t = useSafeTranslations(locale);
   const [applications, setApplications] = useState<TeacherApplication[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -53,10 +159,10 @@ export function AdminDashboard() {
   async function handleStatusUpdate(id: string, status: 'approved' | 'rejected', reviewNotes: string) {
     try {
       const response = await fetch(`/api/admin/teacher-applications/${id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status, reviewNotes }),
-      });
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status, reviewNotes }),
+    });
 
       if (!response.ok) {
         const error = await response.json();
@@ -66,10 +172,10 @@ export function AdminDashboard() {
       }
 
       // refresh applications list
-      const res = await fetch('/api/admin/teacher-applications');
-      if (res.ok) {
-        const data = await res.json();
-        setApplications(data.applications || []);
+    const res = await fetch('/api/admin/teacher-applications');
+    if (res.ok) {
+      const data = await res.json();
+      setApplications(data.applications || []);
       }
     } catch (error) {
       console.error('Network error:', error);
@@ -124,129 +230,76 @@ export function AdminDashboard() {
               <div className="space-y-1">
                 <CardTitle className="flex items-center gap-3">
                   <User className="w-5 h-5" />
-                  {application.user.name || 'Unknown User'}
+                  {application.user?.name || 'Unknown User'}
                   {getStatusBadge(application.status)}
                 </CardTitle>
-                <CardDescription className="flex items-center gap-4">
-                  <span className="flex items-center gap-1">
-                    <Mail className="w-3 h-3" />
-                    {application.user.email}
-                  </span>
-                  <span className="flex items-center gap-1">
-                    <Calendar className="w-3 h-3" />
-                    {new Date(application.submittedAt).toLocaleDateString()}
-                  </span>
-                </CardDescription>
+                <p className="text-sm text-muted-foreground">{application.user?.email || 'N/A'}</p>
+                <p className="text-xs text-muted-foreground">
+                  {t('submittedAt')}: {new Date(application.submittedAt).toLocaleDateString()}
+                </p>
               </div>
             </div>
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               <div className="space-y-2">
-                <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                  {t('admin.experienceLevel')}
-                </Label>
-                <p className="text-sm capitalize">{application.experienceLevel.replace('_', ' ')}</p>
+                                 <p className="text-sm font-medium">{t('experience')}</p>
+                                   <p className="text-sm capitalize">{application.experienceLevel?.replace('_', ' ') || 'N/A'}</p>
               </div>
-              {application.regularStudentsCount && (
                 <div className="space-y-2">
-                  <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                    {t('admin.regularStudents')}
-                  </Label>
-                  <p className="text-sm">{application.regularStudentsCount}</p>
+                 <p className="text-sm font-medium">{t('certifications')}</p>
+                                   <p className="text-sm">{application.trainingBackground || 'N/A'}</p>
                 </div>
-              )}
               <div className="space-y-2">
-                <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                  {t('admin.revenueModel')}
-                </Label>
-                <p className="text-sm capitalize">{application.revenueModel.replace('_', ' ')}</p>
+                 <p className="text-sm font-medium">{t('bio')}</p>
+                 <p className="text-sm">{application.additionalInfo || 'N/A'}</p>
               </div>
-            </div>
-
-            <div className="space-y-4">
-              <div>
-                <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                  {t('admin.trainingBackground')}
-                </Label>
-                <p className="text-sm mt-1">{application.trainingBackground}</p>
-              </div>
-
-              {application.offlinePractice && (
-                <div>
-                  <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                    {t('admin.currentPractice')}
-                  </Label>
-                  <p className="text-sm mt-1">{application.offlinePractice}</p>
-                </div>
-              )}
-
-              {application.motivation && (
-                <div>
-                  <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                    {t('admin.motivation')}
-                  </Label>
-                  <p className="text-sm mt-1">{application.motivation}</p>
-                </div>
-              )}
-
-              {application.additionalInfo && (
-                <div>
-                  <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                    {t('admin.additionalInfo')}
-                  </Label>
-                  <p className="text-sm mt-1">{application.additionalInfo}</p>
-                </div>
-              )}
             </div>
 
             {application.status === 'pending' && (
               <div className="border-t pt-4">
                 <div className="space-y-4">
                   <div>
-                    <Label htmlFor={`notes-${application.id}`}>{t('admin.reviewNotes')}</Label>
-                    <Textarea
-                      id={`notes-${application.id}`}
-                      placeholder={t('admin.addFeedback')}
+                                         <p className="text-sm font-medium">{t('reviewNotes')}</p>
+                    <textarea
+                                              placeholder={t('addFeedback')}
                       rows={3}
-                      className="mt-2"
+                      className="mt-2 w-full p-2 border border-gray-300 rounded-md"
                     />
                   </div>
                   <div className="flex gap-3">
                     <Button 
                       onClick={() => {
-                        const notes = (document.getElementById(`notes-${application.id}`) as HTMLTextAreaElement)?.value || '';
+                        const notes = (document.querySelector(`textarea[placeholder="${t('addFeedback')}"]`) as HTMLTextAreaElement)?.value || '';
                         handleStatusUpdate(application.id, 'approved', notes);
                       }}
                       className="bg-green-600 hover:bg-green-700"
                     >
                       <CheckCircle className="w-4 h-4 mr-2" />
-                      {t('common.approve')}
+                      {t('approve')}
                     </Button>
                     <Button 
                       onClick={() => {
-                        const notes = (document.getElementById(`notes-${application.id}`) as HTMLTextAreaElement)?.value || '';
+                        const notes = (document.querySelector(`textarea[placeholder="${t('addFeedback')}"]`) as HTMLTextAreaElement)?.value || '';
                         handleStatusUpdate(application.id, 'rejected', notes);
                       }}
                       variant="destructive"
                     >
                       <XCircle className="w-4 h-4 mr-2" />
-                      {t('common.reject')}
+                                              {t('reject')}
                     </Button>
                   </div>
                 </div>
               </div>
             )}
 
-            {application.status !== 'pending' && application.reviewNotes && (
+            {application.status !== 'pending' && (
               <div className="border-t pt-4">
-                <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                  {t('admin.reviewNotesLabel')}
-                </Label>
-                <p className="text-sm mt-1">{application.reviewNotes}</p>
+                <p className="text-sm font-medium">{t('reviewNotesLabel')}</p>
+                <p className="text-sm mt-1">{application.reviewNotes || 'N/A'}</p>
                 {application.reviewedAt && (
                   <p className="text-xs text-muted-foreground mt-2">
-                    {t('admin.reviewedOn')} {new Date(application.reviewedAt).toLocaleDateString()}
+                    {t('reviewedOn')} {new Date(application.reviewedAt).toLocaleDateString()}
                   </p>
                 )}
               </div>

@@ -21,6 +21,7 @@ interface ClassItem {
   videoUrl: string | null;
   videoType: string | null;
   imageUrl: string | null;
+  thumbnailUrl: string | null;
   course: {
     id: string;
     title: string;
@@ -35,9 +36,69 @@ interface ClassItem {
 
 interface ClassManagerProps {
   userId: string;
+  locale?: string;
 }
 
-export function ClassManager({ userId }: ClassManagerProps) {
+// Locale-aware translations for ClassManager
+function getTranslations(locale: string = 'ru') {
+  const translations = {
+    ru: {
+      myClasses: 'Мои занятия',
+      createClass: 'Создать занятие',
+      editClass: 'Редактировать занятие',
+      createNewClass: 'Создать новое занятие',
+      noClasses: 'У вас пока нет занятий. Создайте своё первое занятие!',
+      title: 'Название',
+      description: 'Описание',
+      duration: 'Продолжительность (мин)',
+      difficulty: 'Сложность',
+      intensity: 'Интенсивность',
+      cancel: 'Отмена',
+      save: 'Сохранить',
+      saving: 'Сохранение...',
+      delete: 'Удалить',
+      minutes: 'мин'
+    },
+    en: {
+      myClasses: 'My Classes',
+      createClass: 'Create Class',
+      editClass: 'Edit Class',
+      createNewClass: 'Create New Class',
+      noClasses: 'You don\'t have any classes yet. Create your first class!',
+      title: 'Title',
+      description: 'Description',
+      duration: 'Duration (min)',
+      difficulty: 'Difficulty',
+      intensity: 'Intensity',
+      cancel: 'Cancel',
+      save: 'Save',
+      saving: 'Saving...',
+      delete: 'Delete',
+      minutes: 'min'
+    },
+    'es-MX': {
+      myClasses: 'Mis Clases',
+      createClass: 'Crear Clase',
+      editClass: 'Editar Clase',
+      createNewClass: 'Crear Nueva Clase',
+      noClasses: '¡Aún no tienes clases. Crea tu primera clase!',
+      title: 'Título',
+      description: 'Descripción',
+      duration: 'Duración (min)',
+      difficulty: 'Dificultad',
+      intensity: 'Intensidad',
+      cancel: 'Cancelar',
+      save: 'Guardar',
+      saving: 'Guardando...',
+      delete: 'Eliminar',
+      minutes: 'min'
+    }
+  };
+  
+  return translations[locale as keyof typeof translations] || translations.ru;
+}
+
+export function ClassManager({ userId, locale = 'ru' }: ClassManagerProps) {
   const [classes, setClasses] = useState<ClassItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
@@ -52,9 +113,11 @@ export function ClassManager({ userId }: ClassManagerProps) {
     videoUrl: '',
     videoType: '',
     imageUrl: '',
+    thumbnailUrl: '',
   });
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
+  const t = getTranslations(locale);
 
   // Fetch classes
   useEffect(() => {
@@ -82,6 +145,7 @@ export function ClassManager({ userId }: ClassManagerProps) {
       videoUrl: '',
       videoType: '',
       imageUrl: '',
+      thumbnailUrl: '',
     });
     setEditingClass(null);
     setShowForm(false);
@@ -105,6 +169,7 @@ export function ClassManager({ userId }: ClassManagerProps) {
       videoUrl: classItem.videoUrl || '',
       videoType: classItem.videoType || '',
       imageUrl: classItem.imageUrl || '',
+      thumbnailUrl: classItem.thumbnailUrl || '',
     });
     setShowForm(true);
   };
@@ -131,6 +196,7 @@ export function ClassManager({ userId }: ClassManagerProps) {
           videoUrl: formData.videoUrl || null,
           videoType: formData.videoType || null,
           imageUrl: formData.imageUrl || null,
+          thumbnailUrl: formData.thumbnailUrl || null,
         }),
       });
 
@@ -195,7 +261,7 @@ export function ClassManager({ userId }: ClassManagerProps) {
             <div>
               <CardTitle className="flex items-center gap-2">
                 <Play className="w-5 h-5" />
-                My Classes
+                {t.myClasses}
               </CardTitle>
               <CardDescription>
                 Create and manage individual yoga classes
@@ -203,7 +269,7 @@ export function ClassManager({ userId }: ClassManagerProps) {
             </div>
             <Button onClick={handleCreate} className="gap-2">
               <Plus className="w-4 h-4" />
-              Create Class
+                              {t.createClass}
             </Button>
           </div>
         </CardHeader>
@@ -286,20 +352,22 @@ export function ClassManager({ userId }: ClassManagerProps) {
 
               {/* Video Upload Section */}
               <div className="border-t pt-6">
-                <ClassVideoInput
-                  userId={userId}
-                  initialVideoPath={formData.videoPath || undefined}
-                  initialVideoUrl={formData.videoUrl || undefined}
-                  initialVideoType={formData.videoType || undefined}
-                  onVideoChange={(videoPath, videoUrl, videoType) => 
-                    setFormData({
-                      ...formData, 
-                      videoPath: videoPath || '', 
-                      videoUrl: videoUrl || '',
-                      videoType: videoType || ''
-                    })
-                  }
-                />
+                              <ClassVideoInput
+                userId={userId}
+                initialVideoPath={formData.videoPath || undefined}
+                initialVideoUrl={formData.videoUrl || undefined}
+                initialVideoType={formData.videoType || undefined}
+                locale={locale}
+                onVideoChange={(videoPath, videoUrl, videoType, thumbnailUrl) => 
+                  setFormData({
+                    ...formData, 
+                    videoPath: videoPath || '', 
+                    videoUrl: videoUrl || '',
+                    videoType: videoType || '',
+                    thumbnailUrl: thumbnailUrl || ''
+                  })
+                }
+              />
               </div>
 
               {error && (

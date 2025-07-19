@@ -10,17 +10,15 @@ const intlMiddleware = createMiddleware({
   localePrefix: 'as-needed',
   localeDetection: false,
   pathnames: {
-    '/my_practice': '/my_practice',
-    '/teachers': '/teachers',
-    '/courses': '/courses',
-    '/classes': '/classes'
+    // Only include routes that actually have locale support
+    // Removed paths that are in route groups without locale structure
   }
 });
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Skip middleware for problematic routes - be more aggressive
+  // Skip middleware for problematic routes and (app) route group routes
   if (
     pathname.startsWith('/api/') ||
     pathname.startsWith('/_next/') ||
@@ -33,6 +31,10 @@ export async function middleware(request: NextRequest) {
     pathname.startsWith('/catalog') ||
     pathname.startsWith('/account') ||
     pathname.startsWith('/login') ||
+    pathname.startsWith('/my_practice') || // Skip (app) route group routes
+    pathname.startsWith('/teachers') ||    // Skip (app) route group routes  
+    pathname.startsWith('/courses') ||     // Skip (app) route group routes
+    pathname.startsWith('/classes') ||     // Skip (app) route group routes
     pathname.includes('favicon.ico') ||
     pathname.includes('robots.txt') ||
     pathname.includes('sitemap.xml') ||
@@ -67,14 +69,13 @@ export async function middleware(request: NextRequest) {
     return response;
   }
 
-  // Only apply i18n to specific routes that need it
+  // Apply i18n only to routes that actually support locales
+  // Currently, only the home page has locale support via [locale] route
   if (
-    pathname.startsWith('/my_practice') ||
-    pathname.startsWith('/teachers') ||
-    pathname.startsWith('/courses') ||
-    pathname.startsWith('/classes')
+    pathname.match(/^\/[a-z]{2}(-[A-Z]{2})?$/) || // Match locale patterns like /en, /es-MX
+    pathname.match(/^\/[a-z]{2}(-[A-Z]{2})?\/.*/) // Match locale-prefixed routes
   ) {
-    // Handle i18n for specific routes only
+    // Handle i18n for locale routes only
     let response;
     try {
       response = intlMiddleware(request);

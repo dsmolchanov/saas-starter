@@ -77,7 +77,97 @@ interface Metadata {
   difficultyLevels: string[];
 }
 
-export function CourseManager() {
+interface CourseManagerProps {
+  locale?: string;
+}
+
+// Locale-aware translations for CourseManager
+function getTranslations(locale: string = 'ru') {
+  const translations = {
+    ru: {
+      myCourses: 'Мои курсы',
+      createCourse: 'Создать курс',
+      editCourse: 'Редактировать курс',
+      createNewCourse: 'Создать новый курс',
+      updateCourse: 'Обновить курс',
+      published: 'Опубликован',
+      draft: 'Черновик',
+      deleteCourse: 'Удалить курс',
+      cancel: 'Отмена',
+      delete: 'Удалить',
+      saving: 'Сохранение...',
+      failedToSaveCourse: 'Не удалось сохранить курс',
+      failedToDeleteCourse: 'Не удалось удалить курс',
+      failedToLoadCourses: 'Не удалось загрузить курсы',
+      deleteConfirmation: 'Вы уверены, что хотите удалить',
+      actionCannotBeUndone: 'Это действие нельзя отменить.',
+      courseHasClasses: 'У этого курса есть занятия. Пожалуйста, сначала удалите все занятия.',
+      noCourses: 'У вас пока нет курсов. Создайте свой первый курс!',
+      title: 'Название',
+      description: 'Описание',
+      level: 'Уровень',
+      category: 'Категория',
+      imageUrl: 'URL изображения',
+      coverUrl: 'URL обложки'
+    },
+    en: {
+      myCourses: 'My Courses',
+      createCourse: 'Create Course',
+      editCourse: 'Edit Course',
+      createNewCourse: 'Create New Course',
+      updateCourse: 'Update Course',
+      published: 'Published',
+      draft: 'Draft',
+      deleteCourse: 'Delete Course',
+      cancel: 'Cancel',
+      delete: 'Delete',
+      saving: 'Saving...',
+      failedToSaveCourse: 'Failed to save course',
+      failedToDeleteCourse: 'Failed to delete course',
+      failedToLoadCourses: 'Failed to load courses',
+      deleteConfirmation: 'Are you sure you want to delete',
+      actionCannotBeUndone: 'This action cannot be undone.',
+      courseHasClasses: 'This course has classes. Please delete all classes first.',
+      noCourses: 'You don\'t have any courses yet. Create your first course!',
+      title: 'Title',
+      description: 'Description',
+      level: 'Level',
+      category: 'Category',
+      imageUrl: 'Image URL',
+      coverUrl: 'Cover URL'
+    },
+    'es-MX': {
+      myCourses: 'Mis Cursos',
+      createCourse: 'Crear Curso',
+      editCourse: 'Editar Curso',
+      createNewCourse: 'Crear Nuevo Curso',
+      updateCourse: 'Actualizar Curso',
+      published: 'Publicado',
+      draft: 'Borrador',
+      deleteCourse: 'Eliminar Curso',
+      cancel: 'Cancelar',
+      delete: 'Eliminar',
+      saving: 'Guardando...',
+      failedToSaveCourse: 'Error al guardar el curso',
+      failedToDeleteCourse: 'Error al eliminar el curso',
+      failedToLoadCourses: 'Error al cargar los cursos',
+      deleteConfirmation: '¿Estás seguro de que quieres eliminar',
+      actionCannotBeUndone: 'Esta acción no se puede deshacer.',
+      courseHasClasses: 'Este curso tiene clases. Por favor elimina todas las clases primero.',
+      noCourses: '¡Aún no tienes cursos. Crea tu primer curso!',
+      title: 'Título',
+      description: 'Descripción',
+      level: 'Nivel',
+      category: 'Categoría',
+      imageUrl: 'URL de Imagen',
+      coverUrl: 'URL de Portada'
+    }
+  };
+  
+  return translations[locale as keyof typeof translations] || translations.ru;
+}
+
+export function CourseManager({ locale = 'ru' }: CourseManagerProps = {}) {
   const [courses, setCourses] = useState<Course[]>([]);
   const [metadata, setMetadata] = useState<Metadata | null>(null);
   const [loading, setLoading] = useState(true);
@@ -93,6 +183,7 @@ export function CourseManager() {
   });
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
+  const t = getTranslations(locale);
 
   // Fetch courses and metadata
   useEffect(() => {
@@ -105,7 +196,7 @@ export function CourseManager() {
       setLoading(false);
     }).catch(err => {
       console.error('Error fetching data:', err);
-      setError('Failed to load courses');
+      setError(t.failedToLoadCourses);
       setLoading(false);
     });
   }, []);
@@ -163,7 +254,7 @@ export function CourseManager() {
       const data = await res.json();
 
       if (!res.ok) {
-        throw new Error(data.error || 'Failed to save course');
+        throw new Error(data.error || t.failedToSaveCourse);
       }
 
       // Refresh courses list
@@ -173,7 +264,7 @@ export function CourseManager() {
 
       resetForm();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to save course');
+      setError(err instanceof Error ? err.message : t.failedToSaveCourse);
     }
 
     setSaving(false);
@@ -247,7 +338,7 @@ export function CourseManager() {
             <div>
               <CardTitle className="flex items-center gap-2">
                 <BookOpen className="w-5 h-5" />
-                My Courses
+                {t.myCourses}
               </CardTitle>
               <CardDescription>
                 Create and manage your yoga courses
@@ -255,7 +346,7 @@ export function CourseManager() {
             </div>
             <Button onClick={handleCreate} className="gap-2">
               <Plus className="w-4 h-4" />
-              Create Course
+                              {t.createCourse}
             </Button>
           </div>
         </CardHeader>
@@ -305,7 +396,7 @@ export function CourseManager() {
                 )}
                 <div className="absolute top-2 left-2">
                   <Badge variant={course.isPublished ? "default" : "secondary"}>
-                    {course.isPublished ? 'Published' : 'Draft'}
+                    {course.isPublished ? t.published : t.draft}
                   </Badge>
                 </div>
                 <div className="absolute bottom-2 right-2 bg-black/70 text-white text-xs px-2 py-1 rounded">

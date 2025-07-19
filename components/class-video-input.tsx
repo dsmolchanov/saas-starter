@@ -15,7 +15,76 @@ interface ClassVideoInputProps {
   initialVideoPath?: string;
   initialVideoUrl?: string;
   initialVideoType?: string;
-  onVideoChange: (videoPath: string | null, videoUrl: string | null, videoType: string) => void;
+  onVideoChange: (videoPath: string | null, videoUrl: string | null, videoType: string, thumbnailUrl?: string) => void;
+  locale?: string;
+}
+
+// Locale-aware translations for ClassVideoInput
+function getTranslations(locale: string = 'ru') {
+  const translations = {
+    ru: {
+      classVideo: 'Видео занятия',
+      uploadFile: 'Загрузить файл',
+      videoUrl: 'URL видео',
+      uploadVideoFile: 'Загрузить видеофайл',
+      chooseVideoFile: 'Выбрать видеофайл',
+      uploading: 'Загрузка...',
+      videoUploaded: 'Видео загружено',
+      youtubeVideo: 'YouTube видео',
+      vimeoVideo: 'Vimeo видео',
+      externalVideo: 'Внешнее видео',
+      enterVideoUrl: 'Введите URL видео',
+      supportedFormats: 'Поддерживается: YouTube, Vimeo или прямые ссылки на видеофайлы',
+      addVideoUrl: 'Добавить URL видео',
+      videoUploadFailed: 'Загрузка видео не удалась',
+      failedToUploadVideo: 'Не удалось загрузить видео. Попробуйте еще раз.',
+      pleaseEnterVideoUrl: 'Пожалуйста, введите URL видео',
+      pleaseEnterValidUrl: 'Пожалуйста, введите действительный URL YouTube, Vimeo или видеофайла',
+      invalidVideoUrlFormat: 'Неверный формат URL видео'
+    },
+    en: {
+      classVideo: 'Class Video',
+      uploadFile: 'Upload File',
+      videoUrl: 'Video URL',
+      uploadVideoFile: 'Upload a video file',
+      chooseVideoFile: 'Choose Video File',
+      uploading: 'Uploading...',
+      videoUploaded: 'Video uploaded',
+      youtubeVideo: 'YouTube video',
+      vimeoVideo: 'Vimeo video',
+      externalVideo: 'External video',
+      enterVideoUrl: 'Enter video URL',
+      supportedFormats: 'Supported: YouTube, Vimeo, or direct video file URLs',
+      addVideoUrl: 'Add Video URL',
+      videoUploadFailed: 'Video upload failed',
+      failedToUploadVideo: 'Failed to upload video. Please try again.',
+      pleaseEnterVideoUrl: 'Please enter a video URL',
+      pleaseEnterValidUrl: 'Please enter a valid YouTube, Vimeo, or video file URL',
+      invalidVideoUrlFormat: 'Invalid video URL format'
+    },
+    'es-MX': {
+      classVideo: 'Video de Clase',
+      uploadFile: 'Subir Archivo',
+      videoUrl: 'URL de Video',
+      uploadVideoFile: 'Subir un archivo de video',
+      chooseVideoFile: 'Elegir Archivo de Video',
+      uploading: 'Subiendo...',
+      videoUploaded: 'Video subido',
+      youtubeVideo: 'Video de YouTube',
+      vimeoVideo: 'Video de Vimeo',
+      externalVideo: 'Video externo',
+      enterVideoUrl: 'Ingresar URL de video',
+      supportedFormats: 'Soportado: YouTube, Vimeo, o URLs directas de archivos de video',
+      addVideoUrl: 'Agregar URL de Video',
+      videoUploadFailed: 'Error al subir video',
+      failedToUploadVideo: 'Error al subir video. Inténtalo de nuevo.',
+      pleaseEnterVideoUrl: 'Por favor ingresa una URL de video',
+      pleaseEnterValidUrl: 'Por favor ingresa una URL válida de YouTube, Vimeo o archivo de video',
+      invalidVideoUrlFormat: 'Formato de URL de video inválido'
+    }
+  };
+  
+  return translations[locale as keyof typeof translations] || translations.ru;
 }
 
 export function ClassVideoInput({
@@ -23,7 +92,8 @@ export function ClassVideoInput({
   initialVideoPath,
   initialVideoUrl,
   initialVideoType,
-  onVideoChange
+  onVideoChange,
+  locale = 'ru'
 }: ClassVideoInputProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
@@ -32,6 +102,7 @@ export function ClassVideoInput({
   const [activeTab, setActiveTab] = useState(
     initialVideoType === 'upload' ? 'upload' : 'url'
   );
+  const t = getTranslations(locale);
 
   const hasVideo = initialVideoPath || initialVideoUrl;
   const currentVideoType = initialVideoType || 'upload';
@@ -50,7 +121,7 @@ export function ClassVideoInput({
         .upload(filePath, file, { upsert: true, contentType: file.type });
       
       if (error) {
-        alert(`Video upload failed: ${error.message}`);
+        alert(`${t.videoUploadFailed}: ${error.message}`);
         return;
       }
 
@@ -59,7 +130,7 @@ export function ClassVideoInput({
       setVideoUrl('');
     } catch (error) {
       console.error('Error uploading video:', error);
-      alert('Failed to upload video. Please try again.');
+      alert(t.failedToUploadVideo);
     } finally {
       setUploading(false);
     }
@@ -67,21 +138,21 @@ export function ClassVideoInput({
 
   function handleUrlSubmit() {
     if (!videoUrl.trim()) {
-      setUrlError('Please enter a video URL');
+      setUrlError(t.pleaseEnterVideoUrl);
       return;
     }
 
     if (!isValidVideoUrl(videoUrl)) {
-      setUrlError('Please enter a valid YouTube, Vimeo, or video file URL');
+      setUrlError(t.pleaseEnterValidUrl);
       return;
     }
 
     try {
       const videoInfo = parseVideoUrl(videoUrl);
-      onVideoChange(null, videoUrl, videoInfo.type);
+      onVideoChange(null, videoUrl, videoInfo.type, videoInfo.thumbnailUrl);
       setUrlError('');
     } catch (error) {
-      setUrlError('Invalid video URL format');
+      setUrlError(t.invalidVideoUrlFormat);
     }
   }
 
@@ -120,10 +191,10 @@ export function ClassVideoInput({
         
         <div className="border border-green-200 bg-green-50 rounded-lg p-4">
           {currentVideoType === 'upload' ? (
-            <div className="flex items-center gap-3">
-              <Video className="w-5 h-5 text-green-600" />
-              <div className="flex-1">
-                <p className="text-sm font-medium text-green-800">Video uploaded</p>
+                          <div className="flex items-center gap-3">
+                <Video className="w-5 h-5 text-green-600" />
+                <div className="flex-1">
+                  <p className="text-sm font-medium text-green-800">{t.videoUploaded}</p>
                 <p className="text-xs text-green-600">
                   {initialVideoPath?.split('/').pop()?.substring(0, 50)}...
                 </p>
@@ -146,7 +217,9 @@ export function ClassVideoInput({
                   {currentVideoType === 'vimeo' && <Video className="w-5 h-5 text-blue-600" />}
                   {currentVideoType === 'external' && <ExternalLink className="w-5 h-5 text-gray-600" />}
                   <span className="text-sm font-medium text-green-800 capitalize">
-                    {currentVideoType} video
+                    {currentVideoType === 'youtube' ? t.youtubeVideo : 
+                     currentVideoType === 'vimeo' ? t.vimeoVideo : 
+                     t.externalVideo}
                   </span>
                 </div>
                 <Button
@@ -182,24 +255,24 @@ export function ClassVideoInput({
 
   return (
     <div className="space-y-3">
-      <Label className="text-sm font-medium">Class Video</Label>
+      <Label className="text-sm font-medium">{t.classVideo}</Label>
       
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="upload" className="gap-2">
             <Upload className="w-4 h-4" />
-            Upload File
+            {t.uploadFile}
           </TabsTrigger>
           <TabsTrigger value="url" className="gap-2">
             <Link className="w-4 h-4" />
-            Video URL
+            {t.videoUrl}
           </TabsTrigger>
         </TabsList>
 
         <TabsContent value="upload" className="space-y-3">
           <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
             <Upload className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-            <p className="text-sm text-gray-600 mb-3">Upload a video file</p>
+            <p className="text-sm text-gray-600 mb-3">{t.uploadVideoFile}</p>
             <Button
               type="button"
               variant="outline"
@@ -208,7 +281,7 @@ export function ClassVideoInput({
               className="gap-2"
             >
               <Video className="w-4 h-4" />
-              {uploading ? 'Uploading...' : 'Choose Video File'}
+              {uploading ? t.uploading : t.chooseVideoFile}
             </Button>
           </div>
           
@@ -225,7 +298,7 @@ export function ClassVideoInput({
           <div className="space-y-3">
             <div>
               <Input
-                placeholder="https://youtube.com/watch?v=... or https://vimeo.com/..."
+                placeholder={t.enterVideoUrl}
                 value={videoUrl}
                 onChange={(e) => {
                   setVideoUrl(e.target.value);
@@ -239,7 +312,7 @@ export function ClassVideoInput({
             </div>
             
             <div className="text-xs text-gray-500">
-              Supported: YouTube, Vimeo, or direct video file URLs
+              {t.supportedFormats}
             </div>
             
             <Button
@@ -249,7 +322,7 @@ export function ClassVideoInput({
               className="w-full gap-2"
             >
               <Link className="w-4 h-4" />
-              Add Video URL
+              {t.addVideoUrl}
             </Button>
           </div>
         </TabsContent>

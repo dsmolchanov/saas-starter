@@ -16,10 +16,44 @@ interface TeacherDashboardProps {
     email: string | null;
     avatarUrl?: string | null;
   };
+  locale?: string;
 }
 
-export function TeacherDashboard({ user }: TeacherDashboardProps) {
+// Locale-aware translations for TeacherDashboard
+function getTranslations(locale: string = 'ru') {
+  const translations = {
+    ru: {
+      teacher: 'Преподаватель',
+      profile: 'Профиль',
+      courses: 'Курсы',
+      classes: 'Занятия',
+      editProfile: 'Редактировать профиль',
+      updateBioSocial: 'Обновите вашу биографию и информацию в социальных сетях'
+    },
+    en: {
+      teacher: 'Teacher',
+      profile: 'Profile',
+      courses: 'Courses',
+      classes: 'Classes',
+      editProfile: 'Edit Profile',
+      updateBioSocial: 'Update your bio and social media information'
+    },
+    'es-MX': {
+      teacher: 'Profesor',
+      profile: 'Perfil',
+      courses: 'Cursos',
+      classes: 'Clases',
+      editProfile: 'Editar Perfil',
+      updateBioSocial: 'Actualiza tu biografía e información de redes sociales'
+    }
+  };
+  
+  return translations[locale as keyof typeof translations] || translations.ru;
+}
+
+export function TeacherDashboard({ user, locale = 'ru' }: TeacherDashboardProps) {
   const [activeTab, setActiveTab] = useState('profile');
+  const t = getTranslations(locale);
 
   return (
     <div className="space-y-6">
@@ -34,7 +68,7 @@ export function TeacherDashboard({ user }: TeacherDashboardProps) {
               </AvatarFallback>
             </Avatar>
             <div>
-              <CardTitle className="text-2xl">{user.name || 'Teacher'}</CardTitle>
+              <CardTitle className="text-2xl">{user.name || t.teacher}</CardTitle>
               <CardDescription>{user.email}</CardDescription>
             </div>
           </div>
@@ -46,15 +80,15 @@ export function TeacherDashboard({ user }: TeacherDashboardProps) {
         <TabsList className="grid w-full grid-cols-3 mb-8">
           <TabsTrigger value="profile" className="flex items-center gap-2">
             <User className="w-4 h-4" />
-            Profile
+            {t.profile}
           </TabsTrigger>
           <TabsTrigger value="courses" className="flex items-center gap-2">
             <BookOpen className="w-4 h-4" />
-            Courses
+            {t.courses}
           </TabsTrigger>
           <TabsTrigger value="classes" className="flex items-center gap-2">
             <Play className="w-4 h-4" />
-            Classes
+            {t.classes}
           </TabsTrigger>
         </TabsList>
 
@@ -63,24 +97,24 @@ export function TeacherDashboard({ user }: TeacherDashboardProps) {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Settings className="w-5 h-5" />
-                Edit Profile
+                {t.editProfile}
               </CardTitle>
               <CardDescription>
-                Update your bio and social media information
+                {t.updateBioSocial}
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <TeacherProfileForm />
+              <TeacherProfileForm locale={locale} />
             </CardContent>
           </Card>
         </TabsContent>
 
         <TabsContent value="courses" className="space-y-6">
-          <CourseManager />
+          <CourseManager locale={locale} />
         </TabsContent>
 
         <TabsContent value="classes" className="space-y-6">
-          <ClassManager userId={user.id} />
+          <ClassManager userId={user.id} locale={locale} />
         </TabsContent>
       </Tabs>
     </div>
