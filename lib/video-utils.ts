@@ -9,6 +9,25 @@ export interface VideoInfo {
 }
 
 /**
+ * Constructs the full Supabase storage URL from a video path
+ */
+export function getSupabaseVideoUrl(videoPath: string): string {
+  // If it's already a full URL, return as-is
+  if (videoPath.startsWith('http')) {
+    return videoPath;
+  }
+  
+  // Construct the Supabase storage URL
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  if (!supabaseUrl) {
+    console.error('NEXT_PUBLIC_SUPABASE_URL is not defined');
+    return videoPath;
+  }
+  
+  return `${supabaseUrl}/storage/v1/object/public/videos/${videoPath}`;
+}
+
+/**
  * Detects video type from URL and extracts relevant information
  */
 export function parseVideoUrl(url: string): VideoInfo {
@@ -83,7 +102,7 @@ export function getVideoSource(videoPath: string | null, videoUrl: string | null
   if (videoPath) {
     return {
       type: 'upload',
-      url: videoPath
+      url: getSupabaseVideoUrl(videoPath)
     };
   }
   

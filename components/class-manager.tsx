@@ -44,54 +44,93 @@ function getTranslations(locale: string = 'ru') {
   const translations = {
     ru: {
       myClasses: 'Мои занятия',
+      createAndManage: 'Создавайте и управляйте индивидуальными занятиями йогой',
       createClass: 'Создать занятие',
       editClass: 'Редактировать занятие',
       createNewClass: 'Создать новое занятие',
       noClasses: 'У вас пока нет занятий. Создайте своё первое занятие!',
-      title: 'Название',
+      classTitle: 'Название занятия',
+      titlePlaceholder: 'например, Утренняя растяжка',
       description: 'Описание',
-      duration: 'Продолжительность (мин)',
+      descriptionPlaceholder: 'Опишите это занятие...',
+      duration: 'Продолжительность (минуты)',
+      durationPlaceholder: '30',
       difficulty: 'Сложность',
+      difficultyPlaceholder: 'Начинающий',
       intensity: 'Интенсивность',
+      intensityPlaceholder: 'Низкая',
       cancel: 'Отмена',
       save: 'Сохранить',
       saving: 'Сохранение...',
+      updateClass: 'Обновить занятие',
       delete: 'Удалить',
-      minutes: 'мин'
+      edit: 'Редактировать',
+      video: 'Видео',
+      minutes: 'м',
+      noClassesYet: 'Занятий пока нет',
+      createFirstClass: 'Создайте своё первое занятие, чтобы начать формировать библиотеку контента',
+      createYourFirstClass: 'Создать первое занятие',
+      deleteConfirm: 'Вы уверены, что хотите удалить это занятие?'
     },
     en: {
       myClasses: 'My Classes',
+      createAndManage: 'Create and manage individual yoga classes',
       createClass: 'Create Class',
       editClass: 'Edit Class',
       createNewClass: 'Create New Class',
       noClasses: 'You don\'t have any classes yet. Create your first class!',
-      title: 'Title',
+      classTitle: 'Class Title',
+      titlePlaceholder: 'e.g., Morning Stretch',
       description: 'Description',
-      duration: 'Duration (min)',
+      descriptionPlaceholder: 'Describe this class...',
+      duration: 'Duration (minutes)',
+      durationPlaceholder: '30',
       difficulty: 'Difficulty',
+      difficultyPlaceholder: 'Beginner',
       intensity: 'Intensity',
+      intensityPlaceholder: 'Low',
       cancel: 'Cancel',
       save: 'Save',
       saving: 'Saving...',
+      updateClass: 'Update Class',
       delete: 'Delete',
-      minutes: 'min'
+      edit: 'Edit',
+      video: 'Video',
+      minutes: 'min',
+      noClassesYet: 'No classes yet',
+      createFirstClass: 'Create your first class to start building your content library',
+      createYourFirstClass: 'Create Your First Class',
+      deleteConfirm: 'Are you sure you want to delete this class?'
     },
     'es-MX': {
       myClasses: 'Mis Clases',
+      createAndManage: 'Crear y gestionar clases individuales de yoga',
       createClass: 'Crear Clase',
       editClass: 'Editar Clase',
       createNewClass: 'Crear Nueva Clase',
       noClasses: '¡Aún no tienes clases. Crea tu primera clase!',
-      title: 'Título',
+      classTitle: 'Título de la Clase',
+      titlePlaceholder: 'ej., Estiramiento Matutino',
       description: 'Descripción',
-      duration: 'Duración (min)',
+      descriptionPlaceholder: 'Describe esta clase...',
+      duration: 'Duración (minutos)',
+      durationPlaceholder: '30',
       difficulty: 'Dificultad',
+      difficultyPlaceholder: 'Principiante',
       intensity: 'Intensidad',
+      intensityPlaceholder: 'Baja',
       cancel: 'Cancelar',
       save: 'Guardar',
       saving: 'Guardando...',
+      updateClass: 'Actualizar Clase',
       delete: 'Eliminar',
-      minutes: 'min'
+      edit: 'Editar',
+      video: 'Video',
+      minutes: 'min',
+      noClassesYet: 'Aún no hay clases',
+      createFirstClass: 'Crea tu primera clase para comenzar a construir tu biblioteca de contenido',
+      createYourFirstClass: 'Crear Tu Primera Clase',
+      deleteConfirm: '¿Estás seguro de que quieres eliminar esta clase?'
     }
   };
   
@@ -220,7 +259,7 @@ export function ClassManager({ userId, locale = 'ru' }: ClassManagerProps) {
   };
 
   const handleDelete = async (classId: string) => {
-    if (!confirm('Are you sure you want to delete this class?')) return;
+    if (!confirm(t.deleteConfirm)) return;
 
     try {
       const res = await fetch(`/api/teacher/classes/${classId}`, {
@@ -264,12 +303,12 @@ export function ClassManager({ userId, locale = 'ru' }: ClassManagerProps) {
                 {t.myClasses}
               </CardTitle>
               <CardDescription>
-                Create and manage individual yoga classes
+                {t.createAndManage}
               </CardDescription>
             </div>
             <Button onClick={handleCreate} className="gap-2">
               <Plus className="w-4 h-4" />
-                              {t.createClass}
+              {t.createClass}
             </Button>
           </div>
         </CardHeader>
@@ -289,85 +328,85 @@ export function ClassManager({ userId, locale = 'ru' }: ClassManagerProps) {
         <Card>
           <CardHeader>
             <CardTitle>
-              {editingClass ? 'Edit Class' : 'Create New Class'}
+              {editingClass ? t.edit : t.createNewClass}
             </CardTitle>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="title">Class Title</Label>
+                  <Label htmlFor="title">{t.classTitle}</Label>
                   <Input
                     id="title"
                     value={formData.title}
                     onChange={(e) => setFormData({...formData, title: e.target.value})}
-                    placeholder="e.g., Morning Stretch"
+                    placeholder={t.titlePlaceholder}
                     required
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="duration">Duration (minutes)</Label>
+                  <Label htmlFor="duration">{t.duration}</Label>
                   <Input
                     id="duration"
                     type="number"
                     value={formData.durationMin}
                     onChange={(e) => setFormData({...formData, durationMin: e.target.value})}
-                    placeholder="30"
+                    placeholder={t.durationPlaceholder}
                     required
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="difficulty">Difficulty</Label>
+                  <Label htmlFor="difficulty">{t.difficulty}</Label>
                   <Input
                     id="difficulty"
                     value={formData.difficulty}
                     onChange={(e) => setFormData({...formData, difficulty: e.target.value})}
-                    placeholder="Beginner"
+                    placeholder={t.difficultyPlaceholder}
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="intensity">Intensity</Label>
+                  <Label htmlFor="intensity">{t.intensity}</Label>
                   <Input
                     id="intensity"
                     value={formData.intensity}
                     onChange={(e) => setFormData({...formData, intensity: e.target.value})}
-                    placeholder="Low"
+                    placeholder={t.intensityPlaceholder}
                   />
                 </div>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="description">Description</Label>
+                <Label htmlFor="description">{t.description}</Label>
                 <Textarea
                   id="description"
                   value={formData.description}
                   onChange={(e) => setFormData({...formData, description: e.target.value})}
-                  placeholder="Describe this class..."
+                  placeholder={t.descriptionPlaceholder}
                   rows={3}
                 />
               </div>
 
               {/* Video Upload Section */}
               <div className="border-t pt-6">
-                              <ClassVideoInput
-                userId={userId}
-                initialVideoPath={formData.videoPath || undefined}
-                initialVideoUrl={formData.videoUrl || undefined}
-                initialVideoType={formData.videoType || undefined}
-                locale={locale}
-                onVideoChange={(videoPath, videoUrl, videoType, thumbnailUrl) => 
-                  setFormData({
-                    ...formData, 
-                    videoPath: videoPath || '', 
-                    videoUrl: videoUrl || '',
-                    videoType: videoType || '',
-                    thumbnailUrl: thumbnailUrl || ''
-                  })
-                }
-              />
+                <ClassVideoInput
+                  userId={userId}
+                  initialVideoPath={formData.videoPath || undefined}
+                  initialVideoUrl={formData.videoUrl || undefined}
+                  initialVideoType={formData.videoType || undefined}
+                  locale={locale}
+                  onVideoChange={(videoPath, videoUrl, videoType, thumbnailUrl) => 
+                    setFormData({
+                      ...formData, 
+                      videoPath: videoPath || '', 
+                      videoUrl: videoUrl || '',
+                      videoType: videoType || '',
+                      thumbnailUrl: thumbnailUrl || ''
+                    })
+                  }
+                />
               </div>
 
               {error && (
@@ -378,10 +417,10 @@ export function ClassManager({ userId, locale = 'ru' }: ClassManagerProps) {
 
               <div className="flex justify-end gap-2">
                 <Button type="button" variant="outline" onClick={resetForm}>
-                  Cancel
+                  {t.cancel}
                 </Button>
                 <Button type="submit" disabled={saving}>
-                  {saving ? 'Saving...' : editingClass ? 'Update Class' : 'Create Class'}
+                  {saving ? t.saving : editingClass ? t.updateClass : t.createClass}
                 </Button>
               </div>
             </form>
@@ -394,13 +433,13 @@ export function ClassManager({ userId, locale = 'ru' }: ClassManagerProps) {
         <Card>
           <CardContent className="p-12 text-center">
             <Play className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
-            <h3 className="text-lg font-medium mb-2">No classes yet</h3>
+            <h3 className="text-lg font-medium mb-2">{t.noClassesYet}</h3>
             <p className="text-muted-foreground mb-4">
-              Create your first class to start building your content library
+              {t.createFirstClass}
             </p>
             <Button onClick={handleCreate} className="gap-2">
               <Plus className="w-4 h-4" />
-              Create Your First Class
+              {t.createYourFirstClass}
             </Button>
           </CardContent>
         </Card>
@@ -423,13 +462,13 @@ export function ClassManager({ userId, locale = 'ru' }: ClassManagerProps) {
                   </div>
                 )}
                 <div className="absolute bottom-2 right-2 bg-black/70 text-white text-xs px-2 py-1 rounded">
-                  {classItem.durationMin}m
+                  {classItem.durationMin}{t.minutes}
                 </div>
                 {classItem.videoPath && (
                   <div className="absolute top-2 left-2">
                     <div className="bg-green-500/80 text-white text-xs px-2 py-1 rounded flex items-center gap-1">
                       <Play className="w-3 h-3" />
-                      Video
+                      {t.video}
                     </div>
                   </div>
                 )}
@@ -476,7 +515,7 @@ export function ClassManager({ userId, locale = 'ru' }: ClassManagerProps) {
                     className="gap-1 flex-1"
                   >
                     <Edit className="w-3 h-3" />
-                    Edit
+                    {t.edit}
                   </Button>
 
                   <Button
