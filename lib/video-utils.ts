@@ -6,6 +6,7 @@ export interface VideoInfo {
   embedUrl?: string;
   videoId?: string;
   thumbnailUrl?: string;
+  durationMinutes?: number;
 }
 
 /**
@@ -107,4 +108,83 @@ export function getVideoSource(videoPath: string | null, videoUrl: string | null
   }
   
   return null;
+} 
+
+/**
+ * Fetches YouTube video duration using YouTube Data API
+ */
+export async function getYoutubeDuration(videoId: string): Promise<number | null> {
+  try {
+    const apiKey = process.env.NEXT_PUBLIC_YOUTUBE_API_KEY;
+    if (!apiKey) {
+      console.warn('YouTube API key not configured - duration detection disabled');
+      return null;
+    }
+
+    const response = await fetch(
+      `https://www.googleapis.com/youtube/v3/videos?id=${videoId}&part=contentDetails&key=${apiKey}`
+    );
+    
+    if (!response.ok) {
+      console.error('YouTube API request failed:', response.status);
+      return null;
+    }
+
+    const data = await response.json();
+    if (!data.items || data.items.length === 0) {
+      console.error('Video not found on YouTube');
+      return null;
+    }
+
+    const duration = data.items[0].contentDetails.duration;
+    return parseDurationString(duration);
+  } catch (error) {
+    console.error('Error fetching YouTube duration:', error);
+    return null;
+  }
+}
+
+/**
+ * Parses YouTube duration string (ISO 8601 format) to minutes
+ * Example: "PT4M13S" -> 4.22 minutes, "PT1H2M30S" -> 62.5 minutes
+ */
+function parseDurationString(duration: string): number {
+  const regex = /PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/;
+  const match = duration.match(regex);
+  
+  if (!match) return 0;
+  
+  const hours = parseInt(match[1] || '0');
+  const minutes = parseInt(match[2] || '0');
+  const seconds = parseInt(match[3] || '0');
+  
+  return Math.round(hours * 60 + minutes + seconds / 60);
+} 
+
+/**
+ * Gets duration from an uploaded video file using HTML5 video element
+ */
+export function getVideoDurationFromFile(file: File): Promise<number | null> {
+  return new Promise((resolve) => {
+    const video = document.createElement('video');
+    
+    video.onloadedmetadata = () => {
+      if (video.duration && video.duration !== Infinity) {
+        resolve(Math.round(video.duration / 60)); // Convert seconds to minutes
+      } else {
+        resolve(null);
+      }
+      
+      // Clean up
+      URL.revokeObjectURL(video.src);
+    };
+    
+    video.onerror = () => {
+      resolve(null);
+      URL.revokeObjectURL(video.src);
+    };
+    
+    video.src = URL.createObjectURL(file);
+    video.load();
+  });
 } 

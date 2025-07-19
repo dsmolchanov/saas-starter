@@ -3,12 +3,14 @@ import { db } from '@/lib/db/drizzle';
 import { eq } from 'drizzle-orm';
 import { lessons, type Lesson, lessonFocusAreas, focusAreas } from '@/lib/db/schema';
 import { Button } from '@/components/ui/button';
-import { Play, Clock, Heart, Share2, MessageSquare, Bookmark } from 'lucide-react';
+import { Play, Clock, Heart, Share2, MessageSquare, Bookmark, ArrowLeft, Edit } from 'lucide-react';
 import Image from 'next/image';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { VideoPlayer } from '@/components/video-player';
 import { headers } from 'next/headers';
+import { getUser } from '@/lib/db/queries';
+import Link from 'next/link';
 
 // Locale detection function
 async function getCurrentLocale(): Promise<string> {
@@ -36,7 +38,9 @@ function getTranslations(locale: string = 'ru') {
       min: 'мин',
       hour: 'ч',
       hourShort: 'ч',
-      minuteShort: 'м'
+      minuteShort: 'м',
+      backToTeacherView: 'Назад к управлению',
+      editClass: 'Редактировать занятие'
     },
     en: {
       intensity: 'Intensity',
@@ -52,7 +56,9 @@ function getTranslations(locale: string = 'ru') {
       min: 'min',
       hour: 'hour',
       hourShort: 'h',
-      minuteShort: 'm'
+      minuteShort: 'm',
+      backToTeacherView: 'Back to Teacher View',
+      editClass: 'Edit Class'
     },
     'es-MX': {
       intensity: 'Intensidad',
@@ -68,7 +74,9 @@ function getTranslations(locale: string = 'ru') {
       min: 'min',
       hour: 'hora',
       hourShort: 'h',
-      minuteShort: 'm'
+      minuteShort: 'm',
+      backToTeacherView: 'Volver a Vista de Profesor',
+      editClass: 'Editar Clase'
     }
   };
   
@@ -79,6 +87,9 @@ export default async function ClassPage({ params }: { params: Promise<{ id: stri
   const { id } = await params;
   const currentLocale = await getCurrentLocale();
   const t = getTranslations(currentLocale);
+  
+  // Get current user to check if they are the teacher
+  const currentUser = await getUser();
   
   const lesson = await db.query.lessons.findFirst({
     where: eq(lessons.id, id),
@@ -100,6 +111,9 @@ export default async function ClassPage({ params }: { params: Promise<{ id: stri
     notFound();
   }
 
+  // Check if current user is the teacher who owns this class
+  const isTeacherOwner = currentUser && currentUser.id === lesson.teacherId;
+
   // Format duration with locale-aware text
   const hours = Math.floor(lesson.durationMin / 60);
   const minutes = lesson.durationMin % 60;
@@ -112,6 +126,33 @@ export default async function ClassPage({ params }: { params: Promise<{ id: stri
 
   return (
     <div className="container mx-auto px-4 py-8">
+      {/* Back button for teacher owners */}
+      {isTeacherOwner && (
+        <div className="mb-6 flex items-center justify-between">
+          <Button 
+            variant="ghost" 
+            asChild
+            className="gap-2 hover:bg-muted"
+          >
+            <Link href="/my_practice">
+              <ArrowLeft className="w-4 h-4" />
+              {t.backToTeacherView}
+            </Link>
+          </Button>
+          
+          <Button 
+            variant="outline" 
+            asChild
+            className="gap-2"
+          >
+            <Link href={`/my_practice?edit=${id}`}>
+              <Edit className="w-4 h-4" />
+              {t.editClass}
+            </Link>
+          </Button>
+        </div>
+      )}
+      
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Main content */}
         <div className="lg:col-span-2">

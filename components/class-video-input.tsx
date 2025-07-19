@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Upload, Video, Link, X, ExternalLink, Youtube } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
-import { isValidVideoUrl, parseVideoUrl } from '@/lib/video-utils';
+import { isValidVideoUrl, parseVideoUrl, getYoutubeDuration, getVideoDurationFromFile } from '@/lib/video-utils';
 import { cn } from '@/lib/utils';
 
 interface ClassVideoInputProps {
@@ -17,6 +17,7 @@ interface ClassVideoInputProps {
   initialVideoType?: string;
   onVideoChange: (videoPath: string | null, videoUrl: string | null, videoType: string, thumbnailUrl?: string) => void;
   onCoverImageChange?: (coverImageUrl: string | null) => void;
+  onDurationChange?: (durationMinutes: number | null) => void;
   initialCoverImage?: string | null;
   locale?: string;
 }
@@ -111,6 +112,7 @@ export function ClassVideoInput({
   initialVideoType,
   onVideoChange,
   onCoverImageChange,
+  onDurationChange,
   initialCoverImage,
   locale = 'ru'
 }: ClassVideoInputProps) {
@@ -138,6 +140,12 @@ export function ClassVideoInput({
     const filePath = `${userId}/class-videos/video-${Date.now()}-${file.name}`;
     
     try {
+      // First, detect video duration
+      const duration = await getVideoDurationFromFile(file);
+      if (duration && onDurationChange) {
+        onDurationChange(duration);
+      }
+
       const { error } = await supabase.storage
         .from('videos')
         .upload(filePath, file, { upsert: true, contentType: file.type });
@@ -158,7 +166,7 @@ export function ClassVideoInput({
     }
   }
 
-  function handleUrlSubmit() {
+  async function handleUrlSubmit() {
     if (!videoUrl.trim()) {
       setUrlError(t.pleaseEnterVideoUrl);
       return;
@@ -171,6 +179,15 @@ export function ClassVideoInput({
 
     try {
       const videoInfo = parseVideoUrl(videoUrl);
+      
+      // If it's a YouTube video, try to get the duration
+      if (videoInfo.type === 'youtube' && videoInfo.videoId && onDurationChange) {
+        const duration = await getYoutubeDuration(videoInfo.videoId);
+        if (duration) {
+          onDurationChange(duration);
+        }
+      }
+      
       onVideoChange(null, videoUrl, videoInfo.type, videoInfo.thumbnailUrl);
       setUrlError('');
     } catch (error) {

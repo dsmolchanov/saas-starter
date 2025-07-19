@@ -397,18 +397,23 @@ export function ClassManager({ userId, locale = 'ru' }: ClassManagerProps) {
                   initialVideoPath={formData.videoPath || undefined}
                   initialVideoUrl={formData.videoUrl || undefined}
                   initialVideoType={formData.videoType || undefined}
-                  initialCoverImage={formData.imageUrl || undefined}
-                  locale={locale}
-                  onVideoChange={(videoPath, videoUrl, videoType, thumbnailUrl) => 
+                  onVideoChange={(videoPath, videoUrl, videoType, thumbnailUrl) => {
                     setFormData({
-                      ...formData, 
-                      videoPath: videoPath || '', 
+                      ...formData,
+                      videoPath: videoPath || '',
                       videoUrl: videoUrl || '',
                       videoType: videoType || '',
-                      thumbnailUrl: thumbnailUrl || ''
-                    })
-                  }
+                      thumbnailUrl: thumbnailUrl || '',
+                    });
+                  }}
                   onCoverImageChange={(coverImage) => setFormData({...formData, imageUrl: coverImage || ''})}
+                  onDurationChange={(durationMinutes) => {
+                    if (durationMinutes) {
+                      setFormData({...formData, durationMin: durationMinutes.toString()});
+                    }
+                  }}
+                  initialCoverImage={formData.imageUrl}
+                  locale={locale}
                 />
               </div>
 
