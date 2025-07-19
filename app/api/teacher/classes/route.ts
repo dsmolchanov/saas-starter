@@ -65,6 +65,7 @@ export async function POST(request: NextRequest) {
       videoType,
       thumbnailUrl, 
       imageUrl,
+      coverImage, // Allow both imageUrl and coverImage for flexibility
       difficulty, 
       intensity, 
       style, 
@@ -105,7 +106,7 @@ export async function POST(request: NextRequest) {
         videoUrl: videoUrl?.trim() || null,
         videoType: videoType?.trim() || null,
         thumbnailUrl: thumbnailUrl?.trim() || null,
-        imageUrl: imageUrl?.trim() || null,
+        imageUrl: (coverImage || imageUrl)?.trim() || null,
         difficulty: difficulty?.trim() || null,
         intensity: intensity?.trim() || null,
         style: style?.trim() || null,

@@ -16,6 +16,8 @@ interface ClassVideoInputProps {
   initialVideoUrl?: string;
   initialVideoType?: string;
   onVideoChange: (videoPath: string | null, videoUrl: string | null, videoType: string, thumbnailUrl?: string) => void;
+  onCoverImageChange?: (coverImageUrl: string | null) => void;
+  initialCoverImage?: string | null;
   locale?: string;
 }
 
@@ -40,7 +42,12 @@ function getTranslations(locale: string = 'ru') {
       failedToUploadVideo: 'Не удалось загрузить видео. Попробуйте еще раз.',
       pleaseEnterVideoUrl: 'Пожалуйста, введите URL видео',
       pleaseEnterValidUrl: 'Пожалуйста, введите действительный URL YouTube, Vimeo или видеофайла',
-      invalidVideoUrlFormat: 'Неверный формат URL видео'
+      invalidVideoUrlFormat: 'Неверный формат URL видео',
+      coverImage: 'Обложка занятия',
+      uploadCoverImage: 'Загрузить обложку',
+      useThumbnail: 'Использовать миниатюру видео',
+      coverImageUploaded: 'Обложка загружена',
+      removeCoverImage: 'Удалить обложку'
     },
     en: {
       classVideo: 'Class Video',
@@ -60,7 +67,12 @@ function getTranslations(locale: string = 'ru') {
       failedToUploadVideo: 'Failed to upload video. Please try again.',
       pleaseEnterVideoUrl: 'Please enter a video URL',
       pleaseEnterValidUrl: 'Please enter a valid YouTube, Vimeo, or video file URL',
-      invalidVideoUrlFormat: 'Invalid video URL format'
+      invalidVideoUrlFormat: 'Invalid video URL format',
+      coverImage: 'Cover Image',
+      uploadCoverImage: 'Upload Cover Image',
+      useThumbnail: 'Use Video Thumbnail',
+      coverImageUploaded: 'Cover image uploaded',
+      removeCoverImage: 'Remove Cover Image'
     },
     'es-MX': {
       classVideo: 'Video de Clase',
@@ -80,7 +92,12 @@ function getTranslations(locale: string = 'ru') {
       failedToUploadVideo: 'Error al subir video. Inténtalo de nuevo.',
       pleaseEnterVideoUrl: 'Por favor ingresa una URL de video',
       pleaseEnterValidUrl: 'Por favor ingresa una URL válida de YouTube, Vimeo o archivo de video',
-      invalidVideoUrlFormat: 'Formato de URL de video inválido'
+      invalidVideoUrlFormat: 'Formato de URL de video inválido',
+      coverImage: 'Imagen de portada',
+      uploadCoverImage: 'Subir imagen de portada',
+      useThumbnail: 'Usar miniatura de video',
+      coverImageUploaded: 'Imagen de portada subida',
+      removeCoverImage: 'Eliminar imagen de portada'
     }
   };
   
@@ -93,12 +110,17 @@ export function ClassVideoInput({
   initialVideoUrl,
   initialVideoType,
   onVideoChange,
+  onCoverImageChange,
+  initialCoverImage,
   locale = 'ru'
 }: ClassVideoInputProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const coverImageInputRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
+  const [uploadingCover, setUploadingCover] = useState(false);
   const [videoUrl, setVideoUrl] = useState(initialVideoUrl || '');
   const [urlError, setUrlError] = useState('');
+  const [coverImage, setCoverImage] = useState(initialCoverImage || '');
   const [activeTab, setActiveTab] = useState(
     initialVideoType === 'upload' ? 'upload' : 'url'
   );
@@ -153,6 +175,53 @@ export function ClassVideoInput({
       setUrlError('');
     } catch (error) {
       setUrlError(t.invalidVideoUrlFormat);
+    }
+  }
+
+  async function handleCoverImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploadingCover(true);
+    const supabase = createClient();
+    const filePath = `${userId}/cover-images/cover-${Date.now()}-${file.name}`;
+    
+    try {
+      const { error } = await supabase.storage
+        .from('videos') // Using the same bucket for consistency
+        .upload(filePath, file, { upsert: true, contentType: file.type });
+      
+      if (error) {
+        alert(`Failed to upload cover image: ${error.message}`);
+        return;
+      }
+
+      const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+      const coverImageUrl = `${supabaseUrl}/storage/v1/object/public/videos/${filePath}`;
+      
+      setCoverImage(coverImageUrl);
+      onCoverImageChange?.(coverImageUrl);
+    } catch (error) {
+      console.error('Error uploading cover image:', error);
+      alert('Failed to upload cover image. Please try again.');
+    } finally {
+      setUploadingCover(false);
+    }
+  }
+
+  function handleUseThumbnail() {
+    const videoPreview = getVideoPreview();
+    if (videoPreview?.thumbnail) {
+      setCoverImage(videoPreview.thumbnail);
+      onCoverImageChange?.(videoPreview.thumbnail);
+    }
+  }
+
+  function handleRemoveCoverImage() {
+    setCoverImage('');
+    onCoverImageChange?.(null);
+    if (coverImageInputRef.current) {
+      coverImageInputRef.current.value = '';
     }
   }
 
@@ -327,6 +396,69 @@ export function ClassVideoInput({
           </div>
         </TabsContent>
       </Tabs>
+      
+      {/* Cover Image Section */}
+      <div className="space-y-3 border-t pt-4 mt-6">
+        <Label className="text-sm font-medium">{t.coverImage}</Label>
+        
+        {/* Current Cover Image Display */}
+        {coverImage && (
+          <div className="relative w-32 h-20 bg-gray-100 rounded overflow-hidden border">
+            <img
+              src={coverImage}
+              alt="Cover image"
+              className="w-full h-full object-cover"
+            />
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              onClick={handleRemoveCoverImage}
+              className="absolute top-1 right-1 h-6 w-6 p-0 bg-black/50 hover:bg-black/70 text-white"
+            >
+              <X className="w-3 h-3" />
+            </Button>
+          </div>
+        )}
+        
+        {/* Cover Image Actions */}
+        <div className="flex flex-wrap gap-2">
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => coverImageInputRef.current?.click()}
+            disabled={uploadingCover}
+            className="gap-2"
+          >
+            <Upload className="w-4 h-4" />
+            {uploadingCover ? 'Uploading...' : t.uploadCoverImage}
+          </Button>
+          
+          {/* Use Video Thumbnail Button */}
+          {getVideoPreview()?.thumbnail && (
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={handleUseThumbnail}
+              className="gap-2"
+            >
+              <Video className="w-4 h-4" />
+              {t.useThumbnail}
+            </Button>
+          )}
+        </div>
+        
+        {/* Hidden file input for cover image */}
+        <input
+          type="file"
+          accept="image/*"
+          ref={coverImageInputRef}
+          className="hidden"
+          onChange={handleCoverImageUpload}
+        />
+      </div>
     </div>
   );
 } 

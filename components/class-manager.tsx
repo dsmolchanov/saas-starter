@@ -9,6 +9,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { ClassVideoInput } from '@/components/class-video-input';
 import { Plus, Play, Edit, Trash2, Clock } from 'lucide-react';
+import Link from 'next/link';
 
 interface ClassItem {
   id: string;
@@ -151,7 +152,7 @@ export function ClassManager({ userId, locale = 'ru' }: ClassManagerProps) {
     videoPath: '',
     videoUrl: '',
     videoType: '',
-    imageUrl: '',
+    imageUrl: '', // This is our cover image
     thumbnailUrl: '',
   });
   const [saving, setSaving] = useState(false);
@@ -396,6 +397,7 @@ export function ClassManager({ userId, locale = 'ru' }: ClassManagerProps) {
                   initialVideoPath={formData.videoPath || undefined}
                   initialVideoUrl={formData.videoUrl || undefined}
                   initialVideoType={formData.videoType || undefined}
+                  initialCoverImage={formData.imageUrl || undefined}
                   locale={locale}
                   onVideoChange={(videoPath, videoUrl, videoType, thumbnailUrl) => 
                     setFormData({
@@ -406,6 +408,7 @@ export function ClassManager({ userId, locale = 'ru' }: ClassManagerProps) {
                       thumbnailUrl: thumbnailUrl || ''
                     })
                   }
+                  onCoverImageChange={(coverImage) => setFormData({...formData, imageUrl: coverImage || ''})}
                 />
               </div>
 
@@ -446,89 +449,101 @@ export function ClassManager({ userId, locale = 'ru' }: ClassManagerProps) {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {classes.map((classItem) => (
-            <Card key={classItem.id} className="group hover:shadow-md transition-shadow overflow-hidden">
-              {/* Class Thumbnail */}
-              <div className="relative aspect-video bg-muted">
-                {classItem.imageUrl ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    src={classItem.imageUrl}
-                    alt={classItem.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform"
-                  />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center bg-primary/10">
-                    <Play className="w-8 h-8 text-primary/50" />
-                  </div>
-                )}
-                <div className="absolute bottom-2 right-2 bg-black/70 text-white text-xs px-2 py-1 rounded">
-                  {classItem.durationMin}{t.minutes}
-                </div>
-                {classItem.videoPath && (
-                  <div className="absolute top-2 left-2">
-                    <div className="bg-green-500/80 text-white text-xs px-2 py-1 rounded flex items-center gap-1">
-                      <Play className="w-3 h-3" />
-                      {t.video}
+            <div key={classItem.id} className="relative group">
+              {/* Clickable card that goes to student view */}
+              <Card className="group hover:shadow-md transition-shadow overflow-hidden cursor-pointer">
+                <Link href={`/classes/${classItem.id}`} className="block">
+                  {/* Class Thumbnail */}
+                  <div className="relative aspect-video bg-muted">
+                    {classItem.thumbnailUrl || classItem.imageUrl ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={classItem.thumbnailUrl || classItem.imageUrl || ''}
+                        alt={classItem.title}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center bg-primary/10">
+                        <Play className="w-8 h-8 text-primary/50" />
+                      </div>
+                    )}
+                    <div className="absolute bottom-2 right-2 bg-black/70 text-white text-xs px-2 py-1 rounded">
+                      {classItem.durationMin}{t.minutes}
                     </div>
-                  </div>
-                )}
-              </div>
-
-              <CardHeader className="pb-3">
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <CardTitle className="text-lg mb-2 line-clamp-2">
-                      {classItem.title}
-                    </CardTitle>
-                    <div className="flex items-center gap-2 mb-2">
-                      {classItem.difficulty && (
-                        <Badge variant="secondary">
-                          {classItem.difficulty}
-                        </Badge>
-                      )}
-                      {classItem.intensity && (
-                        <Badge variant="outline">
-                          {classItem.intensity}
-                        </Badge>
-                      )}
-                    </div>
-                    {classItem.course && (
-                      <Badge variant="default" className="text-xs">
-                        {classItem.course.title}
-                      </Badge>
+                    {classItem.videoPath && (
+                      <div className="absolute top-2 left-2">
+                        <div className="bg-green-500/80 text-white text-xs px-2 py-1 rounded flex items-center gap-1">
+                          <Play className="w-3 h-3" />
+                          {t.video}
+                        </div>
+                      </div>
                     )}
                   </div>
-                </div>
-                {classItem.description && (
-                  <CardDescription className="line-clamp-2">
-                    {classItem.description}
-                  </CardDescription>
-                )}
-              </CardHeader>
-              
-              <CardContent className="pt-0">
-                <div className="flex items-center gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleEdit(classItem)}
-                    className="gap-1 flex-1"
-                  >
-                    <Edit className="w-3 h-3" />
-                    {t.edit}
-                  </Button>
 
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleDelete(classItem.id)}
-                    className="text-red-600 hover:text-red-700"
-                  >
-                    <Trash2 className="w-3 h-3" />
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
+                  <CardHeader className="pb-3">
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <CardTitle className="text-lg mb-2 line-clamp-2">
+                          {classItem.title}
+                        </CardTitle>
+                        <div className="flex items-center gap-2 mb-2">
+                          {classItem.difficulty && (
+                            <Badge variant="secondary">
+                              {classItem.difficulty}
+                            </Badge>
+                          )}
+                          {classItem.intensity && (
+                            <Badge variant="outline">
+                              {classItem.intensity}
+                            </Badge>
+                          )}
+                        </div>
+                        {classItem.course && (
+                          <Badge variant="default" className="text-xs">
+                            {classItem.course.title}
+                          </Badge>
+                        )}
+                      </div>
+                    </div>
+                    {classItem.description && (
+                      <CardDescription className="line-clamp-2">
+                        {classItem.description}
+                      </CardDescription>
+                    )}
+                  </CardHeader>
+                </Link>
+                
+                {/* Action buttons - positioned at bottom */}
+                <CardContent className="pt-0">
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        handleEdit(classItem);
+                      }}
+                      className="gap-1 flex-1"
+                    >
+                      <Edit className="w-3 h-3" />
+                      {t.edit}
+                    </Button>
+
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        handleDelete(classItem.id);
+                      }}
+                      className="text-red-600 hover:text-red-700"
+                    >
+                      <Trash2 className="w-3 h-3" />
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
           ))}
         </div>
       )}
