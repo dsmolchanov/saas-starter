@@ -318,6 +318,69 @@ export function ClassVideoInput({
             </div>
           )}
         </div>
+        
+        {/* Cover Image Section - Now included in edit mode */}
+        <div className="space-y-3 border-t pt-4 mt-6">
+          <Label className="text-sm font-medium">{t.coverImage}</Label>
+          
+          {/* Current Cover Image Display */}
+          {coverImage && (
+            <div className="relative w-32 h-20 bg-gray-100 rounded overflow-hidden border">
+              <img
+                src={coverImage}
+                alt="Cover image"
+                className="w-full h-full object-cover"
+              />
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={handleRemoveCoverImage}
+                className="absolute top-1 right-1 h-6 w-6 p-0 bg-black/50 hover:bg-black/70 text-white"
+              >
+                <X className="w-3 h-3" />
+              </Button>
+            </div>
+          )}
+          
+          {/* Cover Image Actions */}
+          <div className="flex flex-wrap gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => coverImageInputRef.current?.click()}
+              disabled={uploadingCover}
+              className="gap-2"
+            >
+              <Upload className="w-4 h-4" />
+              {uploadingCover ? 'Uploading...' : t.uploadCoverImage}
+            </Button>
+            
+            {/* Use Video Thumbnail Button */}
+            {videoPreview?.thumbnail && (
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={handleUseThumbnail}
+                className="gap-2"
+              >
+                <Video className="w-4 h-4" />
+                {t.useThumbnail}
+              </Button>
+            )}
+          </div>
+          
+          {/* Hidden file input for cover image */}
+          <input
+            type="file"
+            accept="image/*"
+            ref={coverImageInputRef}
+            className="hidden"
+            onChange={handleCoverImageUpload}
+          />
+        </div>
       </div>
     );
   }
