@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   Select, 
   SelectContent, 
@@ -42,8 +43,13 @@ import {
   EyeOff, 
   Calendar,
   Clock,
-  Users
+  Users,
+  GripVertical,
+  X,
+  PlayCircle,
+  ExternalLink
 } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 interface Course {
   id: string;
@@ -65,15 +71,24 @@ interface Course {
   }>;
 }
 
-interface Category {
+interface ClassItem {
   id: string;
   title: string;
-  slug: string;
-  icon: string | null;
+  description: string | null;
+  durationMin: number;
+  orderIndex: number | null;
+  courseId: string | null;
+  imageUrl: string | null;
+  difficulty: string | null;
+  intensity: string | null;
 }
 
 interface Metadata {
-  categories: Category[];
+  categories: Array<{
+    id: string;
+    title: string;
+    slug: string;
+  }>;
   difficultyLevels: string[];
 }
 
@@ -183,6 +198,14 @@ export function CourseManager({ locale = 'ru' }: CourseManagerProps = {}) {
   });
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
+  
+  // Class management state
+  const [assignedClasses, setAssignedClasses] = useState<ClassItem[]>([]);
+  const [availableClasses, setAvailableClasses] = useState<ClassItem[]>([]);
+  const [loadingClasses, setLoadingClasses] = useState(false);
+  const [activeTab, setActiveTab] = useState('details');
+  
+  const router = useRouter();
   const t = getTranslations(locale);
 
   // Fetch courses and metadata
@@ -213,11 +236,18 @@ export function CourseManager({ locale = 'ru' }: CourseManagerProps = {}) {
     setEditingCourse(null);
     setShowForm(false);
     setError('');
+    setAssignedClasses([]);
+    setAvailableClasses([]);
+    setActiveTab('details');
   };
 
   const handleCreate = () => {
     resetForm();
     setShowForm(true);
+  };
+
+  const handleViewCourse = (courseId: string) => {
+    router.push(`/course/${courseId}`);
   };
 
   const handleEdit = (course: Course) => {
@@ -230,7 +260,88 @@ export function CourseManager({ locale = 'ru' }: CourseManagerProps = {}) {
       imageUrl: course.imageUrl || '',
       coverUrl: course.coverUrl || '',
     });
+    setActiveTab('details');
+    fetchCourseClasses(course.id);
     setShowForm(true);
+  };
+
+  // Fetch classes for course editing
+  const fetchCourseClasses = async (courseId: string) => {
+    setLoadingClasses(true);
+    try {
+      const response = await fetch(`/api/teacher/courses/${courseId}/classes`);
+      const data = await response.json();
+      
+      if (response.ok) {
+        setAssignedClasses(data.assignedClasses || []);
+        setAvailableClasses(data.availableClasses || []);
+      } else {
+        console.error('Failed to fetch course classes:', data.error);
+      }
+    } catch (error) {
+      console.error('Error fetching course classes:', error);
+    }
+    setLoadingClasses(false);
+  };
+
+  // Add class to course
+  const addClassToCourse = (classItem: ClassItem) => {
+    setAvailableClasses(prev => prev.filter(c => c.id !== classItem.id));
+    setAssignedClasses(prev => [...prev, { ...classItem, orderIndex: prev.length + 1 }]);
+  };
+
+  // Remove class from course
+  const removeClassFromCourse = (classId: string) => {
+    const classItem = assignedClasses.find(c => c.id === classId);
+    if (classItem) {
+      setAssignedClasses(prev => prev.filter(c => c.id !== classId));
+      setAvailableClasses(prev => [...prev, { ...classItem, orderIndex: null }]);
+    }
+  };
+
+  // Reorder classes
+  const moveClass = (fromIndex: number, toIndex: number) => {
+    const newAssignedClasses = [...assignedClasses];
+    const [movedClass] = newAssignedClasses.splice(fromIndex, 1);
+    newAssignedClasses.splice(toIndex, 0, movedClass);
+    
+    // Update order indices
+    const reorderedClasses = newAssignedClasses.map((cls, index) => ({
+      ...cls,
+      orderIndex: index + 1
+    }));
+    
+    setAssignedClasses(reorderedClasses);
+  };
+
+  // Save class assignments
+  const saveClassAssignments = async () => {
+    if (!editingCourse) return;
+
+    try {
+      const response = await fetch(`/api/teacher/courses/${editingCourse.id}/classes`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          assignedClassIds: assignedClasses.map(c => c.id),
+          removedClassIds: [] // We'll handle this through the assignment list
+        }),
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || 'Failed to save class assignments');
+      }
+
+      // Refresh courses to update the class count
+      const coursesRes = await fetch('/api/teacher/courses');
+      const coursesData = await coursesRes.json();
+      if (coursesData.courses) setCourses(coursesData.courses);
+      
+    } catch (error) {
+      console.error('Error saving class assignments:', error);
+      setError(error instanceof Error ? error.message : 'Failed to save class assignments');
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -445,6 +556,16 @@ export function CourseManager({ locale = 'ru' }: CourseManagerProps = {}) {
                   <Button
                     variant="outline"
                     size="sm"
+                    onClick={() => handleViewCourse(course.id)}
+                    className="gap-1"
+                  >
+                    <ExternalLink className="w-3 h-3" />
+                    View
+                  </Button>
+                  
+                  <Button
+                    variant="outline"
+                    size="sm"
                     onClick={() => handleEdit(course)}
                     className="gap-1 flex-1"
                   >
@@ -504,107 +625,261 @@ export function CourseManager({ locale = 'ru' }: CourseManagerProps = {}) {
 
       {/* Course Form Dialog */}
       <Dialog open={showForm} onOpenChange={(open) => !open && resetForm()}>
-        <DialogContent className="max-w-md">
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>
               {editingCourse ? 'Edit Course' : 'Create New Course'}
             </DialogTitle>
             <DialogDescription>
               {editingCourse 
-                ? 'Update your course information' 
+                ? 'Update your course information and manage classes' 
                 : 'Add a new course to your curriculum'
               }
             </DialogDescription>
           </DialogHeader>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="title">Course Title</Label>
-              <Input
-                id="title"
-                value={formData.title}
-                onChange={(e) => setFormData({...formData, title: e.target.value})}
-                placeholder="e.g., Beginner Hatha Series"
-                required
-              />
-            </div>
+          <Tabs value={activeTab} onValueChange={setActiveTab}>
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="details">Course Details</TabsTrigger>
+              <TabsTrigger value="classes" disabled={!editingCourse}>
+                Manage Classes
+              </TabsTrigger>
+            </TabsList>
 
-            <div className="space-y-2">
-              <Label htmlFor="category">Category</Label>
-              <Select 
-                value={formData.categoryId} 
-                onValueChange={(value) => setFormData({...formData, categoryId: value})}
-                required
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select a category" />
-                </SelectTrigger>
-                <SelectContent>
-                  {metadata?.categories.map((category) => (
-                    <SelectItem key={category.id} value={category.id}>
-                      {category.title}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+            <TabsContent value="details" className="mt-6">
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="title">Course Title</Label>
+                  <Input
+                    id="title"
+                    value={formData.title}
+                    onChange={(e) => setFormData({...formData, title: e.target.value})}
+                    placeholder="e.g., Beginner Hatha Series"
+                    required
+                  />
+                </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="level">Difficulty Level</Label>
-              <Select 
-                value={formData.level} 
-                onValueChange={(value) => setFormData({...formData, level: value})}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select difficulty level" />
-                </SelectTrigger>
-                <SelectContent>
-                  {metadata?.difficultyLevels.map((level) => (
-                    <SelectItem key={level} value={level}>
-                      {level}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+                <div className="space-y-2">
+                  <Label htmlFor="category">Category</Label>
+                  <Select 
+                    value={formData.categoryId} 
+                    onValueChange={(value) => setFormData({...formData, categoryId: value})}
+                    required
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a category" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {metadata?.categories.map((category) => (
+                        <SelectItem key={category.id} value={category.id}>
+                          {category.title}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="description">Description</Label>
-              <Textarea
-                id="description"
-                value={formData.description}
-                onChange={(e) => setFormData({...formData, description: e.target.value})}
-                placeholder="Describe what students will learn in this course..."
-                rows={3}
-              />
-            </div>
+                <div className="space-y-2">
+                  <Label htmlFor="level">Difficulty Level</Label>
+                  <Select 
+                    value={formData.level} 
+                    onValueChange={(value) => setFormData({...formData, level: value})}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select difficulty level" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {metadata?.difficultyLevels.map((level) => (
+                        <SelectItem key={level} value={level}>
+                          {level}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="coverUrl">Course Cover Image URL (optional)</Label>
-              <Input
-                id="coverUrl"
-                type="url"
-                value={formData.coverUrl}
-                onChange={(e) => setFormData({...formData, coverUrl: e.target.value})}
-                placeholder="https://example.com/cover.jpg"
-              />
-            </div>
+                <div className="space-y-2">
+                  <Label htmlFor="description">Description</Label>
+                  <Textarea
+                    id="description"
+                    value={formData.description}
+                    onChange={(e) => setFormData({...formData, description: e.target.value})}
+                    placeholder="Describe what students will learn in this course..."
+                    rows={3}
+                  />
+                </div>
 
-            {error && (
-              <div className="p-3 rounded-md bg-red-50 border border-red-200">
-                <p className="text-sm text-red-600">{error}</p>
-              </div>
-            )}
+                <div className="space-y-2">
+                  <Label htmlFor="coverUrl">Course Cover Image URL (optional)</Label>
+                  <Input
+                    id="coverUrl"
+                    type="url"
+                    value={formData.coverUrl}
+                    onChange={(e) => setFormData({...formData, coverUrl: e.target.value})}
+                    placeholder="https://example.com/cover.jpg"
+                  />
+                </div>
 
-            <div className="flex justify-end gap-2 pt-4">
-              <Button type="button" variant="outline" onClick={resetForm}>
-                Cancel
-              </Button>
-              <Button type="submit" disabled={saving}>
-                {saving ? 'Saving...' : editingCourse ? 'Update Course' : 'Create Course'}
-              </Button>
+                <div className="flex justify-end gap-2 pt-4">
+                  <Button type="button" variant="outline" onClick={resetForm}>
+                    Cancel
+                  </Button>
+                  <Button type="submit" disabled={saving}>
+                    {saving ? 'Saving...' : editingCourse ? 'Update Course' : 'Create Course'}
+                  </Button>
+                </div>
+              </form>
+            </TabsContent>
+
+            <TabsContent value="classes" className="mt-6">
+              {editingCourse && (
+                <div className="space-y-6">
+                  {/* Course Classes Section */}
+                  <div>
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className="text-lg font-semibold">Course Content</h3>
+                      <Button 
+                        onClick={saveClassAssignments}
+                        disabled={loadingClasses}
+                        size="sm"
+                      >
+                        Save Changes
+                      </Button>
+                    </div>
+                    
+                    {loadingClasses ? (
+                      <div className="space-y-2">
+                        {[1, 2, 3].map(i => (
+                          <div key={i} className="h-16 bg-gray-100 rounded animate-pulse" />
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="space-y-3">
+                        {assignedClasses.length === 0 ? (
+                          <div className="text-center py-8 text-muted-foreground">
+                            No classes assigned to this course yet.
+                            <br />
+                            Add classes from the available classes below.
+                          </div>
+                        ) : (
+                          assignedClasses.map((classItem, index) => (
+                            <div
+                              key={classItem.id}
+                              className="flex items-center gap-3 p-3 border rounded-lg bg-white"
+                            >
+                              <div className="flex items-center gap-2 cursor-move">
+                                <GripVertical className="w-4 h-4 text-gray-400" />
+                                <span className="text-sm font-medium text-gray-500 w-6">
+                                  {index + 1}
+                                </span>
+                              </div>
+                              
+                              <div className="flex-1">
+                                <div className="flex items-center gap-2">
+                                  <PlayCircle className="w-4 h-4 text-blue-500" />
+                                  <span className="font-medium">{classItem.title}</span>
+                                  {classItem.difficulty && (
+                                    <Badge variant="outline" className="text-xs">
+                                      {classItem.difficulty}
+                                    </Badge>
+                                  )}
+                                </div>
+                                <div className="text-sm text-muted-foreground flex items-center gap-4 mt-1">
+                                  <span className="flex items-center gap-1">
+                                    <Clock className="w-3 h-3" />
+                                    {classItem.durationMin} min
+                                  </span>
+                                  {classItem.description && (
+                                    <span className="truncate max-w-md">
+                                      {classItem.description}
+                                    </span>
+                                  )}
+                                </div>
+                              </div>
+                              
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => removeClassFromCourse(classItem.id)}
+                                className="text-red-600 hover:text-red-700"
+                              >
+                                <X className="w-4 h-4" />
+                              </Button>
+                            </div>
+                          ))
+                        )}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Available Classes Section */}
+                  <div>
+                    <h3 className="text-lg font-semibold mb-4">Available Classes</h3>
+                    {loadingClasses ? (
+                      <div className="space-y-2">
+                        {[1, 2].map(i => (
+                          <div key={i} className="h-16 bg-gray-100 rounded animate-pulse" />
+                        ))}
+                      </div>
+                    ) : availableClasses.length === 0 ? (
+                      <div className="text-center py-8 text-muted-foreground">
+                        No available classes. 
+                        <br />
+                        Create new classes in the Classes tab first.
+                      </div>
+                    ) : (
+                      <div className="space-y-3">
+                        {availableClasses.map((classItem) => (
+                          <div
+                            key={classItem.id}
+                            className="flex items-center gap-3 p-3 border rounded-lg bg-gray-50"
+                          >
+                            <div className="flex-1">
+                              <div className="flex items-center gap-2">
+                                <PlayCircle className="w-4 h-4 text-gray-400" />
+                                <span className="font-medium">{classItem.title}</span>
+                                {classItem.difficulty && (
+                                  <Badge variant="outline" className="text-xs">
+                                    {classItem.difficulty}
+                                  </Badge>
+                                )}
+                              </div>
+                              <div className="text-sm text-muted-foreground flex items-center gap-4 mt-1">
+                                <span className="flex items-center gap-1">
+                                  <Clock className="w-3 h-3" />
+                                  {classItem.durationMin} min
+                                </span>
+                                {classItem.description && (
+                                  <span className="truncate max-w-md">
+                                    {classItem.description}
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                            
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => addClassToCourse(classItem)}
+                            >
+                              <Plus className="w-4 h-4 mr-1" />
+                              Add
+                            </Button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+            </TabsContent>
+          </Tabs>
+
+          {error && (
+            <div className="p-3 rounded-md bg-red-50 border border-red-200 mt-4">
+              <p className="text-sm text-red-600">{error}</p>
             </div>
-          </form>
+          )}
         </DialogContent>
       </Dialog>
     </div>
