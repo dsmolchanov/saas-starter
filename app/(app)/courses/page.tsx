@@ -66,7 +66,7 @@ export default async function CoursesPage() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {allCourses.map((course) => (
           <div key={course.id} className="group">
-            <Link href={`/courses/${course.id}`}>
+            <Link href={`/course/${course.id}`}>
               <div className="aspect-video rounded-lg overflow-hidden bg-muted mb-3 relative">
                 {course.coverUrl ? (
                   <Image

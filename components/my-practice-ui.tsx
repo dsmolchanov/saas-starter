@@ -307,7 +307,7 @@ export function MyPracticeUI({ user, initialRole, locale = 'ru' }: { user: User,
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div className="text-center p-4 bg-primary/5 rounded-lg">
                 <BookOpen className="w-8 h-8 text-primary mx-auto mb-2" />
                 <h3 className="font-semibold text-sm mb-1">{t.createCourses}</h3>

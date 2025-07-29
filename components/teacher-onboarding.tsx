@@ -145,7 +145,7 @@ export function TeacherOnboarding({ onComplete, onCancel }: TeacherOnboardingPro
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-2xl mx-auto">
+      <div className="grid grid-cols-1 gap-4 max-w-2xl mx-auto sm:grid-cols-2 md:grid-cols-3">
         <div className="p-4 bg-primary/5 rounded-lg">
           <Users className="w-8 h-8 text-primary mb-2 mx-auto" />
           <h3 className="font-semibold mb-1">Global Reach</h3>
