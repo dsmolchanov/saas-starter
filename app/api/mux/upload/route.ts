@@ -6,9 +6,18 @@ export async function POST(request: NextRequest) {
   try {
     // Verify user authentication
     const user = await getUser();
-    if (!user || user.role !== 'teacher') {
+    console.log('User in MUX upload:', { id: user?.id, role: user?.role, name: user?.name });
+    
+    if (!user) {
       return NextResponse.json(
-        { error: 'Unauthorized. Teacher access required.' },
+        { error: 'User not authenticated.' },
+        { status: 401 }
+      );
+    }
+    
+    if (user.role !== 'teacher' && user.role !== 'admin') {
+      return NextResponse.json(
+        { error: `Unauthorized. Teacher or admin access required. Current role: ${user.role}` },
         { status: 401 }
       );
     }
@@ -81,9 +90,17 @@ export async function GET(request: NextRequest) {
   try {
     // Verify user authentication
     const user = await getUser();
-    if (!user || user.role !== 'teacher') {
+    
+    if (!user) {
       return NextResponse.json(
-        { error: 'Unauthorized. Teacher access required.' },
+        { error: 'User not authenticated.' },
+        { status: 401 }
+      );
+    }
+    
+    if (user.role !== 'teacher' && user.role !== 'admin') {
+      return NextResponse.json(
+        { error: `Unauthorized. Teacher or admin access required. Current role: ${user.role}` },
         { status: 401 }
       );
     }
