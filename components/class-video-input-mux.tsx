@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -60,7 +60,6 @@ function getTranslations(locale: string = 'ru') {
       invalidVideoUrlFormat: 'Неверный формат URL видео',
       muxVideoStreaming: 'Видео стриминг (MUX)',
       dragDropVideo: 'Перетащите видеофайл сюда или нажмите для выбора',
-      uploadToMux: 'Загрузить в MUX для оптимального стриминга',
     },
     en: {
       classVideo: 'Class Video',
@@ -84,7 +83,6 @@ function getTranslations(locale: string = 'ru') {
       invalidVideoUrlFormat: 'Invalid video URL format',
       muxVideoStreaming: 'Video Streaming (MUX)',
       dragDropVideo: 'Drag and drop video file here or click to select',
-      uploadToMux: 'Upload to MUX for optimal streaming',
     },
   };
   
@@ -114,11 +112,97 @@ export function ClassVideoInputMux({
     initialVideoType === 'mux' ? 'mux' : 
     (initialVideoType === 'upload' || !initialVideoType) ? 'mux' : 'url'
   );
+  const [isPollingStatus, setIsPollingStatus] = useState(false);
+  const pollIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
   const t = getTranslations(locale);
   
   const hasVideo = initialVideoPath || initialVideoUrl || initialMuxAssetId;
   const currentVideoType = initialVideoType || 'upload';
+
+  // Cleanup polling on unmount
+  useEffect(() => {
+    return () => {
+      if (pollIntervalRef.current) {
+        clearInterval(pollIntervalRef.current);
+      }
+    };
+  }, []);
+
+  // Start polling status if we have an upload ID and status is not final
+  useEffect(() => {
+    if (initialMuxUploadId && 
+        currentVideoType === 'mux' && 
+        initialMuxStatus && 
+        !['ready', 'errored'].includes(initialMuxStatus) &&
+        !isPollingStatus) {
+      startStatusPolling(initialMuxUploadId);
+    }
+  }, [initialMuxUploadId, initialMuxStatus, currentVideoType]);
+
+  // Poll for upload status
+  async function pollUploadStatus(uploadId: string) {
+    try {
+      const response = await fetch(`/api/mux/upload?uploadId=${uploadId}`);
+      if (!response.ok) {
+        throw new Error('Failed to get upload status');
+      }
+
+      const data = await response.json();
+      console.log('MUX upload status:', data);
+
+      // Update the status based on the response
+      if (data.status === 'asset_created' && data.assetId) {
+        // Upload complete, asset created, now it's preparing
+        onVideoChange({
+          videoPath: null,
+          videoUrl: null,
+          videoType: 'mux',
+          muxUploadId: uploadId,
+          muxAssetId: data.assetId,
+          muxStatus: 'preparing',
+        });
+      } else if (data.status === 'errored') {
+        // Upload failed
+        onVideoChange({
+          videoPath: null,
+          videoUrl: null,
+          videoType: 'mux',
+          muxUploadId: uploadId,
+          muxStatus: 'errored',
+        });
+        stopStatusPolling();
+      }
+      
+    } catch (error) {
+      console.error('Error polling upload status:', error);
+    }
+  }
+
+  function startStatusPolling(uploadId: string) {
+    if (pollIntervalRef.current) {
+      clearInterval(pollIntervalRef.current);
+    }
+    
+    setIsPollingStatus(true);
+    console.log('Starting status polling for upload:', uploadId);
+    
+    // Poll every 3 seconds
+    pollIntervalRef.current = setInterval(() => {
+      pollUploadStatus(uploadId);
+    }, 3000);
+    
+    // Also poll immediately
+    pollUploadStatus(uploadId);
+  }
+
+  function stopStatusPolling() {
+    if (pollIntervalRef.current) {
+      clearInterval(pollIntervalRef.current);
+      pollIntervalRef.current = null;
+    }
+    setIsPollingStatus(false);
+  }
 
   // Create MUX upload URL
   async function createMuxUpload() {
@@ -159,17 +243,23 @@ export function ClassVideoInputMux({
   // Handle MUX upload events
   function handleMuxUploadSuccess(event: any) {
     console.log('MUX upload successful:', event);
+    const uploadId = event.detail.uploadId;
+    
     onVideoChange({
       videoPath: null,
       videoUrl: null,
       videoType: 'mux',
-      muxUploadId: event.detail.uploadId,
-      muxStatus: 'asset_created',
+      muxUploadId: uploadId,
+      muxStatus: 'processing',
     });
+
+    // Start polling for status updates
+    startStatusPolling(uploadId);
   }
 
   function handleMuxUploadError(event: any) {
     console.error('MUX upload error:', event);
+    stopStatusPolling();
     onVideoChange({
       videoPath: null,
       videoUrl: null,
@@ -218,6 +308,7 @@ export function ClassVideoInputMux({
   }
 
   function handleRemoveVideo() {
+    stopStatusPolling();
     onVideoChange({
       videoPath: null,
       videoUrl: null,
@@ -261,12 +352,24 @@ export function ClassVideoInputMux({
                 <p className="text-sm font-medium text-green-800">
                   {initialMuxStatus === 'ready' ? t.videoReady :
                    initialMuxStatus === 'preparing' ? t.videoProcessing :
+                   initialMuxStatus === 'processing' ? t.processing :
+                   initialMuxStatus === 'waiting' ? t.uploading :
                    initialMuxStatus === 'errored' ? t.videoError :
                    t.muxVideoStreaming}
+                  {(initialMuxStatus === 'processing' || initialMuxStatus === 'preparing') && isPollingStatus && (
+                    <span className="ml-2 animate-spin inline-block">⏳</span>
+                  )}
                 </p>
-                <p className="text-xs text-green-600">
-                  MUX Asset: {initialMuxAssetId?.substring(0, 20)}...
-                </p>
+                {initialMuxAssetId && (
+                  <p className="text-xs text-green-600">
+                    MUX Asset: {initialMuxAssetId.substring(0, 20)}...
+                  </p>
+                )}
+                {initialMuxUploadId && !initialMuxAssetId && (
+                  <p className="text-xs text-green-600">
+                    Upload ID: {initialMuxUploadId.substring(0, 20)}...
+                  </p>
+                )}
               </div>
               <Button
                 type="button"
@@ -359,12 +462,11 @@ export function ClassVideoInputMux({
         </TabsList>
 
         <TabsContent value="mux" className="space-y-3">
-          <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
-            <Upload className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-            <p className="text-sm text-gray-600 mb-3">{t.dragDropVideo}</p>
-            <p className="text-xs text-gray-500 mb-4">{t.uploadToMux}</p>
-            
-            {!muxUploadUrl ? (
+          {!muxUploadUrl ? (
+            <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+              <Upload className="w-8 h-8 text-gray-400 mx-auto mb-2" />
+              <p className="text-sm text-gray-600 mb-3">{t.dragDropVideo}</p>
+              
               <Button
                 type="button"
                 onClick={createMuxUpload}
@@ -374,20 +476,21 @@ export function ClassVideoInputMux({
                 <Video className="w-4 h-4" />
                 {isCreatingUpload ? t.processing : t.uploadVideoFile}
               </Button>
-            ) : (
+            </div>
+          ) : (
+            <div className="border-2 border-dashed border-gray-300 rounded-lg p-4">
               <MuxUploader
                 endpoint={muxUploadUrl}
                 onSuccess={handleMuxUploadSuccess}
                 onError={handleMuxUploadError}
                 onProgress={handleMuxProgress}
                 style={{
-                  fontFamily: 'system-ui, sans-serif',
-                  backgroundColor: 'white',
-                  color: '#374151',
+                  width: '100%',
+                  minHeight: '100px',
                 } as any}
               />
-            )}
-          </div>
+            </div>
+          )}
         </TabsContent>
 
         <TabsContent value="url" className="space-y-3">

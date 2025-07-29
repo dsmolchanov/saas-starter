@@ -488,9 +488,9 @@ export function CourseManager({ locale = 'ru' }: CourseManagerProps = {}) {
           </CardContent>
         </Card>
       ) : (
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3">
           {courses.map((course) => (
-            <Card key={course.id} className="group hover:shadow-md transition-shadow overflow-hidden">
+            <Card key={course.id} className="group hover:shadow-md transition-shadow overflow-hidden cursor-pointer" onClick={() => handleViewCourse(course.id)}>
               {/* Course Thumbnail */}
               <div className="relative aspect-video bg-muted">
                 {course.coverUrl || course.imageUrl ? (
@@ -552,32 +552,42 @@ export function CourseManager({ locale = 'ru' }: CourseManagerProps = {}) {
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1.5 flex-wrap min-w-0">
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => handleViewCourse(course.id)}
-                    className="gap-1"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleViewCourse(course.id);
+                    }}
+                    className="gap-1 shrink-0 flex-1 min-w-[60px]"
                   >
                     <ExternalLink className="w-3 h-3" />
-                    View
+                    <span className="hidden sm:inline">View</span>
                   </Button>
                   
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => handleEdit(course)}
-                    className="gap-1 flex-1"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleEdit(course);
+                    }}
+                    className="gap-1 shrink-0 flex-1 min-w-[60px]"
                   >
                     <Edit className="w-3 h-3" />
-                    Edit
+                    <span className="hidden sm:inline">Edit</span>
                   </Button>
                   
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => togglePublish(course)}
-                    className="gap-1"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      togglePublish(course);
+                    }}
+                    className="gap-1 shrink-0 px-2"
+                    title={course.isPublished ? "Unpublish course" : "Publish course"}
                   >
                     {course.isPublished ? (
                       <EyeOff className="w-3 h-3" />
@@ -588,7 +598,13 @@ export function CourseManager({ locale = 'ru' }: CourseManagerProps = {}) {
 
                   <AlertDialog>
                     <AlertDialogTrigger asChild>
-                      <Button variant="outline" size="sm" className="text-red-600 hover:text-red-700">
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="text-red-600 hover:text-red-700 shrink-0 px-2"
+                        onClick={(e) => e.stopPropagation()}
+                        title="Delete course"
+                      >
                         <Trash2 className="w-3 h-3" />
                       </Button>
                     </AlertDialogTrigger>
