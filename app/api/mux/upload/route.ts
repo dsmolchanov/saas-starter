@@ -120,10 +120,22 @@ export async function GET(request: NextRequest) {
     const muxService = getMuxService();
     const uploadData = await muxService.getUpload(uploadId);
 
+    // If asset is created, also get asset details for playback ID
+    let playbackId = null;
+    if (uploadData.status === 'asset_created' && uploadData.assetId) {
+      try {
+        const assetData = await muxService.getAsset(uploadData.assetId);
+        playbackId = assetData.playbackIds?.[0]?.id || null;
+      } catch (error) {
+        console.error('Error getting asset details:', error);
+      }
+    }
+
     return NextResponse.json({
       id: uploadData.id,
       status: uploadData.status,
       assetId: uploadData.assetId,
+      playbackId: playbackId,
       error: uploadData.error,
     });
 

@@ -107,6 +107,7 @@ export function ClassVideoInputMux({
   const [videoUrl, setVideoUrl] = useState(initialVideoUrl || '');
   const [urlError, setUrlError] = useState('');
   const [muxUploadUrl, setMuxUploadUrl] = useState<string | null>(null);
+  const [currentUploadId, setCurrentUploadId] = useState<string | null>(initialMuxUploadId || null);
   const [isCreatingUpload, setIsCreatingUpload] = useState(false);
   const [activeTab, setActiveTab] = useState(
     initialVideoType === 'mux' ? 'mux' : 
@@ -153,15 +154,17 @@ export function ClassVideoInputMux({
 
       // Update the status based on the response
       if (data.status === 'asset_created' && data.assetId) {
-        // Upload complete, asset created, now it's preparing
+        // Upload complete, asset created - stop polling and mark as ready
         onVideoChange({
           videoPath: null,
           videoUrl: null,
           videoType: 'mux',
           muxUploadId: uploadId,
           muxAssetId: data.assetId,
-          muxStatus: 'preparing',
+          muxPlaybackId: data.playbackId,
+          muxStatus: 'ready',
         });
+        stopStatusPolling(); // Important: stop polling when asset is created
       } else if (data.status === 'errored') {
         // Upload failed
         onVideoChange({
@@ -223,6 +226,7 @@ export function ClassVideoInputMux({
 
       const { uploadUrl, uploadId } = await response.json();
       setMuxUploadUrl(uploadUrl);
+      setCurrentUploadId(uploadId);
       
       // Store upload ID for tracking
       onVideoChange({
@@ -245,7 +249,18 @@ export function ClassVideoInputMux({
   // Handle MUX upload events
   function handleMuxUploadSuccess(event: any) {
     console.log('MUX upload successful:', event);
-    const uploadId = event.detail.uploadId;
+    
+    // The MUX uploader doesn't provide uploadId in the success event detail
+    // We need to use the uploadId from when we created the upload URL
+    // Let's get it from the current muxUploadUrl or track it separately
+    
+    // Use the stored currentUploadId from when we created the upload
+    const uploadId = currentUploadId;
+    
+    if (!uploadId) {
+      console.error('No upload ID available for success event');
+      return;
+    }
     
     onVideoChange({
       videoPath: null,
@@ -319,6 +334,7 @@ export function ClassVideoInputMux({
     setVideoUrl('');
     setUrlError('');
     setMuxUploadUrl(null);
+    setCurrentUploadId(null);
   }
 
   function getVideoPreview() {
