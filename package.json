@@ -12,6 +12,9 @@
     "setup:supabase": "npx tsx scripts/setup-supabase.ts"
   },
   "dependencies": {
+    "@mux/mux-node": "^12.3.0",
+    "@mux/mux-player-react": "^3.5.1",
+    "@mux/mux-uploader-react": "^1.2.0",
     "@radix-ui/react-alert-dialog": "^1.1.14",
     "@radix-ui/react-avatar": "^1.1.10",
     "@radix-ui/react-checkbox": "^1.3.2",

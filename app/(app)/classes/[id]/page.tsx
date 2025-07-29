@@ -160,6 +160,7 @@ export default async function ClassPage({ params }: { params: Promise<{ id: stri
             videoPath={lesson.videoPath}
             videoUrl={lesson.videoUrl}
             videoType={lesson.videoType}
+            muxPlaybackId={lesson.muxPlaybackId}
             thumbnailUrl={lesson.thumbnailUrl}
             title={lesson.title}
             className="rounded-xl"

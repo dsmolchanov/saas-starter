@@ -109,6 +109,7 @@ export default async function LessonPage({ params }: { params: Promise<{ lessonI
           videoPath={lesson.videoPath}
           videoUrl={(lesson as any).videoUrl}
           videoType={(lesson as any).videoType}
+          muxPlaybackId={(lesson as any).muxPlaybackId}
           thumbnailUrl={lesson.imageUrl || lesson.thumbnailUrl}
           title={lesson.title}
           className="w-full h-full"

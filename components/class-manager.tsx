@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
-import { ClassVideoInput } from '@/components/class-video-input';
+import { ClassVideoInputMux } from '@/components/class-video-input-mux';
 import { Plus, Play, Edit, Trash2, Clock } from 'lucide-react';
 import Link from 'next/link';
 
@@ -21,6 +21,10 @@ interface ClassItem {
   videoPath: string | null;
   videoUrl: string | null;
   videoType: string | null;
+  muxAssetId: string | null;
+  muxPlaybackId: string | null;
+  muxUploadId: string | null;
+  muxStatus: string | null;
   imageUrl: string | null;
   thumbnailUrl: string | null;
   course: {
@@ -152,6 +156,10 @@ export function ClassManager({ userId, locale = 'ru' }: ClassManagerProps) {
     videoPath: '',
     videoUrl: '',
     videoType: '',
+    muxAssetId: '',
+    muxPlaybackId: '',
+    muxUploadId: '',
+    muxStatus: '',
     imageUrl: '', // This is our cover image
     thumbnailUrl: '',
   });
@@ -184,6 +192,10 @@ export function ClassManager({ userId, locale = 'ru' }: ClassManagerProps) {
       videoPath: '',
       videoUrl: '',
       videoType: '',
+      muxAssetId: '',
+      muxPlaybackId: '',
+      muxUploadId: '',
+      muxStatus: '',
       imageUrl: '',
       thumbnailUrl: '',
     });
@@ -208,6 +220,10 @@ export function ClassManager({ userId, locale = 'ru' }: ClassManagerProps) {
       videoPath: classItem.videoPath || '',
       videoUrl: classItem.videoUrl || '',
       videoType: classItem.videoType || '',
+      muxAssetId: classItem.muxAssetId || '',
+      muxPlaybackId: classItem.muxPlaybackId || '',
+      muxUploadId: classItem.muxUploadId || '',
+      muxStatus: classItem.muxStatus || '',
       imageUrl: classItem.imageUrl || '',
       thumbnailUrl: classItem.thumbnailUrl || '',
     });
@@ -235,6 +251,10 @@ export function ClassManager({ userId, locale = 'ru' }: ClassManagerProps) {
           videoPath: formData.videoPath || null,
           videoUrl: formData.videoUrl || null,
           videoType: formData.videoType || null,
+          muxAssetId: formData.muxAssetId || null,
+          muxPlaybackId: formData.muxPlaybackId || null,
+          muxUploadId: formData.muxUploadId || null,
+          muxStatus: formData.muxStatus || null,
           imageUrl: formData.imageUrl || null,
           thumbnailUrl: formData.thumbnailUrl || null,
         }),
@@ -392,18 +412,26 @@ export function ClassManager({ userId, locale = 'ru' }: ClassManagerProps) {
 
               {/* Video Upload Section */}
               <div className="border-t pt-6">
-                <ClassVideoInput
+                <ClassVideoInputMux
                   userId={userId}
                   initialVideoPath={formData.videoPath || undefined}
                   initialVideoUrl={formData.videoUrl || undefined}
                   initialVideoType={formData.videoType || undefined}
-                  onVideoChange={(videoPath, videoUrl, videoType, thumbnailUrl) => {
+                  initialMuxAssetId={formData.muxAssetId || undefined}
+                  initialMuxPlaybackId={formData.muxPlaybackId || undefined}
+                  initialMuxUploadId={formData.muxUploadId || undefined}
+                  initialMuxStatus={formData.muxStatus || undefined}
+                  onVideoChange={(data) => {
                     setFormData({
                       ...formData,
-                      videoPath: videoPath || '',
-                      videoUrl: videoUrl || '',
-                      videoType: videoType || '',
-                      thumbnailUrl: thumbnailUrl || '',
+                      videoPath: data.videoPath || '',
+                      videoUrl: data.videoUrl || '',
+                      videoType: data.videoType || '',
+                      muxAssetId: data.muxAssetId || '',
+                      muxPlaybackId: data.muxPlaybackId || '',
+                      muxUploadId: data.muxUploadId || '',
+                      muxStatus: data.muxStatus || '',
+                      thumbnailUrl: data.thumbnailUrl || '',
                     });
                   }}
                   onCoverImageChange={(coverImage) => setFormData({...formData, imageUrl: coverImage || ''})}

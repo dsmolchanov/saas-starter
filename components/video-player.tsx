@@ -4,12 +4,14 @@ import { useState } from 'react';
 import { Play, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { getVideoSource, VideoInfo } from '@/lib/video-utils';
+import MuxPlayer from '@mux/mux-player-react';
 import { cn } from '@/lib/utils';
 
 interface VideoPlayerProps {
   videoPath?: string | null;
   videoUrl?: string | null;
   videoType?: string | null;
+  muxPlaybackId?: string | null;
   thumbnailUrl?: string | null;
   title: string;
   className?: string;
@@ -21,6 +23,7 @@ export function VideoPlayer({
   videoPath,
   videoUrl,
   videoType,
+  muxPlaybackId,
   thumbnailUrl,
   title,
   className,
@@ -30,7 +33,7 @@ export function VideoPlayer({
   const [isLoading, setIsLoading] = useState(false);
   const [hasError, setHasError] = useState(false);
 
-  const videoSource = getVideoSource(videoPath || null, videoUrl || null, videoType || null);
+  const videoSource = getVideoSource(videoPath || null, videoUrl || null, videoType || null, muxPlaybackId || null);
 
   if (!videoSource) {
     return (
@@ -74,6 +77,23 @@ export function VideoPlayer({
 
   // Render based on video type
   switch (videoSource.type) {
+    case 'mux':
+      // Use MUX Player for optimal streaming
+      return (
+        <div className={cn("w-full aspect-video relative", className)}>
+          <MuxPlayer
+            playbackId={muxPlaybackId!}
+            autoPlay={autoplay}
+            poster={thumbnailUrl || videoSource.thumbnailUrl}
+            className="w-full h-full rounded-lg"
+            style={{ aspectRatio: '16/9' }}
+            onLoadStart={handleLoadStart}
+            onLoadedData={handleLoadedData}
+            onError={handleError}
+          />
+        </div>
+      );
+
     case 'youtube':
     case 'vimeo':
       return (

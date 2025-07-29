@@ -1,4 +1,4 @@
-export type VideoType = 'upload' | 'youtube' | 'vimeo' | 'external';
+export type VideoType = 'upload' | 'youtube' | 'vimeo' | 'external' | 'mux';
 
 export interface VideoInfo {
   type: VideoType;
@@ -95,12 +95,29 @@ export function isValidVideoUrl(url: string): boolean {
 /**
  * Gets the appropriate video source for the HTML5 video element or iframe
  */
-export function getVideoSource(videoPath: string | null, videoUrl: string | null, videoType: string | null): VideoInfo | null {
-  if (videoUrl && videoType && videoType !== 'upload') {
+export function getVideoSource(
+  videoPath: string | null, 
+  videoUrl: string | null, 
+  videoType: string | null,
+  muxPlaybackId?: string | null
+): VideoInfo | null {
+  // Handle MUX videos (only for uploaded files)
+  if (videoType === 'mux' && muxPlaybackId) {
+    return {
+      type: 'mux',
+      url: `https://stream.mux.com/${muxPlaybackId}.m3u8`,
+      embedUrl: `https://stream.mux.com/${muxPlaybackId}.m3u8`,
+      thumbnailUrl: `https://image.mux.com/${muxPlaybackId}/thumbnail.jpg`,
+    };
+  }
+
+  // Handle external URLs (YouTube, Vimeo, Rutube, etc.) - no MUX processing
+  if (videoUrl && videoType && videoType !== 'upload' && videoType !== 'mux') {
     return parseVideoUrl(videoUrl);
   }
   
-  if (videoPath) {
+  // Handle legacy Supabase uploads
+  if (videoPath && videoType === 'upload') {
     return {
       type: 'upload',
       url: getSupabaseVideoUrl(videoPath)
@@ -108,6 +125,33 @@ export function getVideoSource(videoPath: string | null, videoUrl: string | null
   }
   
   return null;
+}
+
+/**
+ * Get MUX streaming URL from playback ID
+ */
+export function getMuxStreamingUrl(playbackId: string): string {
+  return `https://stream.mux.com/${playbackId}.m3u8`;
+}
+
+/**
+ * Get MUX thumbnail URL from playback ID
+ */
+export function getMuxThumbnailUrl(playbackId: string, options: {
+  time?: number;
+  width?: number;
+  height?: number;
+  fit_mode?: 'preserve' | 'crop' | 'pad';
+} = {}): string {
+  const params = new URLSearchParams();
+  
+  if (options.time !== undefined) params.set('time', options.time.toString());
+  if (options.width) params.set('width', options.width.toString());
+  if (options.height) params.set('height', options.height.toString());
+  if (options.fit_mode) params.set('fit_mode', options.fit_mode);
+
+  const queryString = params.toString();
+  return `https://image.mux.com/${playbackId}/thumbnail.jpg${queryString ? `?${queryString}` : ''}`;
 } 
 
 /**

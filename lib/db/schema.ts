@@ -91,9 +91,14 @@ export const classes = pgTable('classes', {
   durationMin: integer('duration_min').notNull().default(0),
   videoPath: text('video_path'), // For uploaded videos (legacy support)
   videoUrl: text('video_url'), // For external URLs (YouTube, Vimeo, etc.)
-  videoType: varchar('video_type', { length: 20 }).default('upload'), // 'upload', 'youtube', 'vimeo', 'external'
+  videoType: varchar('video_type', { length: 20 }).default('upload'), // 'upload', 'youtube', 'vimeo', 'external', 'mux'
   thumbnailUrl: text('thumbnail_url'),
   imageUrl: text('image_url'),
+  // MUX integration fields
+  muxAssetId: text('mux_asset_id'), // MUX Asset ID
+  muxPlaybackId: text('mux_playback_id'), // MUX Playback ID for streaming
+  muxUploadId: text('mux_upload_id'), // MUX Upload ID for direct uploads
+  muxStatus: varchar('mux_status', { length: 20 }), // 'preparing', 'ready', 'errored'
   difficulty: varchar('difficulty', { length: 20 }),
   intensity: varchar('intensity', { length: 20 }),
   style: varchar('style', { length: 50 }),
