@@ -217,7 +217,8 @@ export function ClassVideoInputMux({
       });
 
       if (!response.ok) {
-        throw new Error('Failed to create upload URL');
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to create upload URL');
       }
 
       const { uploadUrl, uploadId } = await response.json();
@@ -234,7 +235,8 @@ export function ClassVideoInputMux({
 
     } catch (error) {
       console.error('Error creating MUX upload:', error);
-      alert('Failed to create upload URL');
+      const errorMessage = error instanceof Error ? error.message : 'Failed to create upload URL';
+      alert(`Upload Error: ${errorMessage}`);
     } finally {
       setIsCreatingUpload(false);
     }

@@ -13,9 +13,20 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Check MUX environment variables
+    if (!process.env.MUX_TOKEN_ID || !process.env.MUX_TOKEN_SECRET) {
+      console.error('MUX credentials not configured. Missing MUX_TOKEN_ID or MUX_TOKEN_SECRET');
+      return NextResponse.json(
+        { error: 'MUX service not properly configured. Please contact administrator.' },
+        { status: 500 }
+      );
+    }
+
     // Get request body
     const body = await request.json();
     const { corsOrigin } = body;
+
+    console.log('Creating MUX upload with CORS origin:', corsOrigin || process.env.NEXT_PUBLIC_SITE_URL);
 
     // Create MUX direct upload
     const muxService = getMuxService();
@@ -29,6 +40,8 @@ export async function POST(request: NextRequest) {
       },
     });
 
+    console.log('MUX upload created successfully:', uploadData.uploadId);
+
     return NextResponse.json({
       uploadId: uploadData.uploadId,
       uploadUrl: uploadData.uploadUrl,
@@ -36,6 +49,27 @@ export async function POST(request: NextRequest) {
 
   } catch (error) {
     console.error('Error creating MUX upload:', error);
+    
+    // Provide more specific error messages
+    if (error instanceof Error) {
+      if (error.message.includes('credentials')) {
+        return NextResponse.json(
+          { error: 'MUX authentication failed. Please check API credentials.' },
+          { status: 500 }
+        );
+      } else if (error.message.includes('network') || error.message.includes('fetch')) {
+        return NextResponse.json(
+          { error: 'Network error connecting to MUX. Please try again.' },
+          { status: 500 }
+        );
+      } else {
+        return NextResponse.json(
+          { error: `MUX API error: ${error.message}` },
+          { status: 500 }
+        );
+      }
+    }
+
     return NextResponse.json(
       { error: 'Failed to create upload URL' },
       { status: 500 }
