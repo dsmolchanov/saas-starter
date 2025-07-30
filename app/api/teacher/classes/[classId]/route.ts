@@ -84,9 +84,9 @@ export async function PUT(
     } = body;
 
     // Validate required fields
-    if (!title || !durationMin) {
+    if (!title) {
       return NextResponse.json({ 
-        error: 'Title and duration are required' 
+        error: 'Title is required' 
       }, { status: 400 });
     }
 
