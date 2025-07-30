@@ -15,6 +15,7 @@ import { SimpleLanguageToggle } from '@/components/simple-language-toggle';
 import Link from 'next/link';
 import { ClearAuthErrors } from '@/components/clear-auth-errors';
 import { headers } from 'next/headers';
+import { TabManager } from '@/components/tab-manager';
 
 // This page needs dynamic rendering for user authentication
 export const dynamic = 'force-dynamic';
@@ -61,10 +62,16 @@ function getTranslations(locale: string) {
   return translations[locale as keyof typeof translations] || translations.ru;
 }
 
-export default async function MyPracticePage() {
+export default async function MyPracticePage({
+  searchParams
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+}) {
   const user = await getUser();
   const currentLocale = await getCurrentLocale();
   const t = getTranslations(currentLocale);
+  const resolvedSearchParams = await searchParams;
+  const activeTab = (resolvedSearchParams.tab as string) || 'teacher';
   
   if (!user) {
     return (
@@ -258,7 +265,7 @@ export default async function MyPracticePage() {
             </div>
 
             {/* Role switching tabs for admins */}
-            <Tabs defaultValue="admin" className="w-full mt-4">
+            <TabManager defaultValue={activeTab} className="w-full mt-4">
               <TabsList className="w-full justify-start bg-transparent border-b border-border rounded-none p-0">
                 <TabsTrigger 
                   value="admin" 
@@ -291,7 +298,7 @@ export default async function MyPracticePage() {
               <TabsContent value="student" className="mt-6">
                 <StudentPracticeView />
               </TabsContent>
-            </Tabs>
+            </TabManager>
           </div>
         </div>
       </div>
@@ -323,7 +330,7 @@ export default async function MyPracticePage() {
             </div>
 
             {/* Role switching tabs for teachers */}
-            <Tabs defaultValue="teacher" className="w-full mt-4">
+            <TabManager defaultValue={activeTab} className="w-full mt-4">
               <TabsList className="w-full justify-start bg-transparent border-b border-border rounded-none p-0">
                 <TabsTrigger 
                   value="teacher" 
@@ -346,7 +353,7 @@ export default async function MyPracticePage() {
               <TabsContent value="student" className="mt-6">
                 <StudentPracticeView />
               </TabsContent>
-            </Tabs>
+            </TabManager>
           </div>
         </div>
       </div>

@@ -134,7 +134,7 @@ export default async function ClassPage({ params }: { params: Promise<{ id: stri
             asChild
             className="gap-2 hover:bg-muted"
           >
-            <Link href="/my_practice">
+            <Link href="/my_practice?tab=teacher">
               <ArrowLeft className="w-4 h-4" />
               {t.backToTeacherView}
             </Link>
@@ -145,7 +145,7 @@ export default async function ClassPage({ params }: { params: Promise<{ id: stri
             asChild
             className="gap-2"
           >
-            <Link href={`/my_practice?edit=${id}`}>
+            <Link href={`/my_practice?tab=teacher&edit=${id}`}>
               <Edit className="w-4 h-4" />
               {t.editClass}
             </Link>
