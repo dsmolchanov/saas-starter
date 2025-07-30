@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -148,6 +149,8 @@ function getTranslations(locale: string = 'ru') {
 }
 
 export function ClassManager({ userId, locale = 'ru', editClassId }: ClassManagerProps) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const [classes, setClasses] = useState<ClassItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
@@ -217,6 +220,15 @@ export function ClassManager({ userId, locale = 'ru', editClassId }: ClassManage
     setEditingClass(null);
     setShowForm(false);
     setError('');
+    
+    // Clear edit parameter from URL when closing the form
+    if (searchParams?.get('edit')) {
+      const current = new URLSearchParams(searchParams ? Array.from(searchParams.entries()) : []);
+      current.delete('edit');
+      const search = current.toString();
+      const query = search ? `?${search}` : '';
+      router.push(`/my_practice${query}`, { scroll: false });
+    }
   };
 
   const handleCreate = () => {
