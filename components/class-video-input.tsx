@@ -419,19 +419,65 @@ export function ClassVideoInput({
         </TabsList>
 
         <TabsContent value="upload" className="space-y-3">
-          <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
-            <Upload className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-            <p className="text-sm text-gray-600 mb-3">{t.uploadVideoFile}</p>
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => fileInputRef.current?.click()}
-              disabled={uploading}
-              className="gap-2"
-            >
-              <Video className="w-4 h-4" />
-              {uploading ? t.uploading : t.chooseVideoFile}
-            </Button>
+          <div 
+            className={cn(
+              "relative border-2 border-dashed rounded-lg p-8 text-center transition-all duration-200 cursor-pointer group",
+              uploading ? "border-blue-300 bg-blue-50" : "border-gray-300 hover:border-blue-400 hover:bg-blue-50/50",
+              "focus-within:ring-2 focus-within:ring-blue-500 focus-within:ring-offset-2"
+            )}
+            onClick={() => !uploading && fileInputRef.current?.click()}
+            onDragOver={(e) => {
+              e.preventDefault();
+              e.currentTarget.classList.add('border-blue-400', 'bg-blue-50');
+            }}
+            onDragLeave={(e) => {
+              e.preventDefault();
+              e.currentTarget.classList.remove('border-blue-400', 'bg-blue-50');
+            }}
+            onDrop={(e) => {
+              e.preventDefault();
+              e.currentTarget.classList.remove('border-blue-400', 'bg-blue-50');
+              const files = e.dataTransfer.files;
+              if (files.length > 0 && files[0].type.startsWith('video/')) {
+                const event = { target: { files } } as React.ChangeEvent<HTMLInputElement>;
+                handleFileUpload(event);
+              }
+            }}
+          >
+            <div className="flex flex-col items-center space-y-4">
+              <div className={cn(
+                "p-4 rounded-full transition-colors duration-200",
+                uploading ? "bg-blue-100" : "bg-gray-100 group-hover:bg-blue-100"
+              )}>
+                {uploading ? (
+                  <div className="w-8 h-8 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
+                ) : (
+                  <Video className="w-8 h-8 text-gray-500 group-hover:text-blue-600" />
+                )}
+              </div>
+              
+              <div className="space-y-2">
+                <h3 className="text-lg font-semibold text-gray-700 group-hover:text-blue-700">
+                  {uploading ? t.uploading : t.uploadVideoFile}
+                </h3>
+                <p className="text-sm text-gray-500 max-w-sm">
+                  {uploading 
+                    ? "Processing your video..." 
+                    : "Drag and drop your video file here, or click to browse"
+                  }
+                </p>
+                <p className="text-xs text-gray-400">
+                  Supports MP4, MOV, AVI and other video formats
+                </p>
+              </div>
+              
+              {!uploading && (
+                <div className="flex items-center space-x-2 text-sm text-gray-500">
+                  <Upload className="w-4 h-4" />
+                  <span>{t.chooseVideoFile}</span>
+                </div>
+              )}
+            </div>
           </div>
           
           <input
