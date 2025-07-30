@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ClassVideoInputMux } from '@/components/class-video-input-mux';
 import { CoverImageUpload } from '@/components/cover-image-upload';
 import { Plus, Play, Edit, Trash2, Clock } from 'lucide-react';
@@ -47,6 +48,10 @@ interface ClassManagerProps {
   editClassId?: string;
 }
 
+// Enum definitions
+const DIFFICULTY_LEVELS = ['beginner', 'intermediate', 'advanced'] as const;
+const INTENSITY_LEVELS = ['low', 'medium', 'high'] as const;
+
 // Locale-aware translations for ClassManager
 function getTranslations(locale: string = 'ru') {
   const translations = {
@@ -64,9 +69,17 @@ function getTranslations(locale: string = 'ru') {
       duration: 'Продолжительность (минуты)',
       durationPlaceholder: '30',
       difficulty: 'Сложность',
-      difficultyPlaceholder: 'Начинающий',
+      selectDifficulty: 'Выберите сложность',
       intensity: 'Интенсивность',
-      intensityPlaceholder: 'Низкая',
+      selectIntensity: 'Выберите интенсивность',
+      // Difficulty levels
+      beginner: 'Начинающий',
+      intermediate: 'Средний',
+      advanced: 'Продвинутый',
+      // Intensity levels
+      low: 'Низкая',
+      medium: 'Средняя',
+      high: 'Высокая',
       cancel: 'Отмена',
       save: 'Сохранить',
       saving: 'Сохранение...',
@@ -95,9 +108,17 @@ function getTranslations(locale: string = 'ru') {
       duration: 'Duration (minutes)',
       durationPlaceholder: '30',
       difficulty: 'Difficulty',
-      difficultyPlaceholder: 'Beginner',
+      selectDifficulty: 'Select difficulty',
       intensity: 'Intensity',
-      intensityPlaceholder: 'Low',
+      selectIntensity: 'Select intensity',
+      // Difficulty levels
+      beginner: 'Beginner',
+      intermediate: 'Intermediate',
+      advanced: 'Advanced',
+      // Intensity levels
+      low: 'Low',
+      medium: 'Medium',
+      high: 'High',
       cancel: 'Cancel',
       save: 'Save',
       saving: 'Saving...',
@@ -126,9 +147,17 @@ function getTranslations(locale: string = 'ru') {
       duration: 'Duración (minutos)',
       durationPlaceholder: '30',
       difficulty: 'Dificultad',
-      difficultyPlaceholder: 'Principiante',
+      selectDifficulty: 'Seleccionar dificultad',
       intensity: 'Intensidad',
-      intensityPlaceholder: 'Baja',
+      selectIntensity: 'Seleccionar intensidad',
+      // Difficulty levels
+      beginner: 'Principiante',
+      intermediate: 'Intermedio',
+      advanced: 'Avanzado',
+      // Intensity levels
+      low: 'Baja',
+      medium: 'Media',
+      high: 'Alta',
       cancel: 'Cancelar',
       save: 'Guardar',
       saving: 'Guardando...',
@@ -403,22 +432,40 @@ export function ClassManager({ userId, locale = 'ru', editClassId }: ClassManage
 
                 <div className="space-y-2">
                   <Label htmlFor="difficulty">{t.difficulty}</Label>
-                  <Input
-                    id="difficulty"
+                  <Select
                     value={formData.difficulty}
-                    onChange={(e) => setFormData({...formData, difficulty: e.target.value})}
-                    placeholder={t.difficultyPlaceholder}
-                  />
+                    onValueChange={(value) => setFormData({...formData, difficulty: value})}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder={t.selectDifficulty} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {DIFFICULTY_LEVELS.map((level) => (
+                        <SelectItem key={level} value={level}>
+                          {t[level as keyof typeof t]}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
 
                 <div className="space-y-2">
                   <Label htmlFor="intensity">{t.intensity}</Label>
-                  <Input
-                    id="intensity"
+                  <Select
                     value={formData.intensity}
-                    onChange={(e) => setFormData({...formData, intensity: e.target.value})}
-                    placeholder={t.intensityPlaceholder}
-                  />
+                    onValueChange={(value) => setFormData({...formData, intensity: value})}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder={t.selectIntensity} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {INTENSITY_LEVELS.map((level) => (
+                        <SelectItem key={level} value={level}>
+                          {t[level as keyof typeof t]}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
 
@@ -433,15 +480,17 @@ export function ClassManager({ userId, locale = 'ru', editClassId }: ClassManage
                 />
               </div>
 
-              {/* Cover Image Upload Section */}
-              <div className="border-t pt-6">
-                <CoverImageUpload
-                  key={formData.imageUrl} // Force re-render when imageUrl changes
-                  initialImage={formData.imageUrl}
-                  onImageChange={(imageUrl) => setFormData(prev => ({...prev, imageUrl: imageUrl || ''}))}
-                  locale={locale}
-                />
-              </div>
+              {/* Cover Image Upload Section - Only show when editing existing class */}
+              {editingClass && (
+                <div className="border-t pt-6">
+                  <CoverImageUpload
+                    key={formData.imageUrl} // Force re-render when imageUrl changes
+                    initialImage={formData.imageUrl}
+                    onImageChange={(imageUrl) => setFormData(prev => ({...prev, imageUrl: imageUrl || ''}))}
+                    locale={locale}
+                  />
+                </div>
+              )}
 
               {/* Video Upload Section */}
               <div className="border-t pt-6">
@@ -561,12 +610,12 @@ export function ClassManager({ userId, locale = 'ru', editClassId }: ClassManage
                         <div className="flex items-center gap-2 mb-2">
                           {classItem.difficulty && (
                             <Badge variant="secondary">
-                              {classItem.difficulty}
+                              {t[classItem.difficulty as keyof typeof t] || classItem.difficulty}
                             </Badge>
                           )}
                           {classItem.intensity && (
                             <Badge variant="outline">
-                              {classItem.intensity}
+                              {t[classItem.intensity as keyof typeof t] || classItem.intensity}
                             </Badge>
                           )}
                         </div>

@@ -49,6 +49,7 @@ import {
   PlayCircle,
   ExternalLink
 } from 'lucide-react';
+import { CoverImageUpload } from '@/components/cover-image-upload';
 import { useRouter } from 'next/navigation';
 
 interface Course {
@@ -123,7 +124,10 @@ function getTranslations(locale: string = 'ru') {
       level: 'Уровень',
       category: 'Категория',
       imageUrl: 'URL изображения',
-      coverUrl: 'URL обложки'
+      coverUrl: 'URL обложки',
+      courseCoverImage: 'Обложка курса',
+      uploadCourseCover: 'Загрузить обложку курса',
+      courseCoverDescription: 'Обложка помогает студентам понять содержание курса. Если не загружена, будет использована обложка первого занятия.'
     },
     en: {
       myCourses: 'My Courses',
@@ -149,7 +153,10 @@ function getTranslations(locale: string = 'ru') {
       level: 'Level',
       category: 'Category',
       imageUrl: 'Image URL',
-      coverUrl: 'Cover URL'
+      coverUrl: 'Cover URL',
+      courseCoverImage: 'Course Cover Image',
+      uploadCourseCover: 'Upload Course Cover',
+      courseCoverDescription: 'Cover image helps students understand the course content. If not uploaded, the first class cover will be used.'
     },
     'es-MX': {
       myCourses: 'Mis Cursos',
@@ -175,7 +182,10 @@ function getTranslations(locale: string = 'ru') {
       level: 'Nivel',
       category: 'Categoría',
       imageUrl: 'URL de Imagen',
-      coverUrl: 'URL de Portada'
+      coverUrl: 'URL de Portada',
+      courseCoverImage: 'Imagen de Portada del Curso',
+      uploadCourseCover: 'Subir Portada del Curso',
+      courseCoverDescription: 'La imagen de portada ayuda a los estudiantes a entender el contenido del curso. Si no se sube, se usará la portada de la primera clase.'
     }
   };
   
@@ -726,13 +736,10 @@ export function CourseManager({ locale = 'ru' }: CourseManagerProps = {}) {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="coverUrl">Course Cover Image URL (optional)</Label>
-                  <Input
-                    id="coverUrl"
-                    type="url"
-                    value={formData.coverUrl}
-                    onChange={(e) => setFormData({...formData, coverUrl: e.target.value})}
-                    placeholder="https://example.com/cover.jpg"
+                  <CoverImageUpload
+                    initialImage={formData.coverUrl}
+                    onImageChange={(imageUrl) => setFormData({...formData, coverUrl: imageUrl || ''})}
+                    locale={locale}
                   />
                 </div>
 

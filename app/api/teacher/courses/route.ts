@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getUser } from '@/lib/db/queries';
 import { db } from '@/lib/db/drizzle';
-import { courses, categories } from '@/lib/db/schema';
+import { courses, categories, classes } from '@/lib/db/schema';
 import { eq, and } from 'drizzle-orm';
 
 // GET - Fetch teacher's courses
@@ -65,6 +65,26 @@ export async function POST(request: NextRequest) {
       }, { status: 400 });
     }
 
+    // Handle fallback logic for cover image
+    let finalCoverUrl = coverUrl?.trim() || null;
+    
+    // If no cover image provided, get the first class's cover image from this teacher
+    if (!finalCoverUrl) {
+      const firstClassWithCover = await db.query.classes.findFirst({
+        where: eq(classes.teacherId, user.id),
+        columns: {
+          imageUrl: true,
+          thumbnailUrl: true,
+        },
+        orderBy: (classes, { desc }) => [desc(classes.createdAt)],
+      });
+      
+      // Use cover image or thumbnail from the first available class
+      if (firstClassWithCover) {
+        finalCoverUrl = firstClassWithCover.imageUrl || firstClassWithCover.thumbnailUrl || null;
+      }
+    }
+
     const [newCourse] = await db
       .insert(courses)
       .values({
@@ -74,7 +94,7 @@ export async function POST(request: NextRequest) {
         description: description?.trim() || null,
         level: level?.trim() || null,
         imageUrl: imageUrl?.trim() || null,
-        coverUrl: coverUrl?.trim() || null,
+        coverUrl: finalCoverUrl,
         isPublished: 0, // Default to draft
       })
       .returning();
