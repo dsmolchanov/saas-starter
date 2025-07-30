@@ -188,6 +188,123 @@
   }
 }
 
+/* Enhanced UI Components Utilities */
+@layer utilities {
+  /* Gradient text effects */
+  .text-gradient {
+    @apply bg-gradient-to-r from-[rgb(74,140,120)] to-[rgb(159,178,176)] bg-clip-text text-transparent;
+  }
+  
+  /* Zen color variables for homepage gradients */
+  :root {
+    --color-zen-3: rgb(199, 214, 212);
+    --color-zen-4: rgb(159, 178, 176);
+    --color-zen-5: rgb(74, 140, 120);
+  }
+  
+  /* Zen color utility classes */
+  .text-zen-mint { color: hsl(158 35% 35%); }
+  .text-zen-dodger { color: hsl(168 30% 42%); }
+  .text-zen-malibu { color: hsl(168 23% 54%); }
+  .text-zen-anakiwa { color: hsl(142 39% 74%); }
+  .text-zen-fog { color: hsl(154 48% 88%); }
+  
+  .bg-zen-mint { background-color: hsl(158 35% 35%); }
+  .bg-zen-dodger { background-color: hsl(168 30% 42%); }
+  .bg-zen-malibu { background-color: hsl(168 23% 54%); }
+  .bg-zen-anakiwa { background-color: hsl(142 39% 74%); }
+  .bg-zen-fog { background-color: hsl(154 48% 88%); }
+  
+  .from-zen-fog { --tw-gradient-from: hsl(154 48% 88%); }
+  .to-zen-anakiwa { --tw-gradient-to: hsl(142 39% 74%); }
+  .from-zen-fog\/50 { --tw-gradient-from: hsl(154 48% 88% / 0.5); }
+  .to-zen-anakiwa\/50 { --tw-gradient-to: hsl(142 39% 74% / 0.5); }
+  .from-zen-mint { --tw-gradient-from: hsl(158 35% 35%); }
+  .via-zen-dodger { --tw-gradient-via: hsl(168 30% 42%); }
+  .to-zen-malibu { --tw-gradient-to: hsl(168 23% 54%); }
+  
+  /* Zen gradient utilities defined later in file - see original zen-gradient section */
+  
+  /* Modern box shadows */
+  .shadow-glow {
+    box-shadow: 0 0 15px -3px rgba(74, 140, 120, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  }
+  
+  /* Backdrop blur utilities */
+  .backdrop-blur-modern {
+    backdrop-filter: blur(12px) saturate(150%);
+  }
+  
+  /* Animation utilities */
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+  
+  .animate-pulse-slow {
+    animation: pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+  
+  .animate-fade-in {
+    animation: fadeIn 1s ease-out;
+  }
+  
+  .animate-fade-in-delay {
+    animation: fadeIn 1s ease-out 0.1s both;
+  }
+  
+  .animate-fade-in-up {
+    animation: fadeInUp 0.8s ease-out;
+  }
+}
+
+/* Keyframes for animations */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Additional component-specific styles */
+@layer components {
+  /* Enhanced card styles */
+  .card-modern {
+    @apply bg-white/80 backdrop-blur-sm border border-white/20 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300;
+  }
+  
+  /* Modern button variants */
+  .btn-gradient {
+    @apply bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-medium px-6 py-3 rounded-lg transform hover:scale-105 transition-all duration-200;
+  }
+  
+  /* Glass morphism effect */
+  .glass {
+    @apply bg-white/10 backdrop-blur-md border border-white/20;
+  }
+}
+
 /*
   ---break---
 */

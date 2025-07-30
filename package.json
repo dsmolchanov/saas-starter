@@ -39,6 +39,7 @@
     "dotenv": "^16.5.0",
     "drizzle-kit": "^0.31.4",
     "drizzle-orm": "^0.44.2",
+    "framer-motion": "^12.23.11",
     "fs": "0.0.1-security",
     "jose": "^6.0.11",
     "lucide-react": "^0.511.0",

@@ -6,6 +6,8 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { SimpleLanguageToggle } from '@/components/simple-language-toggle';
 import { MobileNav } from '@/components/mobile-nav';
+import { HeroSimple } from '@/components/ui/hero-simple';
+import { EnhancedCardSimple } from '@/components/ui/enhanced-card-simple';
 import { 
   Heart, 
   Settings, 
@@ -207,38 +209,6 @@ function getExtendedTranslations(locale: string = 'ru') {
   return translations[locale as keyof typeof translations] || translations.en;
 }
 
-interface FeatureCardProps {
-  icon: React.ReactNode;
-  title: string;
-  description: string;
-  image: string;
-}
-
-function FeatureCard({ icon, title, description, image }: FeatureCardProps) {
-  return (
-    <Card className="overflow-hidden hover:shadow-lg transition-all duration-300 hover:-translate-y-1 border-0 shadow-md">
-      <div className="aspect-[4/3] relative">
-        <Image
-          src={image}
-          alt={title}
-          fill
-          className="object-cover"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
-        <div className="absolute bottom-4 left-4">
-          <div className="bg-white/90 backdrop-blur-sm rounded-full p-3 mb-3">
-            {icon}
-          </div>
-        </div>
-      </div>
-      <CardContent className="p-6">
-        <h3 className="text-xl font-semibold mb-3">{title}</h3>
-        <p className="text-gray-600 leading-relaxed">{description}</p>
-      </CardContent>
-    </Card>
-  );
-}
-
 export default async function HomePage({ params }: { params?: { locale?: string } } = {}) {
   // Extract locale from URL or default to 'ru'
   const currentLocale = params?.locale || 'ru';
@@ -249,73 +219,69 @@ export default async function HomePage({ params }: { params?: { locale?: string 
   // Get extended translations for homepage content
   const t = getExtendedTranslations(currentLocale);
 
+  // Hover effect items
+  const hoverItems = [
+    {
+      title: t.smartPlaylists,
+      description: t.smartPlaylistsDesc,
+      icon: <PlayCircle className="h-6 w-6 text-purple-500" />,
+      image: "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?auto=format&fit=crop&w=500&q=80",
+    },
+    {
+      title: t.forFamily,
+      description: t.forFamilyDesc,
+      icon: <Users className="h-6 w-6 text-zen-dodger" />,
+      image: "https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?auto=format&fit=crop&w=500&q=80",
+    },
+    {
+      title: t.liveWebinars,
+      description: t.liveWebinarsDesc,
+      icon: <Star className="h-6 w-6 text-yellow-500" />,
+      image: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&w=500&q=80",
+    },
+  ];
+
   return (
     <div className="flex flex-col min-h-[100dvh]">
-      {/* Header with Language Toggle */}
-      <header className="absolute top-0 left-0 right-0 z-50 bg-transparent">
+      {/* Enhanced Header with Language Toggle */}
+      <header className="absolute top-0 left-0 right-0 z-50 bg-transparent backdrop-blur-sm">
         <div className="container mx-auto px-4 py-4">
-          <div className="flex justify-end">
-            <SimpleLanguageToggle />
+          <div className="flex justify-between items-center">
+            <div className="flex items-center space-x-2 animate-fade-in">
+              <div className="w-8 h-8 zen-gradient rounded-full flex items-center justify-center">
+                <Sparkles className="w-4 h-4 text-white animate-pulse" />
+              </div>
+              <span className="text-white font-bold text-lg">Dzen Yoga</span>
+            </div>
+            <div className="animate-fade-in-delay">
+              <SimpleLanguageToggle />
+            </div>
           </div>
         </div>
       </header>
 
       {/* Main Content */}
       <main className="flex-1 pb-16">
-        {/* Hero Section */}
-        <section 
-          className="relative min-h-[90vh] overflow-hidden"
-          style={{
-            background: 'linear-gradient(135deg, var(--color-zen-5), var(--color-zen-4), var(--color-zen-3))'
-          }}
-        >
-          <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?auto=format&fit=crop&w=2000&q=80')] bg-cover bg-center opacity-30" />
-          
-          <div className="relative container mx-auto px-4 py-20 flex flex-col justify-center min-h-[90vh]">
-            <div className="max-w-4xl mx-auto text-center text-white">
-              <h1 className="text-5xl sm:text-6xl md:text-7xl font-bold leading-tight mb-8 drop-shadow-2xl">
-                {messages.homeTitle || t.title}
-                <span className="bg-gradient-to-r from-yellow-400 to-pink-400 bg-clip-text text-transparent block">
-                  {messages.homeSubtitle || t.subtitle}
-                </span>
-              </h1>
-              
-              <p className="text-xl md:text-2xl text-gray-200 mb-12 max-w-3xl mx-auto leading-relaxed">
-                {t.description}
-              </p>
-              
-              <div className="flex flex-col sm:flex-row gap-6 justify-center">
-                <Button 
-                  asChild 
-                  size="lg" 
-                  className="text-lg px-8 py-4 bg-white hover:bg-gray-100"
-                  style={{ color: 'var(--color-zen-5)' }}
-                >
-                  <Link href="/sign-up">
-                    {messages.common?.signUp || t.startTrial}
-                  </Link>
-                </Button>
-                
-                <Button 
-                  asChild 
-                  variant="outline" 
-                  size="lg"
-                  className="text-lg px-8 py-4 zen-gradient border-0 text-white hover:zen-gradient-hover transition-all duration-300"
-                >
-                  <Link href="/browse">
-                    {messages.navigation?.browse || t.browseClasses}
-                  </Link>
-                </Button>
-              </div>
-            </div>
-          </div>
-        </section>
+        {/* Enhanced Hero Section */}
+        <HeroSimple
+          title={messages.homeTitle || t.title}
+          subtitle={messages.homeSubtitle || t.subtitle}
+          description={t.description}
+          primaryButtonText={messages.common?.signUp || t.startTrial}
+          secondaryButtonText={messages.navigation?.browse || t.browseClasses}
+          primaryButtonHref="/sign-up"
+          secondaryButtonHref="/browse"
+        />
 
-        {/* Features Section */}
+        {/* Enhanced Features Section */}
         <section className="py-24 bg-gradient-to-b from-gray-50 to-white">
           <div className="container mx-auto px-4">
             <div className="text-center mb-16">
-              <h2 className="text-4xl md:text-5xl font-bold mb-6">
+              <Badge className="mb-4 bg-purple-100 text-purple-700 border-purple-200">
+                <Sparkles className="w-4 h-4 mr-2" />
+                Features
+              </Badge>
+              <h2 className="text-4xl md:text-5xl font-bold mb-6 text-gradient">
                 {t.whyLove}
               </h2>
               <p className="text-xl text-gray-600 max-w-3xl mx-auto">
@@ -324,43 +290,43 @@ export default async function HomePage({ params }: { params?: { locale?: string 
             </div>
             
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
-              <FeatureCard
-                icon={<Heart className="size-12" style={{ color: 'var(--color-zen-5)' }} />}
+              <EnhancedCardSimple
+                icon={<Heart className="h-6 w-6 text-purple-500" />}
                 title={t.findTeachers}
                 description={t.findTeachersDesc}
                 image="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=500&q=80"
               />
               
-              <FeatureCard
-                icon={<Settings className="size-12" style={{ color: 'var(--color-zen-5)' }} />}
+              <EnhancedCardSimple
+                icon={<Settings className="h-6 w-6 text-zen-dodger" />}
                 title={t.customizeEverything}
                 description={t.customizeDesc}
                 image="https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?auto=format&fit=crop&w=500&q=80"
               />
               
-              <FeatureCard
-                icon={<Clock className="size-12" style={{ color: 'var(--color-zen-5)' }} />}
+              <EnhancedCardSimple
+                icon={<Clock className="h-6 w-6 text-green-500" />}
                 title={t.perfectTiming}
                 description={t.perfectTimingDesc}
                 image="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&w=500&q=80"
               />
               
-              <FeatureCard
-                icon={<Video className="size-12" style={{ color: 'var(--color-zen-5)' }} />}
+              <EnhancedCardSimple
+                icon={<Video className="h-6 w-6 text-red-500" />}
                 title={t.crystalClear}
                 description={t.crystalClearDesc}
                 image="https://images.unsplash.com/photo-1588286840104-8957b019727f?auto=format&fit=crop&w=500&q=80"
               />
               
-              <FeatureCard
-                icon={<PlayCircle className="size-12" style={{ color: 'var(--color-zen-5)' }} />}
+              <EnhancedCardSimple
+                icon={<PlayCircle className="h-6 w-6 text-purple-500" />}
                 title={t.smartPlaylists}
                 description={t.smartPlaylistsDesc}
                 image="https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?auto=format&fit=crop&w=500&q=80"
               />
               
-              <FeatureCard
-                icon={<Users className="size-12" style={{ color: 'var(--color-zen-5)' }} />}
+              <EnhancedCardSimple
+                icon={<Users className="h-6 w-6 text-zen-dodger" />}
                 title={t.forFamily}
                 description={t.forFamilyDesc}
                 image="https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?auto=format&fit=crop&w=500&q=80"
@@ -369,69 +335,65 @@ export default async function HomePage({ params }: { params?: { locale?: string 
           </div>
         </section>
 
-        {/* Playlist Features Section */}
-        <section 
-          className="py-24"
-          style={{ background: 'linear-gradient(135deg, rgb(199, 214, 212, 0.3), rgb(159, 178, 176, 0.3))' }}
-        >
+        {/* Enhanced Playlist Features Section */}
+        <section className="py-24 bg-gradient-to-br from-zen-fog to-zen-anakiwa">
           <div className="container mx-auto px-4">
             <div className="grid lg:grid-cols-2 gap-12 items-center">
               <div>
-                <Badge className="mb-4 bg-purple-100 text-purple-700 border-purple-200">
+                <Badge className="mb-4 bg-zen-fog text-zen-mint border-zen-anakiwa">
                   <Headphones className="w-4 h-4 mr-2" />
-                  Playlist Features
+                  Smart Features
                 </Badge>
                 
-                <h2 className="text-4xl font-bold mb-6">{t.yourWay}</h2>
+                <h2 className="text-4xl font-bold mb-6 text-gradient">
+                  {t.yourWay}
+                </h2>
                 
                 <p className="text-xl text-gray-600 mb-8">
                   {t.yourWayDesc}
                 </p>
                 
                 <div className="space-y-4 mb-8">
-                  <div className="flex items-center gap-3">
-                    <CheckCircle className="w-6 h-6 text-green-500 flex-shrink-0" />
-                    <span className="text-lg">{t.favoritesCollection}</span>
-                  </div>
-                  
-                  <div className="flex items-center gap-3">
-                    <CheckCircle className="w-6 h-6 text-green-500 flex-shrink-0" />
-                    <span className="text-lg">{t.recentlyPlayed}</span>
-                  </div>
-                  
-                  <div className="flex items-center gap-3">
-                    <CheckCircle className="w-6 h-6 text-green-500 flex-shrink-0" />
-                    <span className="text-lg">{t.customPlaylists}</span>
-                  </div>
-                  
-                  <div className="flex items-center gap-3">
-                    <CheckCircle className="w-6 h-6 text-green-500 flex-shrink-0" />
-                    <span className="text-lg">{t.smartRecommendations}</span>
-                  </div>
+                  {[
+                    t.favoritesCollection,
+                    t.recentlyPlayed,
+                    t.customPlaylists,
+                    t.smartRecommendations,
+                  ].map((feature, index) => (
+                    <div key={index} className="flex items-center gap-3">
+                      <div className="w-8 h-8 zen-gradient rounded-full flex items-center justify-center">
+                        <CheckCircle className="w-5 h-5 text-white" />
+                      </div>
+                      <span className="text-lg">{feature}</span>
+                    </div>
+                  ))}
                 </div>
                 
                 <Button 
                   asChild 
-                  className="zen-gradient hover:zen-gradient-hover text-white transition-all duration-300"
+                  className="zen-gradient hover:zen-gradient-hover text-white transition-all duration-300 transform hover:scale-105"
                 >
                   <Link href="/my_practice">
-                    {messages.navigation?.myPractice || t.exploreMyPractice} <ArrowRight className="w-4 h-4 ml-2" />
+                    {messages.navigation?.myPractice || t.exploreMyPractice} 
+                    <ArrowRight className="w-4 h-4 ml-2" />
                   </Link>
                 </Button>
               </div>
               
               <div className="relative">
-                <div className="aspect-[4/5] rounded-2xl overflow-hidden shadow-2xl">
-                  <Image
-                    src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=600&q=80"
-                    alt="Yoga playlist interface"
-                    fill
-                    className="object-cover"
-                  />
+                <div className="aspect-[4/5] rounded-2xl overflow-hidden shadow-2xl bg-gradient-to-br from-zen-fog to-zen-anakiwa">
+                  <div className="p-8 h-full flex flex-col justify-center items-center">
+                    <div className="text-center animate-float">
+                      <PlayCircle className="w-16 h-16 text-zen-dodger mx-auto mb-4" />
+                      <h3 className="text-2xl font-bold text-zen-mint mb-2">My Practice</h3>
+                      <p className="text-zen-malibu">Personalized yoga journey</p>
+                    </div>
+                  </div>
                 </div>
+                
                 <div className="absolute -bottom-6 -right-6 bg-white rounded-xl shadow-lg p-4 max-w-xs">
                   <div className="flex items-center gap-2 mb-2">
-                    <CirclePlay className="w-5 h-5 text-purple-600" />
+                    <CirclePlay className="w-5 h-5 text-zen-dodger" />
                     <span className="font-semibold">Morning Flow</span>
                   </div>
                   <p className="text-sm text-gray-600">5 classes • 45 min total</p>
@@ -441,81 +403,49 @@ export default async function HomePage({ params }: { params?: { locale?: string 
           </div>
         </section>
 
-        {/* Live Connection Section */}
-        <section className="py-24 bg-white">
+        {/* Enhanced Interactive Cards Section */}
+        <section className="py-24 bg-gradient-to-br from-gray-50 to-white">
           <div className="container mx-auto px-4">
-            <div className="grid lg:grid-cols-2 gap-12 items-center">
-              <div className="relative order-2 lg:order-1">
-                <div className="aspect-[4/3] rounded-2xl overflow-hidden shadow-2xl">
-                  <Image
-                    src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&w=600&q=80"
-                    alt="Live yoga webinar"
-                    fill
-                    className="object-cover"
-                  />
-                </div>
-                <div className="absolute top-6 left-6 bg-red-500 text-white px-3 py-1 rounded-full text-sm font-medium flex items-center gap-2">
-                  <div className="w-2 h-2 bg-white rounded-full animate-pulse" />
-                  LIVE
-                </div>
-              </div>
-              
-              <div className="order-1 lg:order-2">
-                <Badge className="mb-4 bg-red-100 text-red-700 border-red-200">
-                  <Video className="w-4 h-4 mr-2" />
-                  Live Connection
-                </Badge>
-                
-                <h2 className="text-4xl font-bold mb-6">{t.connectDeeper}</h2>
-                
-                <p className="text-xl text-gray-600 mb-8">
-                  {t.connectDeeperDesc}
-                </p>
-                
-                <div className="grid sm:grid-cols-2 gap-6 mb-8">
-                  <div className="bg-gray-50 rounded-lg p-6">
-                    <Calendar className="w-8 h-8 text-blue-500 mb-3" />
-                    <h3 className="font-semibold mb-2">{t.liveWebinars}</h3>
-                    <p className="text-sm text-gray-600">
-                      {t.liveWebinarsDesc}
-                    </p>
-                  </div>
-                  
-                  <div className="bg-gray-50 rounded-lg p-6">
-                    <Star className="w-8 h-8 text-yellow-500 mb-3" />
-                    <h3 className="font-semibold mb-2">{t.privateClasses}</h3>
-                    <p className="text-sm text-gray-600">
-                      {t.privateClassesDesc}
-                    </p>
-                  </div>
-                </div>
-                
-                <Button 
-                  asChild 
-                  className="zen-gradient hover:zen-gradient-hover text-white transition-all duration-300"
-                >
-                  <Link href="/teachers">
-                    {messages.navigation?.teachers || t.meetTeachers} <ArrowRight className="w-4 h-4 ml-2" />
-                  </Link>
-                </Button>
-              </div>
+            <div className="text-center mb-16 animate-fade-in-up">
+              <Badge className="mb-4 bg-zen-fog text-zen-mint border-zen-anakiwa">
+                <Star className="w-4 h-4 mr-2" />
+                Premium Features
+              </Badge>
+              <h2 className="text-4xl md:text-5xl font-bold mb-6 text-gradient">
+                {t.connectDeeper}
+              </h2>
+              <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+                {t.connectDeeperDesc}
+              </p>
+            </div>
+            
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {hoverItems.map((item, index) => (
+                <EnhancedCardSimple
+                  key={index}
+                  icon={item.icon}
+                  title={item.title}
+                  description={item.description}
+                  image={item.image}
+                  className="animate-fade-in-up"
+                />
+              ))}
             </div>
           </div>
         </section>
 
-        {/* Family Section */}
-        <section 
-          className="py-24"
-          style={{ background: 'linear-gradient(135deg, rgb(232, 232, 232, 0.5), rgb(199, 214, 212, 0.5))' }}
-        >
+        {/* Enhanced Family Section */}
+        <section className="py-24 bg-gradient-to-br from-green-50 to-blue-50">
           <div className="container mx-auto px-4">
-            <div className="text-center mb-16">
-              <Badge className="mb-4 bg-green-100 text-green-700 border-green-200">
+            <div className="text-center mb-16 animate-fade-in-up">
+              <Badge className="mb-4 bg-zen-fog text-zen-mint border-zen-anakiwa">
                 <Baby className="w-4 h-4 mr-2" />
                 {t.familyWellness}
               </Badge>
               
-              <h2 className="text-4xl font-bold mb-6">{t.yogaForFamily}</h2>
+              <h2 className="text-4xl font-bold mb-6 text-gradient">
+                {t.yogaForFamily}
+              </h2>
               
               <p className="text-xl text-gray-600 max-w-3xl mx-auto">
                 {t.familyDesc}
@@ -523,91 +453,67 @@ export default async function HomePage({ params }: { params?: { locale?: string 
             </div>
             
             <div className="grid md:grid-cols-3 gap-8">
-              <Card className="overflow-hidden hover:shadow-lg transition-shadow">
-                <div className="aspect-[4/3] relative">
-                  <Image
-                    src="https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?auto=format&fit=crop&w=400&q=80"
-                    alt="Kids yoga"
-                    fill
-                    className="object-cover"
-                  />
-                </div>
-                <CardContent className="p-6">
-                  <h3 className="text-xl font-semibold mb-2">{t.kidsTeens}</h3>
-                  <p className="text-gray-600 mb-4">
-                    {t.kidsDesc}
-                  </p>
-                  <Button variant="outline" size="sm">
-                    {t.exploreKids}
-                  </Button>
-                </CardContent>
-              </Card>
+              <div className="animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
+                <EnhancedCardSimple
+                  icon={<Baby className="h-6 w-6 text-pink-500" />}
+                  title={t.kidsTeens}
+                  description={t.kidsDesc}
+                  image="https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?auto=format&fit=crop&w=400&q=80"
+                />
+              </div>
               
-              <Card className="overflow-hidden hover:shadow-lg transition-shadow">
-                <div className="aspect-[4/3] relative">
-                  <Image
-                    src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=400&q=80"
-                    alt="Prenatal yoga"
-                    fill
-                    className="object-cover"
-                  />
-                </div>
-                <CardContent className="p-6">
-                  <h3 className="text-xl font-semibold mb-2">{t.prenatalPostnatal}</h3>
-                  <p className="text-gray-600 mb-4">
-                    {t.prenatalDesc}
-                  </p>
-                  <Button variant="outline" size="sm">
-                    {t.viewPrenatal}
-                  </Button>
-                </CardContent>
-              </Card>
+              <div className="animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
+                <EnhancedCardSimple
+                  icon={<Heart className="h-6 w-6 text-purple-500" />}
+                  title={t.prenatalPostnatal}
+                  description={t.prenatalDesc}
+                  image="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=400&q=80"
+                />
+              </div>
               
-              <Card className="overflow-hidden hover:shadow-lg transition-shadow">
-                <div className="aspect-[4/3] relative">
-                  <Image
-                    src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&w=400&q=80"
-                    alt="Senior yoga"
-                    fill
-                    className="object-cover"
-                  />
-                </div>
-                <CardContent className="p-6">
-                  <h3 className="text-xl font-semibold mb-2">{t.seniorFriendly}</h3>
-                  <p className="text-gray-600 mb-4">
-                    {t.seniorDesc}
-                  </p>
-                  <Button variant="outline" size="sm">
-                    {t.seniorPrograms}
-                  </Button>
-                </CardContent>
-              </Card>
+              <div className="animate-fade-in-up" style={{ animationDelay: '0.3s' }}>
+                <EnhancedCardSimple
+                  icon={<Star className="h-6 w-6 text-zen-dodger" />}
+                  title={t.seniorFriendly}
+                  description={t.seniorDesc}
+                  image="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&w=400&q=80"
+                />
+              </div>
             </div>
           </div>
         </section>
 
-        {/* CTA Section */}
-        <section 
-          className="py-24 text-white"
-          style={{ background: 'linear-gradient(135deg, var(--color-zen-5), var(--color-zen-4))' }}
-        >
-          <div className="container mx-auto px-4 text-center">
-            <Sparkles className="w-16 h-16 mx-auto mb-6 text-yellow-300" />
+        {/* Enhanced CTA Section */}
+        <section className="py-24 text-white relative overflow-hidden bg-gradient-to-br from-slate-800 via-zen-mint to-zen-dodger">
+          {/* Background Pattern */}
+          <div className="absolute inset-0 opacity-20" style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%239C92AC' fill-opacity='0.1'%3E%3Ccircle cx='30' cy='30' r='4'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
+          }} />
+          
+          {/* Floating Elements */}
+          <div className="absolute inset-0">
+            <div className="absolute top-20 left-20 w-32 h-32 zen-gradient rounded-full blur-xl opacity-20 animate-pulse" />
+            <div className="absolute bottom-20 right-20 w-24 h-24 bg-zen-dodger rounded-full blur-xl opacity-20 animate-pulse" style={{ animationDelay: '1s' }} />
+          </div>
+          
+          <div className="container mx-auto px-4 text-center relative z-10">
+            <div className="mb-6 animate-fade-in-up">
+              <Sparkles className="w-16 h-16 mx-auto text-yellow-300 animate-bounce" />
+            </div>
             
-            <h2 className="text-4xl md:text-5xl font-bold mb-6">
+            <h2 className="text-4xl md:text-5xl font-bold mb-6 animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
               {t.readyTransform}
             </h2>
             
-            <p className="text-xl mb-12 max-w-3xl mx-auto opacity-90">
+            <p className="text-xl mb-12 max-w-3xl mx-auto opacity-90 animate-fade-in-up" style={{ animationDelay: '0.4s' }}>
               {t.transformDesc}
             </p>
             
-            <div className="flex flex-col sm:flex-row gap-6 justify-center">
+            <div className="flex flex-col sm:flex-row gap-6 justify-center animate-fade-in-up" style={{ animationDelay: '0.6s' }}>
               <Button 
                 asChild 
                 size="lg" 
-                className="text-lg px-8 py-4 bg-white hover:bg-gray-100"
-                style={{ color: 'var(--color-zen-5)' }}
+                className="text-lg px-8 py-4 bg-white hover:bg-gray-100 text-purple-900 font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
               >
                 <Link href="/sign-up">
                   {messages.common?.signUp || t.startTrial}
@@ -618,7 +524,7 @@ export default async function HomePage({ params }: { params?: { locale?: string 
                 asChild 
                 variant="outline" 
                 size="lg"
-                className="text-lg px-8 py-4 zen-gradient border-0 text-white hover:zen-gradient-hover transition-all duration-300"
+                className="text-lg px-8 py-4 border-2 border-zen-fog text-zen-fog hover:bg-zen-fog hover:bg-opacity-10 hover:text-zen-mint backdrop-blur-sm transition-all duration-300 hover:scale-105"
               >
                 <Link href="/browse">
                   {messages.navigation?.browse || t.browseClasses}
@@ -626,7 +532,7 @@ export default async function HomePage({ params }: { params?: { locale?: string 
               </Button>
             </div>
             
-            <p className="mt-8 text-sm opacity-75">
+            <p className="mt-8 text-sm opacity-75 animate-fade-in-up" style={{ animationDelay: '0.8s' }}>
               {t.noCard}
             </p>
           </div>
@@ -637,4 +543,4 @@ export default async function HomePage({ params }: { params?: { locale?: string 
       <MobileNav />
     </div>
   );
-} 
+}
