@@ -154,7 +154,27 @@ export function ClassVideoInputMux({
 
       // Update the status based on the response
       if (data.status === 'asset_created' && data.assetId) {
-        // Upload complete, asset created - stop polling and mark as ready
+        // Asset created but may still be processing
+        onVideoChange({
+          videoPath: null,
+          videoUrl: null,
+          videoType: 'mux',
+          muxUploadId: uploadId,
+          muxAssetId: data.assetId,
+          muxPlaybackId: data.playbackId,
+          muxStatus: 'processing',
+          thumbnailUrl: data.thumbnailUrl,
+        });
+        
+        // Auto-fill cover image with thumbnail if available 
+        if (data.thumbnailUrl && onCoverImageChange) {
+          onCoverImageChange(data.thumbnailUrl);
+        }
+        
+        // Continue polling - don't stop yet, duration might not be available
+        console.log('Asset created, continuing to poll for duration...');
+      } else if (data.status === 'ready' && data.assetId) {
+        // Asset fully processed with duration
         onVideoChange({
           videoPath: null,
           videoUrl: null,
@@ -168,16 +188,11 @@ export function ClassVideoInputMux({
         
         // Auto-fill duration if available (always update duration for new videos)
         if (data.durationMinutes && onDurationChange) {
+          console.log('Duration detected from MUX:', data.durationMinutes, 'minutes');
           onDurationChange(data.durationMinutes);
         }
         
-        // Auto-fill cover image with thumbnail if available 
-        // Only auto-generate if no manual cover image has been uploaded
-        if (data.thumbnailUrl && onCoverImageChange) {
-          onCoverImageChange(data.thumbnailUrl);
-        }
-        
-        stopStatusPolling(); // Important: stop polling when asset is created
+        stopStatusPolling(); // Now stop polling when fully ready
       } else if (data.status === 'errored') {
         // Upload failed
         onVideoChange({

@@ -125,6 +125,7 @@ export async function GET(request: NextRequest) {
     let duration = null;
     let durationMinutes = null;
     let thumbnailUrl = null;
+    let assetStatus = null;
     
     if (uploadData.status === 'asset_created' && uploadData.assetId) {
       try {
@@ -132,6 +133,15 @@ export async function GET(request: NextRequest) {
         playbackId = assetData.playbackIds?.[0]?.id || null;
         duration = assetData.duration;
         durationMinutes = assetData.durationMinutes;
+        assetStatus = assetData.status;
+        
+        console.log('Asset details:', {
+          assetId: uploadData.assetId,
+          status: assetData.status,
+          duration: duration,
+          durationMinutes: durationMinutes,
+          playbackId: playbackId
+        });
         
         // Generate thumbnail URL (first frame at 1 second)
         if (playbackId) {
@@ -144,8 +154,9 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({
       id: uploadData.id,
-      status: uploadData.status,
+      status: assetStatus === 'ready' ? 'ready' : uploadData.status, // Use asset status if ready
       assetId: uploadData.assetId,
+      assetStatus: assetStatus, // Include asset status separately
       playbackId: playbackId,
       duration: duration,
       durationMinutes: durationMinutes,

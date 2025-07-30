@@ -262,7 +262,7 @@ export function ClassManager({ userId, locale = 'ru', editClassId }: ClassManage
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           ...formData,
-          durationMin: parseInt(formData.durationMin),
+          durationMin: parseInt(formData.durationMin) || 0,
           videoPath: formData.videoPath || null,
           videoUrl: formData.videoUrl || null,
           videoType: formData.videoType || null,
