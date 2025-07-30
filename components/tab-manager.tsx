@@ -15,7 +15,7 @@ export function TabManager({ defaultValue, className, children }: TabManagerProp
   const searchParams = useSearchParams();
   
   const handleTabChange = useCallback((value: string) => {
-    const current = new URLSearchParams(Array.from(searchParams.entries()));
+    const current = new URLSearchParams(searchParams ? Array.from(searchParams.entries()) : []);
     current.set('tab', value);
     const search = current.toString();
     const query = search ? `?${search}` : '';
@@ -25,7 +25,7 @@ export function TabManager({ defaultValue, className, children }: TabManagerProp
   return (
     <Tabs 
       defaultValue={defaultValue} 
-      value={searchParams.get('tab') || defaultValue}
+      value={searchParams?.get('tab') || defaultValue}
       onValueChange={handleTabChange}
       className={className}
     >
