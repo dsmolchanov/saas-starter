@@ -88,7 +88,8 @@ export class MuxService {
       return {
         id: asset.id,
         status: asset.status,
-        duration: asset.duration,
+        duration: asset.duration, // Duration in seconds
+        durationMinutes: asset.duration ? Math.ceil(asset.duration / 60) : null, // Convert to minutes
         aspectRatio: asset.aspect_ratio,
         playbackIds: asset.playback_ids?.map(playback => ({
           id: playback.id,

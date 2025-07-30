@@ -120,12 +120,23 @@ export async function GET(request: NextRequest) {
     const muxService = getMuxService();
     const uploadData = await muxService.getUpload(uploadId);
 
-    // If asset is created, also get asset details for playback ID
+    // If asset is created, also get asset details for playback ID, duration, and thumbnail
     let playbackId = null;
+    let duration = null;
+    let durationMinutes = null;
+    let thumbnailUrl = null;
+    
     if (uploadData.status === 'asset_created' && uploadData.assetId) {
       try {
         const assetData = await muxService.getAsset(uploadData.assetId);
         playbackId = assetData.playbackIds?.[0]?.id || null;
+        duration = assetData.duration;
+        durationMinutes = assetData.durationMinutes;
+        
+        // Generate thumbnail URL (first frame at 1 second)
+        if (playbackId) {
+          thumbnailUrl = muxService.getThumbnailUrl(playbackId, { time: 1 });
+        }
       } catch (error) {
         console.error('Error getting asset details:', error);
       }
@@ -136,6 +147,9 @@ export async function GET(request: NextRequest) {
       status: uploadData.status,
       assetId: uploadData.assetId,
       playbackId: playbackId,
+      duration: duration,
+      durationMinutes: durationMinutes,
+      thumbnailUrl: thumbnailUrl,
       error: uploadData.error,
     });
 

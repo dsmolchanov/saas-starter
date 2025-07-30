@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { ClassVideoInputMux } from '@/components/class-video-input-mux';
+import { CoverImageUpload } from '@/components/cover-image-upload';
 import { Plus, Play, Edit, Trash2, Clock } from 'lucide-react';
 import Link from 'next/link';
 
@@ -366,17 +367,11 @@ export function ClassManager({ userId, locale = 'ru' }: ClassManagerProps) {
                   />
                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="duration">{t.duration}</Label>
-                  <Input
-                    id="duration"
-                    type="number"
-                    value={formData.durationMin}
-                    onChange={(e) => setFormData({...formData, durationMin: e.target.value})}
-                    placeholder={t.durationPlaceholder}
-                    required
-                  />
-                </div>
+                {/* Duration field is hidden - will be auto-filled from video */}
+                <input
+                  type="hidden"
+                  value={formData.durationMin}
+                />
 
                 <div className="space-y-2">
                   <Label htmlFor="difficulty">{t.difficulty}</Label>
@@ -410,6 +405,15 @@ export function ClassManager({ userId, locale = 'ru' }: ClassManagerProps) {
                 />
               </div>
 
+              {/* Cover Image Upload Section */}
+              <div className="border-t pt-6">
+                <CoverImageUpload
+                  initialImage={formData.imageUrl}
+                  onImageChange={(imageUrl) => setFormData({...formData, imageUrl: imageUrl || ''})}
+                  locale={locale}
+                />
+              </div>
+
               {/* Video Upload Section */}
               <div className="border-t pt-6">
                 <ClassVideoInputMux
@@ -434,7 +438,12 @@ export function ClassManager({ userId, locale = 'ru' }: ClassManagerProps) {
                       thumbnailUrl: data.thumbnailUrl || '',
                     });
                   }}
-                  onCoverImageChange={(coverImage) => setFormData({...formData, imageUrl: coverImage || ''})}
+                  onCoverImageChange={(coverImage) => {
+                    // Only auto-fill if no cover image is currently set
+                    if (coverImage && !formData.imageUrl) {
+                      setFormData({...formData, imageUrl: coverImage});
+                    }
+                  }}
                   onDurationChange={(durationMinutes) => {
                     if (durationMinutes) {
                       setFormData({...formData, durationMin: durationMinutes.toString()});

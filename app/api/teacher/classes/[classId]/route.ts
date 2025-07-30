@@ -3,6 +3,8 @@ import { getUser } from '@/lib/db/queries';
 import { db } from '@/lib/db/drizzle';
 import { classes, lessonFocusAreas, focusAreas, courses } from '@/lib/db/schema';
 import { eq, and } from 'drizzle-orm';
+import { getMuxService } from '@/lib/mux-service';
+import { createServerSupabaseClient } from '@/lib/supabase/server';
 
 // GET - Fetch specific class for editing
 export async function GET(
@@ -176,6 +178,48 @@ export async function DELETE(
 
     if (!existingClass) {
       return NextResponse.json({ error: 'Class not found' }, { status: 404 });
+    }
+
+    // Delete MUX asset if it exists
+    if (existingClass.muxAssetId) {
+      try {
+        console.log('Deleting MUX asset:', existingClass.muxAssetId);
+        const muxService = getMuxService();
+        await muxService.deleteAsset(existingClass.muxAssetId);
+        console.log('MUX asset deleted successfully');
+      } catch (error) {
+        console.error('Error deleting MUX asset:', error);
+        // Continue with class deletion even if MUX deletion fails
+      }
+    }
+
+    // Delete cover image from Supabase if it exists
+    if (existingClass.imageUrl) {
+      try {
+        // Extract the file path from the URL
+        const url = new URL(existingClass.imageUrl);
+        const pathParts = url.pathname.split('/');
+        const bucketIndex = pathParts.indexOf('images');
+        
+        if (bucketIndex !== -1 && bucketIndex < pathParts.length - 1) {
+          const filePath = pathParts.slice(bucketIndex + 1).join('/');
+          console.log('Deleting cover image:', filePath);
+          
+          const supabase = await createServerSupabaseClient();
+          const { error } = await supabase.storage
+            .from('images')
+            .remove([filePath]);
+          
+          if (error) {
+            console.error('Error deleting cover image:', error);
+          } else {
+            console.log('Cover image deleted successfully');
+          }
+        }
+      } catch (error) {
+        console.error('Error deleting cover image:', error);
+        // Continue with class deletion even if image deletion fails
+      }
     }
 
     // Delete focus area associations first

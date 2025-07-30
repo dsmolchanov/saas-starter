@@ -163,7 +163,19 @@ export function ClassVideoInputMux({
           muxAssetId: data.assetId,
           muxPlaybackId: data.playbackId,
           muxStatus: 'ready',
+          thumbnailUrl: data.thumbnailUrl,
         });
+        
+        // Auto-fill duration if available
+        if (data.durationMinutes && onDurationChange) {
+          onDurationChange(data.durationMinutes);
+        }
+        
+        // Auto-fill cover image with thumbnail if available and no existing cover
+        if (data.thumbnailUrl && onCoverImageChange && !initialCoverImage) {
+          onCoverImageChange(data.thumbnailUrl);
+        }
+        
         stopStatusPolling(); // Important: stop polling when asset is created
       } else if (data.status === 'errored') {
         // Upload failed
