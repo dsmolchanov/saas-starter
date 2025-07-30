@@ -170,7 +170,7 @@ export function ClassManager({ userId, locale = 'ru' }: ClassManagerProps) {
 
   // Fetch classes
   useEffect(() => {
-    fetch('/api/teacher/classes')
+    fetch('/api/teacher/classes', { cache: 'no-store' })
       .then(r => r.json())
       .then(data => {
         if (data.classes) setClasses(data.classes);
@@ -267,8 +267,10 @@ export function ClassManager({ userId, locale = 'ru' }: ClassManagerProps) {
         throw new Error(data.error || 'Failed to save class');
       }
 
-      // Refresh classes list
-      const classesRes = await fetch('/api/teacher/classes');
+      // Refresh classes list with cache busting
+      const classesRes = await fetch(`/api/teacher/classes?t=${Date.now()}`, {
+        cache: 'no-store'
+      });
       const classesData = await classesRes.json();
       if (classesData.classes) setClasses(classesData.classes);
 
@@ -408,8 +410,9 @@ export function ClassManager({ userId, locale = 'ru' }: ClassManagerProps) {
               {/* Cover Image Upload Section */}
               <div className="border-t pt-6">
                 <CoverImageUpload
+                  key={formData.imageUrl} // Force re-render when imageUrl changes
                   initialImage={formData.imageUrl}
-                  onImageChange={(imageUrl) => setFormData({...formData, imageUrl: imageUrl || ''})}
+                  onImageChange={(imageUrl) => setFormData(prev => ({...prev, imageUrl: imageUrl || ''}))}
                   locale={locale}
                 />
               </div>
@@ -439,14 +442,15 @@ export function ClassManager({ userId, locale = 'ru' }: ClassManagerProps) {
                     });
                   }}
                   onCoverImageChange={(coverImage) => {
-                    // Only auto-fill if no cover image is currently set
-                    if (coverImage && !formData.imageUrl) {
-                      setFormData({...formData, imageUrl: coverImage});
+                    // Auto-fill cover image from video thumbnail
+                    // This will be called when a new video is uploaded
+                    if (coverImage) {
+                      setFormData(prev => ({...prev, imageUrl: coverImage}));
                     }
                   }}
                   onDurationChange={(durationMinutes) => {
                     if (durationMinutes) {
-                      setFormData({...formData, durationMin: durationMinutes.toString()});
+                      setFormData(prev => ({...prev, durationMin: durationMinutes.toString()}));
                     }
                   }}
                   initialCoverImage={formData.imageUrl}
@@ -489,7 +493,7 @@ export function ClassManager({ userId, locale = 'ru' }: ClassManagerProps) {
           </CardContent>
         </Card>
       ) : (
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
           {classes.map((classItem) => (
             <div key={classItem.id} className="relative group">
               {/* Clickable card that goes to student view */}

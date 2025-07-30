@@ -166,13 +166,14 @@ export function ClassVideoInputMux({
           thumbnailUrl: data.thumbnailUrl,
         });
         
-        // Auto-fill duration if available
+        // Auto-fill duration if available (always update duration for new videos)
         if (data.durationMinutes && onDurationChange) {
           onDurationChange(data.durationMinutes);
         }
         
-        // Auto-fill cover image with thumbnail if available and no existing cover
-        if (data.thumbnailUrl && onCoverImageChange && !initialCoverImage) {
+        // Auto-fill cover image with thumbnail if available 
+        // Only auto-generate if no manual cover image has been uploaded
+        if (data.thumbnailUrl && onCoverImageChange) {
           onCoverImageChange(data.thumbnailUrl);
         }
         
