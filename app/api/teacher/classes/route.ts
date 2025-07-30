@@ -3,12 +3,25 @@ import { getUser } from '@/lib/db/queries';
 import { db } from '@/lib/db/drizzle';
 import { classes, lessonFocusAreas, focusAreas, courses } from '@/lib/db/schema';
 import { eq, and, SQL } from 'drizzle-orm';
+import { getErrorTranslations } from '@/lib/translations';
+
+// Helper to get locale from request headers
+function getLocaleFromRequest(request: NextRequest): string {
+  const acceptLanguage = request.headers.get('accept-language') || '';
+  if (acceptLanguage.includes('es')) return 'es-MX';
+  if (acceptLanguage.includes('en')) return 'en';
+  return 'ru'; // default
+}
 
 // GET - Fetch teacher's classes
 export async function GET(request: NextRequest) {
   try {
     const user = await getUser();
-    if (!user) return NextResponse.json({ error: 'unauthenticated' }, { status: 401 });
+    if (!user) {
+      const locale = getLocaleFromRequest(request);
+      const t = getErrorTranslations(locale);
+      return NextResponse.json({ error: t.unauthenticated }, { status: 401 });
+    }
 
     const searchParams = request.nextUrl.searchParams;
     const courseId = searchParams.get('courseId');
@@ -44,7 +57,9 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ classes: teacherClasses });
   } catch (error) {
     console.error('Error fetching teacher classes:', error);
-    return NextResponse.json({ error: 'Failed to fetch classes' }, { status: 500 });
+    const locale = getLocaleFromRequest(request);
+    const t = getErrorTranslations(locale);
+    return NextResponse.json({ error: t.failedToFetchClasses }, { status: 500 });
   }
 }
 
@@ -52,7 +67,11 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const user = await getUser();
-    if (!user) return NextResponse.json({ error: 'unauthenticated' }, { status: 401 });
+    if (!user) {
+      const locale = getLocaleFromRequest(request);
+      const t = getErrorTranslations(locale);
+      return NextResponse.json({ error: t.unauthenticated }, { status: 401 });
+    }
 
     const body = await request.json();
     const { 
@@ -80,8 +99,10 @@ export async function POST(request: NextRequest) {
 
     // Validate required fields
     if (!title) {
+      const locale = getLocaleFromRequest(request);
+      const t = getErrorTranslations(locale);
       return NextResponse.json({ 
-        error: 'Title is required' 
+        error: t.titleRequired 
       }, { status: 400 });
     }
 
@@ -92,8 +113,10 @@ export async function POST(request: NextRequest) {
       });
 
       if (!course) {
+        const locale = getLocaleFromRequest(request);
+        const t = getErrorTranslations(locale);
         return NextResponse.json({ 
-          error: 'Invalid course or you do not have permission to add classes to this course' 
+          error: t.invalidCourse 
         }, { status: 400 });
       }
     }
@@ -136,6 +159,8 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ class: newClass }, { status: 201 });
   } catch (error) {
     console.error('Error creating class:', error);
-    return NextResponse.json({ error: 'Failed to create class' }, { status: 500 });
+    const locale = getLocaleFromRequest(request);
+    const t = getErrorTranslations(locale);
+    return NextResponse.json({ error: t.failedToCreateClass }, { status: 500 });
   }
 } 

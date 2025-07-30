@@ -76,7 +76,8 @@ function getTranslations(locale: string = 'ru') {
       noClassesYet: 'Занятий пока нет',
       createFirstClass: 'Создайте своё первое занятие, чтобы начать формировать библиотеку контента',
       createYourFirstClass: 'Создать первое занятие',
-      deleteConfirm: 'Вы уверены, что хотите удалить это занятие?'
+      deleteConfirm: 'Вы уверены, что хотите удалить это занятие?',
+      titleRequired: 'Название обязательно'
     },
     en: {
       myClasses: 'My Classes',
@@ -106,7 +107,8 @@ function getTranslations(locale: string = 'ru') {
       noClassesYet: 'No classes yet',
       createFirstClass: 'Create your first class to start building your content library',
       createYourFirstClass: 'Create Your First Class',
-      deleteConfirm: 'Are you sure you want to delete this class?'
+      deleteConfirm: 'Are you sure you want to delete this class?',
+      titleRequired: 'Title is required'
     },
     'es-MX': {
       myClasses: 'Mis Clases',
@@ -136,7 +138,8 @@ function getTranslations(locale: string = 'ru') {
       noClassesYet: 'Aún no hay clases',
       createFirstClass: 'Crea tu primera clase para comenzar a construir tu biblioteca de contenido',
       createYourFirstClass: 'Crear Tu Primera Clase',
-      deleteConfirm: '¿Estás seguro de que quieres eliminar esta clase?'
+      deleteConfirm: '¿Estás seguro de que quieres eliminar esta clase?',
+      titleRequired: 'El título es obligatorio'
     }
   };
   

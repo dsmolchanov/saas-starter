@@ -5,6 +5,15 @@ import { classes, lessonFocusAreas, focusAreas, courses } from '@/lib/db/schema'
 import { eq, and } from 'drizzle-orm';
 import { getMuxService } from '@/lib/mux-service';
 import { createServerSupabaseClient } from '@/lib/supabase/server';
+import { getErrorTranslations } from '@/lib/translations';
+
+// Helper to get locale from request headers
+function getLocaleFromRequest(request: NextRequest): string {
+  const acceptLanguage = request.headers.get('accept-language') || '';
+  if (acceptLanguage.includes('es')) return 'es-MX';
+  if (acceptLanguage.includes('en')) return 'en';
+  return 'ru'; // default
+}
 
 // GET - Fetch specific class for editing
 export async function GET(
@@ -13,7 +22,11 @@ export async function GET(
 ) {
   try {
     const user = await getUser();
-    if (!user) return NextResponse.json({ error: 'unauthenticated' }, { status: 401 });
+    if (!user) {
+      const locale = getLocaleFromRequest(request);
+      const t = getErrorTranslations(locale);
+      return NextResponse.json({ error: t.unauthenticated }, { status: 401 });
+    }
 
     const { classId } = await params;
 
@@ -40,13 +53,17 @@ export async function GET(
     });
 
     if (!classItem) {
-      return NextResponse.json({ error: 'Class not found' }, { status: 404 });
+      const locale = getLocaleFromRequest(request);
+      const t = getErrorTranslations(locale);
+      return NextResponse.json({ error: t.classNotFound }, { status: 404 });
     }
 
     return NextResponse.json({ class: classItem });
   } catch (error) {
     console.error('Error fetching class:', error);
-    return NextResponse.json({ error: 'Failed to fetch class' }, { status: 500 });
+    const locale = getLocaleFromRequest(request);
+    const t = getErrorTranslations(locale);
+    return NextResponse.json({ error: t.failedToFetchClasses }, { status: 500 });
   }
 }
 
@@ -57,7 +74,11 @@ export async function PUT(
 ) {
   try {
     const user = await getUser();
-    if (!user) return NextResponse.json({ error: 'unauthenticated' }, { status: 401 });
+    if (!user) {
+      const locale = getLocaleFromRequest(request);
+      const t = getErrorTranslations(locale);
+      return NextResponse.json({ error: t.unauthenticated }, { status: 401 });
+    }
 
     const { classId } = await params;
     const body = await request.json();
@@ -85,8 +106,10 @@ export async function PUT(
 
     // Validate required fields
     if (!title) {
+      const locale = getLocaleFromRequest(request);
+      const t = getErrorTranslations(locale);
       return NextResponse.json({ 
-        error: 'Title is required' 
+        error: t.titleRequired 
       }, { status: 400 });
     }
 
@@ -96,7 +119,9 @@ export async function PUT(
     });
 
     if (!existingClass) {
-      return NextResponse.json({ error: 'Class not found' }, { status: 404 });
+      const locale = getLocaleFromRequest(request);
+      const t = getErrorTranslations(locale);
+      return NextResponse.json({ error: t.classNotFound }, { status: 404 });
     }
 
     // If courseId is provided, verify it belongs to the teacher
@@ -106,8 +131,10 @@ export async function PUT(
       });
 
       if (!course) {
+        const locale = getLocaleFromRequest(request);
+        const t = getErrorTranslations(locale);
         return NextResponse.json({ 
-          error: 'Invalid course or you do not have permission to assign this class to that course' 
+          error: t.invalidCourseAssignment 
         }, { status: 400 });
       }
     }
@@ -156,7 +183,9 @@ export async function PUT(
     return NextResponse.json({ class: updatedClass });
   } catch (error) {
     console.error('Error updating class:', error);
-    return NextResponse.json({ error: 'Failed to update class' }, { status: 500 });
+    const locale = getLocaleFromRequest(request);
+    const t = getErrorTranslations(locale);
+    return NextResponse.json({ error: t.failedToUpdateClass }, { status: 500 });
   }
 }
 
@@ -167,7 +196,11 @@ export async function DELETE(
 ) {
   try {
     const user = await getUser();
-    if (!user) return NextResponse.json({ error: 'unauthenticated' }, { status: 401 });
+    if (!user) {
+      const locale = getLocaleFromRequest(request);
+      const t = getErrorTranslations(locale);
+      return NextResponse.json({ error: t.unauthenticated }, { status: 401 });
+    }
 
     const { classId } = await params;
 
@@ -177,7 +210,9 @@ export async function DELETE(
     });
 
     if (!existingClass) {
-      return NextResponse.json({ error: 'Class not found' }, { status: 404 });
+      const locale = getLocaleFromRequest(request);
+      const t = getErrorTranslations(locale);
+      return NextResponse.json({ error: t.classNotFound }, { status: 404 });
     }
 
     // Delete MUX asset if it exists
@@ -231,6 +266,8 @@ export async function DELETE(
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error('Error deleting class:', error);
-    return NextResponse.json({ error: 'Failed to delete class' }, { status: 500 });
+    const locale = getLocaleFromRequest(request);
+    const t = getErrorTranslations(locale);
+    return NextResponse.json({ error: t.failedToDeleteClass }, { status: 500 });
   }
 } 
