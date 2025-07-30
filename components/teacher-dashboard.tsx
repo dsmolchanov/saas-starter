@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { TeacherProfileForm } from '@/components/teacher-profile-form';
 import { CourseManager } from '@/components/course-manager';
@@ -52,8 +53,17 @@ function getTranslations(locale: string = 'ru') {
 }
 
 export function TeacherDashboard({ user, locale = 'ru' }: TeacherDashboardProps) {
-  const [activeTab, setActiveTab] = useState('profile');
+  const searchParams = useSearchParams();
+  const editClassId = searchParams?.get('edit');
+  const [activeTab, setActiveTab] = useState(editClassId ? 'classes' : 'profile');
   const t = getTranslations(locale);
+
+  // Update active tab when edit parameter changes
+  useEffect(() => {
+    if (editClassId) {
+      setActiveTab('classes');
+    }
+  }, [editClassId]);
 
   return (
     <div className="space-y-6">
@@ -114,7 +124,7 @@ export function TeacherDashboard({ user, locale = 'ru' }: TeacherDashboardProps)
         </TabsContent>
 
         <TabsContent value="classes" className="space-y-6">
-          <ClassManager userId={user.id} locale={locale} />
+          <ClassManager userId={user.id} locale={locale} editClassId={editClassId || undefined} />
         </TabsContent>
       </Tabs>
     </div>

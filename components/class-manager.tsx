@@ -43,6 +43,7 @@ interface ClassItem {
 interface ClassManagerProps {
   userId: string;
   locale?: string;
+  editClassId?: string;
 }
 
 // Locale-aware translations for ClassManager
@@ -146,7 +147,7 @@ function getTranslations(locale: string = 'ru') {
   return translations[locale as keyof typeof translations] || translations.ru;
 }
 
-export function ClassManager({ userId, locale = 'ru' }: ClassManagerProps) {
+export function ClassManager({ userId, locale = 'ru', editClassId }: ClassManagerProps) {
   const [classes, setClasses] = useState<ClassItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
@@ -185,6 +186,16 @@ export function ClassManager({ userId, locale = 'ru' }: ClassManagerProps) {
         setLoading(false);
       });
   }, []);
+
+  // Handle automatic editing when editClassId is provided
+  useEffect(() => {
+    if (editClassId && classes.length > 0) {
+      const classToEdit = classes.find(c => c.id === editClassId);
+      if (classToEdit) {
+        handleEdit(classToEdit);
+      }
+    }
+  }, [editClassId, classes]);
 
   const resetForm = () => {
     setFormData({

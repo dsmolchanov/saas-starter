@@ -493,35 +493,64 @@ export function ClassVideoInputMux({
         </TabsList>
 
         <TabsContent value="mux" className="space-y-3">
-          {!muxUploadUrl ? (
-            <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
-              <Upload className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-              <p className="text-sm text-gray-600 mb-3">{t.dragDropVideo}</p>
-              
-              <Button
-                type="button"
-                onClick={createMuxUpload}
-                disabled={isCreatingUpload}
-                className="gap-2"
-              >
-                <Video className="w-4 h-4" />
-                {isCreatingUpload ? t.processing : t.uploadVideoFile}
-              </Button>
-            </div>
-          ) : (
-            <div className="border-2 border-dashed border-gray-300 rounded-lg p-4">
-              <MuxUploader
-                endpoint={muxUploadUrl}
-                onSuccess={handleMuxUploadSuccess}
-                onError={handleMuxUploadError}
-                onProgress={handleMuxProgress}
-                style={{
-                  width: '100%',
-                  minHeight: '100px',
-                } as any}
-              />
-            </div>
-          )}
+          <div 
+            className={cn(
+              "relative border-2 border-dashed rounded-lg p-8 text-center transition-all duration-200 cursor-pointer group",
+              isCreatingUpload ? "border-blue-300 bg-blue-50" : "border-gray-300 hover:border-blue-400 hover:bg-blue-50/50",
+              "focus-within:ring-2 focus-within:ring-blue-500 focus-within:ring-offset-2"
+            )}
+            onClick={() => !isCreatingUpload && !muxUploadUrl && createMuxUpload()}
+          >
+            {!muxUploadUrl ? (
+              <div className="flex flex-col items-center space-y-4">
+                <div className={cn(
+                  "p-4 rounded-full transition-colors duration-200",
+                  isCreatingUpload ? "bg-blue-100" : "bg-gray-100 group-hover:bg-blue-100"
+                )}>
+                  {isCreatingUpload ? (
+                    <div className="w-8 h-8 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
+                  ) : (
+                    <Video className="w-8 h-8 text-gray-500 group-hover:text-blue-600" />
+                  )}
+                </div>
+                
+                <div className="space-y-2">
+                  <h3 className="text-lg font-semibold text-gray-700 group-hover:text-blue-700">
+                    {isCreatingUpload ? t.processing : t.uploadVideoFile}
+                  </h3>
+                  <p className="text-sm text-gray-500 max-w-sm">
+                    {isCreatingUpload 
+                      ? "Preparing upload..." 
+                      : "Click to start video upload with professional streaming quality"
+                    }
+                  </p>
+                  <p className="text-xs text-gray-400">
+                    Supports MP4, MOV, AVI and other video formats • Optimized for streaming
+                  </p>
+                </div>
+                
+                {!isCreatingUpload && (
+                  <div className="flex items-center space-x-2 text-sm text-gray-500">
+                    <Upload className="w-4 h-4" />
+                    <span>{t.uploadVideoFile}</span>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className="min-h-[120px]">
+                <MuxUploader
+                  endpoint={muxUploadUrl}
+                  onSuccess={handleMuxUploadSuccess}
+                  onError={handleMuxUploadError}
+                  onProgress={handleMuxProgress}
+                  style={{
+                    width: '100%',
+                    minHeight: '120px',
+                  } as any}
+                />
+              </div>
+            )}
+          </div>
         </TabsContent>
 
         <TabsContent value="url" className="space-y-3">
