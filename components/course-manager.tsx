@@ -208,11 +208,13 @@ export function CourseManager({ locale = 'ru' }: CourseManagerProps = {}) {
   });
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
   
   // Class management state
   const [assignedClasses, setAssignedClasses] = useState<ClassItem[]>([]);
   const [availableClasses, setAvailableClasses] = useState<ClassItem[]>([]);
   const [loadingClasses, setLoadingClasses] = useState(false);
+  const [savingAssignments, setSavingAssignments] = useState(false);
   const [activeTab, setActiveTab] = useState('details');
   
   const router = useRouter();
@@ -246,6 +248,7 @@ export function CourseManager({ locale = 'ru' }: CourseManagerProps = {}) {
     setEditingCourse(null);
     setShowForm(false);
     setError('');
+    setSuccess('');
     setAssignedClasses([]);
     setAvailableClasses([]);
     setActiveTab('details');
@@ -329,6 +332,7 @@ export function CourseManager({ locale = 'ru' }: CourseManagerProps = {}) {
     if (!editingCourse) return;
 
     try {
+      setSavingAssignments(true);
       const response = await fetch(`/api/teacher/courses/${editingCourse.id}/classes`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
@@ -348,9 +352,17 @@ export function CourseManager({ locale = 'ru' }: CourseManagerProps = {}) {
       const coursesData = await coursesRes.json();
       if (coursesData.courses) setCourses(coursesData.courses);
       
+      // Provide user feedback and close the dialog
+      setSuccess('Class assignments saved');
+      setShowForm(false);
+      // auto-clear success after a short delay
+      setTimeout(() => setSuccess(''), 3000);
+      
     } catch (error) {
       console.error('Error saving class assignments:', error);
       setError(error instanceof Error ? error.message : 'Failed to save class assignments');
+    } finally {
+      setSavingAssignments(false);
     }
   };
 
@@ -358,6 +370,7 @@ export function CourseManager({ locale = 'ru' }: CourseManagerProps = {}) {
     e.preventDefault();
     setSaving(true);
     setError('');
+    const wasEditing = !!editingCourse;
 
     try {
       const url = editingCourse 
@@ -382,7 +395,9 @@ export function CourseManager({ locale = 'ru' }: CourseManagerProps = {}) {
       const coursesRes = await fetch('/api/teacher/courses');
       const coursesData = await coursesRes.json();
       if (coursesData.courses) setCourses(coursesData.courses);
-
+      
+      // Surface success message and close dialog
+      setSuccess(wasEditing ? 'Course updated' : 'Course created');
       resetForm();
     } catch (err) {
       setError(err instanceof Error ? err.message : t.failedToSaveCourse);
@@ -478,6 +493,15 @@ export function CourseManager({ locale = 'ru' }: CourseManagerProps = {}) {
         <Card className="border-red-200 bg-red-50">
           <CardContent className="p-4">
             <p className="text-red-600 text-sm">{error}</p>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Success Message */}
+      {success && (
+        <Card className="border-green-200 bg-green-50">
+          <CardContent className="p-4">
+            <p className="text-green-700 text-sm">{success}</p>
           </CardContent>
         </Card>
       )}
