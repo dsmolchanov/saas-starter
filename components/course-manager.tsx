@@ -51,6 +51,7 @@ import {
 } from 'lucide-react';
 import { CoverImageUpload } from '@/components/cover-image-upload';
 import { useRouter } from 'next/navigation';
+import { toast } from 'sonner';
 
 interface Course {
   id: string;
@@ -354,6 +355,7 @@ export function CourseManager({ locale = 'ru' }: CourseManagerProps = {}) {
       
       // Provide user feedback and close the dialog
       setSuccess('Class assignments saved');
+      toast.success('Class assignments saved');
       setShowForm(false);
       // auto-clear success after a short delay
       setTimeout(() => setSuccess(''), 3000);
@@ -361,6 +363,7 @@ export function CourseManager({ locale = 'ru' }: CourseManagerProps = {}) {
     } catch (error) {
       console.error('Error saving class assignments:', error);
       setError(error instanceof Error ? error.message : 'Failed to save class assignments');
+      toast.error(error instanceof Error ? error.message : 'Failed to save class assignments');
     } finally {
       setSavingAssignments(false);
     }
@@ -398,9 +401,11 @@ export function CourseManager({ locale = 'ru' }: CourseManagerProps = {}) {
       
       // Surface success message and close dialog
       setSuccess(wasEditing ? 'Course updated' : 'Course created');
+      toast.success(wasEditing ? 'Course updated' : 'Course created');
       resetForm();
     } catch (err) {
       setError(err instanceof Error ? err.message : t.failedToSaveCourse);
+      toast.error(err instanceof Error ? err.message : t.failedToSaveCourse);
     }
 
     setSaving(false);
@@ -498,7 +503,7 @@ export function CourseManager({ locale = 'ru' }: CourseManagerProps = {}) {
       )}
 
       {/* Success Message */}
-      {success && (
+      {false && success && (
         <Card className="border-green-200 bg-green-50">
           <CardContent className="p-4">
             <p className="text-green-700 text-sm">{success}</p>
@@ -787,10 +792,10 @@ export function CourseManager({ locale = 'ru' }: CourseManagerProps = {}) {
                       <h3 className="text-lg font-semibold">Course Content</h3>
                       <Button 
                         onClick={saveClassAssignments}
-                        disabled={loadingClasses}
+                        disabled={loadingClasses || savingAssignments}
                         size="sm"
                       >
-                        Save Changes
+                        {savingAssignments ? 'Saving...' : 'Save Changes'}
                       </Button>
                     </div>
                     
@@ -850,7 +855,7 @@ export function CourseManager({ locale = 'ru' }: CourseManagerProps = {}) {
                                 onClick={() => removeClassFromCourse(classItem.id)}
                                 className="text-red-600 hover:text-red-700"
                               >
-                                <X className="w-4 h-4" />
+                                <Trash2 className="w-4 h-4" />
                               </Button>
                             </div>
                           ))

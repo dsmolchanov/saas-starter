@@ -2,6 +2,7 @@ import './globals.css';
 import type { Metadata, Viewport } from 'next';
 import { getUser, getTeamForUser } from '@/lib/db/queries';
 import { SWRConfig } from 'swr';
+import { Toaster } from '@/components/ui/toaster';
 
 // Force all pages to use dynamic rendering to avoid i18n static generation issues
 export const dynamic = 'force-dynamic';
@@ -44,6 +45,7 @@ export default async function RootLayout({
         >
           {children}
         </SWRConfig>
+        <Toaster />
       </body>
     </html>
   );

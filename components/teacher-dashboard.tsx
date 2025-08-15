@@ -55,7 +55,7 @@ function getTranslations(locale: string = 'ru') {
 export function TeacherDashboard({ user, locale = 'ru' }: TeacherDashboardProps) {
   const searchParams = useSearchParams();
   const editClassId = searchParams?.get('edit');
-  const [activeTab, setActiveTab] = useState(editClassId ? 'classes' : 'profile');
+  const [activeTab, setActiveTab] = useState(editClassId ? 'classes' : 'classes');
   const t = getTranslations(locale);
 
   // Update active tab when edit parameter changes
