@@ -47,11 +47,7 @@ export default async function CoursesPage({ searchParams }: { searchParams: Prom
         columns: { id: true },
       },
       category: true,
-      teacher: {
-        with: {
-          user: true,
-        },
-      },
+      teacher: true,
     },
     where: whereConditions.length > 0 ? and(...whereConditions) : undefined,
   });
@@ -172,7 +168,7 @@ export default async function CoursesPage({ searchParams }: { searchParams: Prom
                   {course.title}
                 </h3>
                 <p className="text-sm text-muted-foreground">
-                  By {course.teacher?.user?.name || course.teacher?.name || 'Instructor'}
+                  By {course.teacher?.name || 'Instructor'}
                 </p>
                 {course.classes && course.classes.length > 0 && (
                   <div className="flex items-center text-sm text-muted-foreground mt-1">

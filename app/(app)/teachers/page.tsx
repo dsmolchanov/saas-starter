@@ -57,6 +57,7 @@ export default async function TeachersPage() {
                 name={user.name}
                 imageUrl={user.avatarUrl}
                 bio={teacher.bio || 'Yoga Instructor'}
+                className=""
               />
             );
           })}

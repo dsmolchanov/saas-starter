@@ -303,7 +303,7 @@ export default function BrowsePage() {
             <div key={teacher.id} className="flex-shrink-0 w-24 text-center">
               <Link href="/teachers">
                 <Avatar className="w-16 h-16 mx-auto mb-2">
-                  <AvatarImage src={teacher.user?.avatarUrl || undefined} />
+                  <AvatarImage src={teacher.user?.avatarUrl || undefined} className="object-cover" />
                   <AvatarFallback>
                     <User className="w-6 h-6" />
                   </AvatarFallback>

@@ -44,11 +44,7 @@ export default async function ClassesPage({ searchParams }: { searchParams: Prom
   // Fetch filtered classes with teacher info for search
   const classesData = await db.query.classes.findMany({
     with: {
-      teacher: {
-        with: {
-          user: true,
-        },
-      },
+      teacher: true,
       focusAreas: {
         with: {
           focusArea: true,
@@ -75,7 +71,7 @@ export default async function ClassesPage({ searchParams }: { searchParams: Prom
     // If we have results but want to also include teacher name matches
     const searchLower = searchQuery.toLowerCase();
     const teacherMatches = classesData.filter(cls => {
-      const teacherName = cls.teacher?.user?.name?.toLowerCase() || cls.teacher?.name?.toLowerCase() || '';
+      const teacherName = cls.teacher?.name?.toLowerCase() || '';
       return teacherName.includes(searchLower);
     });
     
@@ -181,7 +177,7 @@ export default async function ClassesPage({ searchParams }: { searchParams: Prom
                   key={lesson.id}
                   id={lesson.id}
                   title={lesson.title}
-                  instructor={lesson.teacher?.user?.name || lesson.teacher?.name || 'Instructor'}
+                  instructor={lesson.teacher?.name || 'Instructor'}
                   duration={lesson.durationMin || 0}
                   difficulty={lesson.difficulty || 'All Levels'}
                   intensity={lesson.intensity?.toLowerCase() || 'moderate'}
