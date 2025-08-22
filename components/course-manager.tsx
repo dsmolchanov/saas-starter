@@ -423,8 +423,13 @@ export function CourseManager({ locale = 'ru' }: CourseManagerProps = {}) {
       }
 
       setCourses(courses.filter(c => c.id !== courseId));
+      toast.success('Course deleted successfully');
+      
+      // Redirect to courses tab in teacher view
+      router.push('/my_practice?tab=teacher');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to delete course');
+      toast.error(err instanceof Error ? err.message : 'Failed to delete course');
     }
   };
 

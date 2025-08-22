@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/lib/db/drizzle';
-import { teachers, courses, lessons, focusAreas, users } from '@/lib/db/schema';
+import { teachers, courses, classes, focusAreas, users } from '@/lib/db/schema';
 import { eq, and, inArray } from 'drizzle-orm';
 
 export async function GET() {
@@ -19,8 +19,8 @@ export async function GET() {
       limit: 20,
     });
 
-    // Fetch lessons with focus areas
-    const lessonsData = await db.query.lessons.findMany({
+    // Fetch classes (lessons) with focus areas, including all image fields
+    const lessonsData = await db.query.classes.findMany({
       with: {
         focusAreas: {
           with: {
@@ -28,10 +28,22 @@ export async function GET() {
           },
         },
       },
+      columns: {
+        id: true,
+        title: true,
+        description: true,
+        durationMin: true,
+        thumbnailUrl: true,
+        imageUrl: true,
+        difficulty: true,
+        intensity: true,
+        style: true,
+        equipment: true,
+      },
       limit: 50,
     });
 
-    // Fetch courses with teacher (user) info and lesson count
+    // Fetch courses with teacher (user) info and class count
     const coursesData = await db.query.courses.findMany({
       with: {
         teacher: {
@@ -40,9 +52,18 @@ export async function GET() {
             name: true,
           },
         },
-        lessons: {
+        classes: {
           columns: { id: true },
         },
+      },
+      columns: {
+        id: true,
+        title: true,
+        description: true,
+        level: true,
+        coverUrl: true,
+        imageUrl: true,
+        isPublished: true,
       },
       limit: 30,
     });
@@ -68,10 +89,17 @@ export async function GET() {
         .filter(Boolean)
     )];
 
+    // Map classes to lessons for frontend compatibility
+    const coursesWithLessons = coursesData.map(course => ({
+      ...course,
+      lessons: course.classes || [],
+      classes: undefined, // Remove classes field to avoid confusion
+    }));
+
     return NextResponse.json({
       teachers: teachersData,
       lessons: lessonsData,
-      courses: coursesData,
+      courses: coursesWithLessons,
       focusAreas: allFocusAreas,
       difficulties: allDifficulties,
       styles: allStyles,
