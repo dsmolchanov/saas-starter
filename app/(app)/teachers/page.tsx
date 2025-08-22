@@ -16,6 +16,7 @@ export default async function TeachersPage() {
           id: true,
           name: true,
           email: true,
+          avatarUrl: true,
         },
       },
     },
@@ -54,6 +55,7 @@ export default async function TeachersPage() {
                 key={teacher.id}
                 id={user.id}
                 name={user.name}
+                imageUrl={user.avatarUrl}
                 bio={teacher.bio || 'Yoga Instructor'}
               />
             );
