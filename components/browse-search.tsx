@@ -29,7 +29,7 @@ export function BrowseSearch({ placeholder = "Search classes, instructors, or ke
       params.delete('q');
     }
     
-    router.push(`${pathname}?${params.toString()}`);
+    router.push(`${pathname || '/'}?${params.toString()}`);
   }, [debouncedSearch, pathname, router, searchParams]);
 
   const handleClear = useCallback(() => {

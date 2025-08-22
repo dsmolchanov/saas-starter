@@ -54,7 +54,7 @@ export function BrowseFilters({ availableFilters, type = 'classes' }: BrowseFilt
       params.delete(filterType);
     }
     
-    router.push(`${pathname}?${params.toString()}`);
+    router.push(`${pathname || '/'}?${params.toString()}`);
   };
 
   // Toggle a single filter value
@@ -67,7 +67,7 @@ export function BrowseFilters({ availableFilters, type = 'classes' }: BrowseFilt
 
   // Clear all filters
   const clearAllFilters = () => {
-    router.push(pathname);
+    router.push(pathname || '/');
     setIsOpen(false);
   };
 
