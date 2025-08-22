@@ -393,7 +393,7 @@ export default function BrowsePage() {
         <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide">
           {filteredCourses.slice(0, 10).map((course, index) => (
             <div key={course.id} className="flex-shrink-0 w-64">
-              <Link href="/courses">
+              <Link href={`/course/${course.id}`}>
                 <div className="aspect-video rounded-lg overflow-hidden bg-muted mb-3 relative group">
                   {course.imageUrl || course.coverUrl ? (
                     <Image

@@ -14,14 +14,14 @@ export function BrowseSearch({ placeholder = "Search classes, instructors, or ke
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const [searchValue, setSearchValue] = useState(searchParams.get('q') || '');
+  const [searchValue, setSearchValue] = useState(searchParams?.get('q') || '');
 
   // Debounce the search value to avoid too many URL updates
   const debouncedSearch = useDebounce(searchValue, 300);
 
   // Update URL when debounced search value changes
   useEffect(() => {
-    const params = new URLSearchParams(searchParams.toString());
+    const params = new URLSearchParams(searchParams?.toString() || '');
     
     if (debouncedSearch) {
       params.set('q', debouncedSearch);

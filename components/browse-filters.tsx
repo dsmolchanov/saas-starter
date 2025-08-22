@@ -32,6 +32,7 @@ export function BrowseFilters({ availableFilters, type = 'classes' }: BrowseFilt
 
   // Get current filter values from URL
   const getFilterValues = (key: string): string[] => {
+    if (!searchParams) return [];
     const values = searchParams.get(key);
     return values ? values.split(',') : [];
   };
@@ -45,7 +46,7 @@ export function BrowseFilters({ availableFilters, type = 'classes' }: BrowseFilt
 
   // Update URL with new filter values
   const updateFilters = (filterType: string, values: string[]) => {
-    const params = new URLSearchParams(searchParams.toString());
+    const params = new URLSearchParams(searchParams?.toString() || '');
     
     if (values.length > 0) {
       params.set(filterType, values.join(','));
