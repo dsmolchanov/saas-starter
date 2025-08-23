@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>You're invited!</title>
+    <title>Sign in to your account</title>
     <!--[if mso]>
     <noscript>
         <xml>
@@ -48,25 +48,26 @@
             margin-bottom: 32px;
             text-align: center;
         }
-        .invite-box {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 12px;
-            padding: 32px;
-            margin-bottom: 32px;
+        .code-container {
+            background-color: #f9fafb;
+            border-radius: 8px;
+            padding: 24px;
+            margin-bottom: 24px;
             text-align: center;
-            color: white;
         }
-        .invite-icon {
-            font-size: 48px;
-            margin-bottom: 16px;
+        .code-label {
+            font-size: 12px;
+            color: #6b7280;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
-        .invite-text {
-            font-size: 16px;
-            margin-bottom: 8px;
-        }
-        .inviter-name {
-            font-size: 18px;
-            font-weight: 600;
+        .code {
+            font-size: 32px;
+            font-weight: 500;
+            letter-spacing: 8px;
+            color: #111827;
+            font-family: 'SF Mono', Monaco, 'Courier New', monospace;
         }
         .button {
             display: inline-block;
@@ -85,30 +86,32 @@
         .button:hover {
             background-color: #1f2937;
         }
-        .features {
-            margin-bottom: 32px;
-        }
-        .feature {
-            display: flex;
-            align-items: flex-start;
+        .alternative {
+            font-size: 13px;
+            color: #6b7280;
+            text-align: center;
             margin-bottom: 16px;
         }
-        .feature-icon {
-            width: 20px;
-            height: 20px;
-            background-color: #10b981;
-            border-radius: 50%;
-            margin-right: 12px;
-            flex-shrink: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 12px;
+        .or-divider {
+            position: relative;
+            text-align: center;
+            margin: 24px 0;
         }
-        .feature-text {
-            font-size: 14px;
-            color: #4b5563;
+        .or-divider::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: #e5e7eb;
+        }
+        .or-divider span {
+            position: relative;
+            padding: 0 16px;
+            background: white;
+            color: #9ca3af;
+            font-size: 12px;
         }
         .divider {
             height: 1px;
@@ -127,12 +130,19 @@
         .footer a:hover {
             text-decoration: underline;
         }
+        .info-text {
+            font-size: 13px;
+            color: #6b7280;
+            margin-bottom: 24px;
+            text-align: center;
+        }
         @media only screen and (max-width: 600px) {
             .container {
                 padding: 24px 16px;
             }
-            .invite-box {
-                padding: 24px;
+            .code {
+                font-size: 28px;
+                letter-spacing: 6px;
             }
         }
     </style>
@@ -144,41 +154,29 @@
             <path d="M10 40C16 36 22 34 32 34C42 34 48 36 54 40C48 48 40 52 32 52C24 52 16 48 10 40Z" fill="#4a9cb0"/>
         </svg>
         
-        <h1>You're invited!</h1>
+        <h1>Sign in to your account</h1>
+        <p class="subtitle">Use the code below or click the button to sign in</p>
         
-        <div class="invite-box">
-            <div class="invite-icon">🎉</div>
-            <div class="invite-text">{{ .InviterEmail }} has invited you to join</div>
-            <div class="inviter-name">{{ .SiteName }}</div>
+        <div class="code-container">
+            <div class="code-label">Your Sign-in Code</div>
+            <div class="code">{{ .Token }}</div>
         </div>
         
-        <p class="subtitle">Join our community and start your journey today</p>
+        <p class="info-text">Enter this code on the sign-in page</p>
         
-        <div class="features">
-            <div class="feature">
-                <div class="feature-icon">✓</div>
-                <div class="feature-text">Access to exclusive content and features</div>
-            </div>
-            <div class="feature">
-                <div class="feature-icon">✓</div>
-                <div class="feature-text">Connect with like-minded individuals</div>
-            </div>
-            <div class="feature">
-                <div class="feature-icon">✓</div>
-                <div class="feature-text">Track your progress and achievements</div>
-            </div>
+        <div class="or-divider">
+            <span>OR</span>
         </div>
         
-        <a href="{{ .ConfirmationURL }}" class="button">Accept Invitation</a>
+        <a href="{{ .ConfirmationURL }}" class="button">Sign In Instantly</a>
         
-        <p style="font-size: 13px; color: #6b7280; text-align: center; margin-bottom: 16px;">
-            This invitation expires in 7 days
-        </p>
+        <p class="alternative">This link and code will expire in 60 minutes</p>
         
         <div class="divider"></div>
         
         <div class="footer">
-            <p>If you don't want to accept this invitation, you can ignore this email.</p>
+            <p>If you didn't request this email, you can safely ignore it.</p>
+            <p style="margin-top: 8px; color: #6b7280;">Someone may have entered your email by mistake.</p>
             <p style="margin-top: 16px;">
                 <a href="{{ .SiteURL }}">Visit our website</a> · 
                 <a href="{{ .SiteURL }}/privacy">Privacy Policy</a>

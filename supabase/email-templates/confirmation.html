@@ -31,20 +31,10 @@
             padding: 40px 20px;
         }
         .logo {
-            width: 40px;
-            height: 40px;
-            background-color: #f3f4f6;
-            border-radius: 50%;
+            width: 48px;
+            height: 48px;
             margin: 0 auto 32px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .logo-dot {
-            width: 8px;
-            height: 8px;
-            background-color: #111827;
-            border-radius: 50%;
+            display: block;
         }
         h1 {
             font-size: 20px;
@@ -125,9 +115,10 @@
 </head>
 <body>
     <div class="container">
-        <div class="logo">
-            <div class="logo-dot"></div>
-        </div>
+        <svg class="logo" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M32 4C26 11 22 19 22 26C22 37 28 44 32 44C36 44 42 37 42 26C42 19 38 11 32 4Z" fill="#4a9cb0"/>
+            <path d="M10 40C16 36 22 34 32 34C42 34 48 36 54 40C48 48 40 52 32 52C24 52 16 48 10 40Z" fill="#4a9cb0"/>
+        </svg>
         
         <h1>Verify your email</h1>
         <p class="subtitle">Enter this code to confirm your email address</p>
