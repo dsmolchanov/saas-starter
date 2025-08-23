@@ -249,6 +249,19 @@ export const playlistActivity = pgTable('playlist_activity', {
     createdAt: timestamp('created_at').notNull().defaultNow(),
 });
 
+export const favorites = pgTable('favorites', {
+    id: uuid('id').defaultRandom().primaryKey(),
+    userId: uuid('user_id').references(() => users.id, { onDelete: 'cascade' }).notNull(),
+    itemType: varchar('item_type', { length: 20 }).notNull(),
+    itemId: uuid('item_id').notNull(),
+    createdAt: timestamp('created_at').notNull().defaultNow(),
+}, (table) => ({
+    uniqueFavorite: {
+        columns: [table.userId, table.itemType, table.itemId],
+        name: 'unique_user_favorite',
+    },
+}));
+
 export const dailyUserMetrics = pgTable('daily_user_metrics', {
     id: uuid('id').defaultRandom().primaryKey(),
     userId: uuid('user_id').references(() => users.id).notNull(),

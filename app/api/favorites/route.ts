@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getUser, getFavoritesPlaylist, addToFavorites, removeFromFavorites, checkIfFavorite } from '@/lib/db/queries';
+import { getUser } from '@/lib/db/queries';
+import { db } from '@/lib/db/drizzle';
+import { favorites } from '@/lib/db/schema';
+import { eq, and } from 'drizzle-orm';
 
 export async function GET() {
   try {
@@ -8,8 +11,13 @@ export async function GET() {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const favorites = await getFavoritesPlaylist(user.id);
-    return NextResponse.json({ favorites });
+    // Get all user's favorites
+    const userFavorites = await db
+      .select()
+      .from(favorites)
+      .where(eq(favorites.userId, user.id));
+    
+    return NextResponse.json({ favorites: userFavorites });
   } catch (error) {
     console.error('Error fetching favorites:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
@@ -30,29 +38,65 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'itemType, itemId, and action are required' }, { status: 400 });
     }
 
-    if (!['lesson', 'course', 'teacher'].includes(itemType)) {
-      return NextResponse.json({ error: 'Invalid itemType' }, { status: 400 });
+    if (!['class', 'meditation', 'course'].includes(itemType)) {
+      return NextResponse.json({ error: 'Invalid itemType. Must be class, meditation, or course' }, { status: 400 });
     }
 
-    if (!['add', 'remove'].includes(action)) {
-      return NextResponse.json({ error: 'Action must be add or remove' }, { status: 400 });
+    if (!['add', 'remove', 'toggle'].includes(action)) {
+      return NextResponse.json({ error: 'Action must be add, remove, or toggle' }, { status: 400 });
     }
+
+    // Check if already favorited
+    const existing = await db
+      .select()
+      .from(favorites)
+      .where(
+        and(
+          eq(favorites.userId, user.id),
+          eq(favorites.itemType, itemType),
+          eq(favorites.itemId, itemId)
+        )
+      )
+      .limit(1);
 
     let result;
-    if (action === 'add') {
-      try {
-        result = await addToFavorites(user.id, itemType, itemId);
-      } catch (error) {
-        if (error instanceof Error && error.message.includes('already exists')) {
-          return NextResponse.json({ error: 'Item already in favorites' }, { status: 409 });
-        }
-        throw error;
-      }
-    } else {
-      result = await removeFromFavorites(user.id, itemType, itemId);
+    if (action === 'toggle') {
+      // Toggle based on current state
+      action = existing.length > 0 ? 'remove' : 'add';
     }
 
-    return NextResponse.json({ success: true, result });
+    if (action === 'add' && existing.length === 0) {
+      // Add to favorites (trigger will add to Liked playlist)
+      [result] = await db
+        .insert(favorites)
+        .values({
+          userId: user.id,
+          itemType,
+          itemId,
+        })
+        .returning();
+    } else if (action === 'remove' && existing.length > 0) {
+      // Remove from favorites (trigger will remove from Liked playlist)
+      await db
+        .delete(favorites)
+        .where(
+          and(
+            eq(favorites.userId, user.id),
+            eq(favorites.itemType, itemType),
+            eq(favorites.itemId, itemId)
+          )
+        );
+      result = { removed: true };
+    } else {
+      // No change needed
+      result = existing[0] || { exists: false };
+    }
+
+    return NextResponse.json({ 
+      success: true, 
+      isFavorited: action === 'add',
+      result 
+    });
   } catch (error) {
     console.error('Error updating favorites:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });

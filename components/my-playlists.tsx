@@ -327,8 +327,51 @@ export function MyPlaylists({ userId, isTeacher }: MyPlaylistsProps) {
         </Dialog>
       </div>
 
-      {/* Playlists Grid */}
-      {playlists.length === 0 ? (
+      {/* Liked Playlist - Always show at the top */}
+      {(() => {
+        const likedPlaylist = playlists.find(p => p.playlistType === 'liked');
+        if (likedPlaylist) {
+          return (
+            <Card 
+              className="mb-6 overflow-hidden bg-gradient-to-br from-purple-500 to-pink-500 text-white cursor-pointer hover:shadow-xl transition-shadow"
+              onClick={() => window.location.href = `/playlists/${likedPlaylist.id}`}
+            >
+              <div className="p-6">
+                <div className="flex items-start justify-between">
+                  <div>
+                    <div className="flex items-center gap-3 mb-2">
+                      <div className="w-12 h-12 bg-white/20 backdrop-blur rounded-lg flex items-center justify-center">
+                        <Heart className="w-6 h-6 fill-current" />
+                      </div>
+                      <div>
+                        <h2 className="text-2xl font-bold">Liked</h2>
+                        <p className="text-white/80 text-sm">Your favorite classes and meditations</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-4 mt-4 text-sm text-white/90">
+                      <div className="flex items-center gap-1">
+                        <Play className="w-4 h-4" />
+                        {likedPlaylist.totalItems} items
+                      </div>
+                      {likedPlaylist.totalDurationMin > 0 && (
+                        <div className="flex items-center gap-1">
+                          <Clock className="w-4 h-4" />
+                          {formatDuration(likedPlaylist.totalDurationMin)}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  <ChevronRight className="w-6 h-6 text-white/60" />
+                </div>
+              </div>
+            </Card>
+          );
+        }
+        return null;
+      })()}
+
+      {/* Other Playlists Grid */}
+      {playlists.filter(p => p.playlistType !== 'liked').length === 0 ? (
         <Card className="p-12 text-center">
           <div className="max-w-sm mx-auto space-y-4">
             <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto">
@@ -350,7 +393,7 @@ export function MyPlaylists({ userId, isTeacher }: MyPlaylistsProps) {
         </Card>
       ) : (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {playlists.map((playlist) => (
+          {playlists.filter(p => p.playlistType !== 'liked').map((playlist) => (
             <Card 
               key={playlist.id} 
               className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer"

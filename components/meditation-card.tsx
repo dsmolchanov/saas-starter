@@ -1,48 +1,45 @@
 'use client';
 
 import Link from 'next/link';
-import { Clock, Heart } from 'lucide-react';
-import { Button } from './ui/button';
+import { Clock, Heart, Headphones } from 'lucide-react';
 import { Badge } from './ui/badge';
 import Image from 'next/image';
 import { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
 
-type ClassCardProps = {
+type MeditationCardProps = {
   id: string;
   title: string;
-  instructor: string;
+  instructor?: string;
   duration: number;
-  difficulty: string;
-  intensity: string;
-  focusAreas: string[];
+  type?: string;
+  focus?: string;
   thumbnailUrl?: string;
-  likes: number;
+  likes?: number;
 };
 
-export function ClassCard({
+export function MeditationCard({
   id,
   title,
   instructor,
   duration,
-  difficulty,
-  intensity,
-  focusAreas = [],
+  type = 'Guided',
+  focus,
   thumbnailUrl,
-  likes: initialLikes,
-}: ClassCardProps) {
+  likes: initialLikes = 0,
+}: MeditationCardProps) {
   const [likes, setLikes] = useState(initialLikes);
   const [isFavorited, setIsFavorited] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  // Check if the class is already favorited
+  // Check if the meditation is already favorited
   useEffect(() => {
     fetch('/api/favorites')
       .then(res => res.json())
       .then(data => {
         if (data.favorites) {
           const favorited = data.favorites.some(
-            (f: any) => f.itemType === 'class' && f.itemId === id
+            (f: any) => f.itemType === 'meditation' && f.itemId === id
           );
           setIsFavorited(favorited);
         }
@@ -62,7 +59,7 @@ export function ClassCard({
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          itemType: 'class',
+          itemType: 'meditation',
           itemId: id,
           action: 'toggle',
         }),
@@ -84,12 +81,12 @@ export function ClassCard({
   const formatDuration = (minutes: number) => {
     const hours = Math.floor(minutes / 60);
     const mins = minutes % 60;
-    return hours > 0 ? `${hours}h ${mins}m` : `${mins}m`;
+    return hours > 0 ? `${hours}h ${mins}m` : `${mins} min`;
   };
 
   return (
     <div className="group overflow-hidden rounded-xl border bg-card text-card-foreground shadow-sm transition-all hover:shadow-md">
-      <Link href={`/classes/${id}`} className="block">
+      <Link href={`/meditations/${id}`} className="block">
         <div className="relative aspect-video bg-muted">
           {thumbnailUrl ? (
             <Image
@@ -100,13 +97,12 @@ export function ClassCard({
               className="object-cover transition-transform group-hover:scale-105"
             />
           ) : (
-            <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-primary/10 to-primary/5">
-              <span className="text-lg font-medium text-muted-foreground">
-                {title[0]?.toUpperCase()}
-              </span>
+            <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-purple-500/10 to-pink-500/10">
+              <Headphones className="h-12 w-12 text-purple-500/50" />
             </div>
           )}
-          <div className="absolute bottom-2 right-2 rounded-full bg-black/70 px-2 py-1 text-xs text-white">
+          <div className="absolute bottom-2 left-2 rounded-full bg-black/70 px-2 py-1 text-xs text-white flex items-center gap-1">
+            <Clock className="h-3 w-3" />
             {formatDuration(duration)}
           </div>
           {/* Favorite button overlay */}
@@ -127,17 +123,21 @@ export function ClassCard({
         <div className="p-4">
           <div className="mb-2 flex items-center gap-2">
             <Badge variant="secondary" className="text-xs">
-              {difficulty}
+              {type}
             </Badge>
-            <Badge variant="outline" className="text-xs">
-              {intensity}
-            </Badge>
+            {focus && (
+              <Badge variant="outline" className="text-xs">
+                {focus}
+              </Badge>
+            )}
           </div>
 
           <h3 className="mb-1 line-clamp-2 font-medium leading-tight">
             {title}
           </h3>
-          <p className="mb-3 text-sm text-muted-foreground">{instructor}</p>
+          {instructor && (
+            <p className="mb-3 text-sm text-muted-foreground">{instructor}</p>
+          )}
 
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-1 text-xs text-muted-foreground">
@@ -147,25 +147,10 @@ export function ClassCard({
               )} />
               <span>{likes}</span>
             </div>
-
-            {focusAreas.length > 0 && (
-              <div className="flex flex-wrap justify-end gap-1">
-                {focusAreas.slice(0, 2).map((area) => (
-                  <Badge
-                    key={area}
-                    variant="outline"
-                    className="text-xs font-normal"
-                  >
-                    {area}
-                  </Badge>
-                ))}
-                {focusAreas.length > 2 && (
-                  <Badge variant="outline" className="text-xs font-normal">
-                    +{focusAreas.length - 2}
-                  </Badge>
-                )}
-              </div>
-            )}
+            <div className="flex items-center gap-1 text-xs text-muted-foreground">
+              <Headphones className="h-3 w-3" />
+              <span>Meditation</span>
+            </div>
           </div>
         </div>
       </Link>
