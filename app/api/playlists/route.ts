@@ -11,7 +11,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Get user's playlists
+    // Get user's playlists with all the new features
     const userPlaylists = await db
       .select({
         playlist: playlists,
@@ -31,12 +31,17 @@ export async function GET(request: NextRequest) {
       .orderBy(desc(playlists.updatedAt));
 
     // Format playlists with additional info
-    const formattedPlaylists = userPlaylists.map(({ playlist, itemCount, followerCount }) => ({
-      ...playlist,
-      totalItems: itemCount || 0,
-      followersCount: followerCount || 0,
-      isOwner: playlist.userId === user.id || playlist.teacherId === user.id,
-    }));
+    const formattedPlaylists = userPlaylists.map((item: any) => {
+      const playlist = item.playlist || item;
+      return {
+        ...playlist,
+        totalItems: item.itemCount || 0,
+        followersCount: item.followerCount || 0,
+        isOwner: playlist.userId === user.id,
+        // Add visibility if not present (for backwards compatibility)
+        visibility: playlist.visibility || (playlist.isPublic ? 'public' : 'private'),
+      };
+    });
 
     return NextResponse.json({ playlists: formattedPlaylists });
   } catch (error) {
@@ -69,14 +74,15 @@ export async function POST(request: NextRequest) {
 
     const isTeacher = userProfile?.role === 'teacher' || !!userProfile?.teacherProfile;
 
-    // Create playlist
+    // Create playlist - now we can use all the new fields
     const [newPlaylist] = await db
       .insert(playlists)
       .values({
         userId: user.id,
         teacherId: isTeacher ? user.id : null,
         name: name.trim(),
-        description: description?.trim(),
+        description: description?.trim() || null,
+        isPublic: visibility === 'public' ? 1 : 0,
         visibility: visibility || 'private',
         tags: tags || [],
         playlistType: 'custom',

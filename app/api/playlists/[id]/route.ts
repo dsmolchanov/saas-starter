@@ -30,14 +30,15 @@ export async function PUT(
       return NextResponse.json({ error: 'Playlist not found or unauthorized' }, { status: 404 });
     }
 
-    // Update playlist
+    // Update playlist with all fields
     const [updatedPlaylist] = await db
       .update(playlists)
       .set({
         name: name?.trim() || existingPlaylist.name,
-        description: description?.trim(),
-        visibility: visibility || existingPlaylist.visibility,
-        tags: tags || existingPlaylist.tags,
+        description: description?.trim() || existingPlaylist.description,
+        visibility: visibility || existingPlaylist.visibility || 'private',
+        tags: tags !== undefined ? tags : existingPlaylist.tags,
+        isPublic: visibility ? (visibility === 'public' ? 1 : 0) : existingPlaylist.isPublic,
         updatedAt: new Date(),
       })
       .where(eq(playlists.id, playlistId))
