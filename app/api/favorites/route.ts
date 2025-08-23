@@ -32,9 +32,9 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { itemType, itemId, action } = body;
+    const { itemType, itemId, action: requestAction } = body;
 
-    if (!itemType || !itemId || !action) {
+    if (!itemType || !itemId || !requestAction) {
       return NextResponse.json({ error: 'itemType, itemId, and action are required' }, { status: 400 });
     }
 
@@ -42,7 +42,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid itemType. Must be class, meditation, or course' }, { status: 400 });
     }
 
-    if (!['add', 'remove', 'toggle'].includes(action)) {
+    if (!['add', 'remove', 'toggle'].includes(requestAction)) {
       return NextResponse.json({ error: 'Action must be add, remove, or toggle' }, { status: 400 });
     }
 
@@ -60,6 +60,7 @@ export async function POST(request: NextRequest) {
       .limit(1);
 
     let result;
+    let action = requestAction;
     if (action === 'toggle') {
       // Toggle based on current state
       action = existing.length > 0 ? 'remove' : 'add';

@@ -64,6 +64,8 @@ interface Playlist {
   tags?: string[];
   isOwner: boolean;
   followersCount?: number;
+  playlistType?: string;
+  isSystem?: number;
 }
 
 interface MyPlaylistsProps {
