@@ -62,7 +62,8 @@ export function TeacherAdminContentV2({
       count: courses.length,
       color: 'bg-purple-100 text-purple-700',
       description: 'Multi-class programs',
-      href: '/teacher/courses'
+      href: '#',
+      onClick: 'courses'
     },
     {
       id: 'classes',
@@ -71,7 +72,8 @@ export function TeacherAdminContentV2({
       count: standaloneClasses.length,
       color: 'bg-blue-100 text-blue-700',
       description: 'Individual sessions',
-      href: '/teacher/classes'
+      href: '#',
+      onClick: 'classes'
     },
     {
       id: 'playlists',
@@ -80,7 +82,7 @@ export function TeacherAdminContentV2({
       count: 0,
       color: 'bg-pink-100 text-pink-700',
       description: 'Curated collections',
-      href: '#playlists',
+      href: '#',
       onClick: 'playlists'
     },
     {
@@ -90,7 +92,8 @@ export function TeacherAdminContentV2({
       count: 0,
       color: 'bg-green-100 text-green-700',
       description: 'Guided audio',
-      href: '/teacher/meditations'
+      href: '#',
+      onClick: 'meditations'
     },
     {
       id: 'challenges',
@@ -99,7 +102,8 @@ export function TeacherAdminContentV2({
       count: 0,
       color: 'bg-orange-100 text-orange-700',
       description: '30-day programs',
-      href: '/teacher/challenges'
+      href: '#',
+      onClick: 'challenges'
     },
     {
       id: 'live',
@@ -108,7 +112,8 @@ export function TeacherAdminContentV2({
       count: 0,
       color: 'bg-red-100 text-red-700',
       description: 'Streaming sessions',
-      href: '/teacher/live'
+      href: '#',
+      onClick: 'live'
     },
     {
       id: 'breathing',
@@ -117,7 +122,8 @@ export function TeacherAdminContentV2({
       count: 0,
       color: 'bg-cyan-100 text-cyan-700',
       description: 'Pranayama exercises',
-      href: '/teacher/breathing'
+      href: '#',
+      onClick: 'breathing'
     },
     {
       id: 'quickflows',
@@ -126,7 +132,8 @@ export function TeacherAdminContentV2({
       count: 0,
       color: 'bg-yellow-100 text-yellow-700',
       description: '5-15 min sessions',
-      href: '/teacher/quickflows'
+      href: '#',
+      onClick: 'quickflows'
     },
     {
       id: 'workshops',
@@ -135,7 +142,8 @@ export function TeacherAdminContentV2({
       count: 0,
       color: 'bg-pink-100 text-pink-700',
       description: 'Extended sessions',
-      href: '/teacher/workshops'
+      href: '#',
+      onClick: 'workshops'
     },
     {
       id: 'articles',
@@ -144,7 +152,8 @@ export function TeacherAdminContentV2({
       count: 0,
       color: 'bg-gray-100 text-gray-700',
       description: 'Blog & education',
-      href: '/teacher/articles'
+      href: '#',
+      onClick: 'articles'
     },
     {
       id: 'groups',
@@ -153,7 +162,8 @@ export function TeacherAdminContentV2({
       count: 0,
       color: 'bg-indigo-100 text-indigo-700',
       description: 'Private communities',
-      href: '/teacher/groups'
+      href: '#',
+      onClick: 'groups'
     }
   ];
 
@@ -201,7 +211,7 @@ export function TeacherAdminContentV2({
         <div className="px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              {selectedSection === 'playlists' ? (
+              {selectedSection !== 'overview' ? (
                 <Button 
                   variant="ghost" 
                   size="icon"
@@ -218,10 +228,12 @@ export function TeacherAdminContentV2({
               )}
               <div>
                 <h1 className="text-xl font-semibold text-gray-900">
-                  {selectedSection === 'playlists' ? 'Teacher Playlists' : 'Teacher Studio'}
+                  {selectedSection === 'overview' ? 'Teacher Studio' : 
+                   contentTypes.find(t => t.onClick === selectedSection)?.label || 'Teacher Studio'}
                 </h1>
                 <p className="text-sm text-gray-500">
-                  {selectedSection === 'playlists' ? 'Manage your curated collections' : 'Create & manage your content'}
+                  {selectedSection === 'overview' ? 'Create & manage your content' :
+                   contentTypes.find(t => t.onClick === selectedSection)?.description || 'Manage your content'}
                 </p>
               </div>
             </div>
@@ -235,6 +247,29 @@ export function TeacherAdminContentV2({
       {selectedSection === 'playlists' ? (
         <div className="px-4 py-6">
           <MyPlaylists userId={user.id} isTeacher={true} />
+        </div>
+      ) : selectedSection !== 'overview' ? (
+        <div className="px-4 py-6">
+          <Card className="p-8 text-center">
+            <div className="max-w-md mx-auto space-y-4">
+              <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto">
+                {contentTypes.find(t => t.onClick === selectedSection)?.icon && (
+                  <>{(() => {
+                    const Icon = contentTypes.find(t => t.onClick === selectedSection)?.icon;
+                    return Icon ? <Icon className="w-8 h-8 text-gray-400" /> : null;
+                  })()}</>
+                )}
+              </div>
+              <h3 className="text-lg font-medium">Coming Soon</h3>
+              <p className="text-sm text-gray-600">
+                {contentTypes.find(t => t.onClick === selectedSection)?.label} management is coming soon. 
+                We're working on bringing you the best tools to create and manage your content.
+              </p>
+              <Button variant="outline" onClick={() => setSelectedSection('overview')}>
+                Back to Overview
+              </Button>
+            </div>
+          </Card>
         </div>
       ) : (
         <>
