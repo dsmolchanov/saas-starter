@@ -6,6 +6,8 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { MyPlaylists } from '@/components/my-playlists';
+import { ClassManager } from '@/components/class-manager';
+import { CourseManager } from '@/components/course-manager';
 import { 
   Plus,
   BookOpen,
@@ -247,6 +249,14 @@ export function TeacherAdminContentV2({
       {selectedSection === 'playlists' ? (
         <div className="px-4 py-6">
           <MyPlaylists userId={user.id} isTeacher={true} />
+        </div>
+      ) : selectedSection === 'classes' ? (
+        <div className="px-4 py-6">
+          <ClassManager userId={user.id} />
+        </div>
+      ) : selectedSection === 'courses' ? (
+        <div className="px-4 py-6">
+          <CourseManager />
         </div>
       ) : selectedSection !== 'overview' ? (
         <div className="px-4 py-6">
