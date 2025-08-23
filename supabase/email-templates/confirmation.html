@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confirm your email</title>
+    <!--[if mso]>
+    <noscript>
+        <xml>
+            <o:OfficeDocumentSettings>
+                <o:PixelsPerInch>96</o:PixelsPerInch>
+            </o:OfficeDocumentSettings>
+        </xml>
+    </noscript>
+    <![endif]-->
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #111827;
+            background-color: #ffffff;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        .logo {
+            width: 40px;
+            height: 40px;
+            background-color: #f3f4f6;
+            border-radius: 50%;
+            margin: 0 auto 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .logo-dot {
+            width: 8px;
+            height: 8px;
+            background-color: #111827;
+            border-radius: 50%;
+        }
+        h1 {
+            font-size: 20px;
+            font-weight: 500;
+            margin-bottom: 16px;
+            text-align: center;
+        }
+        .subtitle {
+            font-size: 14px;
+            color: #6b7280;
+            margin-bottom: 32px;
+            text-align: center;
+        }
+        .code-container {
+            background-color: #f9fafb;
+            border-radius: 8px;
+            padding: 24px;
+            margin-bottom: 32px;
+            text-align: center;
+        }
+        .code {
+            font-size: 32px;
+            font-weight: 500;
+            letter-spacing: 8px;
+            color: #111827;
+            font-family: 'SF Mono', Monaco, 'Courier New', monospace;
+        }
+        .button {
+            display: inline-block;
+            padding: 12px 24px;
+            background-color: #111827;
+            color: #ffffff;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 400;
+            text-align: center;
+            margin: 0 auto;
+            display: block;
+            max-width: 200px;
+        }
+        .button:hover {
+            background-color: #1f2937;
+        }
+        .divider {
+            height: 1px;
+            background-color: #e5e7eb;
+            margin: 32px 0;
+        }
+        .footer {
+            font-size: 12px;
+            color: #9ca3af;
+            text-align: center;
+        }
+        .footer a {
+            color: #6b7280;
+            text-decoration: none;
+        }
+        .footer a:hover {
+            text-decoration: underline;
+        }
+        .info-text {
+            font-size: 13px;
+            color: #6b7280;
+            margin-bottom: 24px;
+            text-align: center;
+        }
+        @media only screen and (max-width: 600px) {
+            .container {
+                padding: 24px 16px;
+            }
+            .code {
+                font-size: 28px;
+                letter-spacing: 6px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">
+            <div class="logo-dot"></div>
+        </div>
+        
+        <h1>Verify your email</h1>
+        <p class="subtitle">Enter this code to confirm your email address</p>
+        
+        <div class="code-container">
+            <div class="code">{{ .Token }}</div>
+        </div>
+        
+        <p class="info-text">This code will expire in 60 minutes</p>
+        
+        <a href="{{ .ConfirmationURL }}" class="button">Verify Email</a>
+        
+        <div class="divider"></div>
+        
+        <div class="footer">
+            <p>If you didn't request this email, you can safely ignore it.</p>
+            <p style="margin-top: 16px;">
+                <a href="{{ .SiteURL }}">Visit our website</a> · 
+                <a href="{{ .SiteURL }}/privacy">Privacy Policy</a>
+            </p>
+        </div>
+    </div>
+</body>
+</html>
