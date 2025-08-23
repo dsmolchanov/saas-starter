@@ -7,6 +7,7 @@ import { Card } from '@/components/ui/card';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
+import { MyPlaylists } from '@/components/my-playlists';
 import { 
   ChevronRight,
   Share2,
@@ -29,7 +30,8 @@ import {
   GraduationCap,
   Heart,
   Star,
-  Award
+  Award,
+  ListMusic
 } from 'lucide-react';
 
 interface User {
@@ -60,6 +62,7 @@ interface MoreContentProps {
 }
 
 export function MoreContent({ user, stats }: MoreContentProps) {
+  const [activeSection, setActiveSection] = useState<string | null>(null);
   const isTeacher = user.role === 'teacher' || !!user.teacherProfile;
   const isAdmin = user.role === 'admin' || user.role === 'owner';
   const formatDate = (date: Date) => {
@@ -93,6 +96,14 @@ export function MoreContent({ user, stats }: MoreContentProps) {
       badgeVariant: 'default' as const,
       iconColor: 'text-purple-600'
     }] : []),
+    {
+      icon: ListMusic,
+      label: 'My Playlists',
+      href: '#playlists',
+      description: 'Manage your practice collections',
+      iconColor: 'text-indigo-600',
+      onClick: 'playlists'
+    },
     {
       icon: Share2,
       label: 'Share Dzen Yoga',
@@ -149,11 +160,29 @@ export function MoreContent({ user, stats }: MoreContentProps) {
       {/* Header */}
       <div className="bg-white border-b border-gray-100">
         <div className="container max-w-md mx-auto px-4 py-6">
-          <h1 className="text-2xl font-bold text-gray-900">More</h1>
+          <div className="flex items-center gap-2">
+            {activeSection && (
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setActiveSection(null)}
+                className="mr-2"
+              >
+                <ChevronRight className="w-5 h-5 rotate-180" />
+              </Button>
+            )}
+            <h1 className="text-2xl font-bold text-gray-900">
+              {activeSection === 'playlists' ? 'My Playlists' : 'More'}
+            </h1>
+          </div>
         </div>
       </div>
 
       <div className="container max-w-md mx-auto px-4 py-6 space-y-6">
+        {activeSection === 'playlists' ? (
+          <MyPlaylists userId={user.id} isTeacher={isTeacher} />
+        ) : (
+          <>
         {/* User Profile Card */}
         <Card className="p-6 border-0 shadow-sm">
           <div className="flex items-center gap-4 mb-4">
@@ -239,8 +268,12 @@ export function MoreContent({ user, stats }: MoreContentProps) {
         {/* Menu Items */}
         <div className="space-y-2">
           {menuItems.map((item, index) => (
-            <Link key={index} href={item.href}>
-              <Card className="p-4 border-0 shadow-sm hover:shadow-md transition-all hover:scale-[1.01]">
+            item.onClick ? (
+              <Card 
+                key={index} 
+                className="p-4 border-0 shadow-sm hover:shadow-md transition-all hover:scale-[1.01] cursor-pointer"
+                onClick={() => setActiveSection(item.onClick)}
+              >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <div className={`w-10 h-10 bg-gray-50 rounded-full flex items-center justify-center`}>
@@ -261,7 +294,31 @@ export function MoreContent({ user, stats }: MoreContentProps) {
                   <ChevronRight className="w-5 h-5 text-gray-400" />
                 </div>
               </Card>
-            </Link>
+            ) : (
+              <Link key={index} href={item.href}>
+                <Card className="p-4 border-0 shadow-sm hover:shadow-md transition-all hover:scale-[1.01]">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className={`w-10 h-10 bg-gray-50 rounded-full flex items-center justify-center`}>
+                        <item.icon className={`w-5 h-5 ${item.iconColor}`} />
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <p className="font-medium text-gray-900">{item.label}</p>
+                          {item.badge && (
+                            <Badge variant={item.badgeVariant} className="text-xs">
+                              {item.badge}
+                            </Badge>
+                          )}
+                        </div>
+                        <p className="text-xs text-gray-500">{item.description}</p>
+                      </div>
+                    </div>
+                    <ChevronRight className="w-5 h-5 text-gray-400" />
+                  </div>
+                </Card>
+              </Link>
+            )
           ))}
         </div>
 
@@ -288,6 +345,8 @@ export function MoreContent({ user, stats }: MoreContentProps) {
           <p className="text-xs text-gray-400">Dzen Yoga v1.0.0</p>
           <p className="text-xs text-gray-400 mt-1">Made with {<Heart className="w-3 h-3 inline text-red-500" />} for yogis</p>
         </div>
+        </>
+        )}
       </div>
     </div>
   );

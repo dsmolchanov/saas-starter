@@ -182,12 +182,19 @@ export const teacherApplications = pgTable('teacher_applications', {
 export const playlists = pgTable('playlists', {
   id: uuid('id').defaultRandom().primaryKey(),
   userId: uuid('user_id').references(() => users.id).notNull(),
+  teacherId: uuid('teacher_id').references(() => users.id),
   name: varchar('name', { length: 100 }).notNull(),
   description: text('description'),
   isPublic: integer('is_public').notNull().default(0),
+  visibility: varchar('visibility', { length: 20 }).notNull().default('private'),
   isSystem: integer('is_system').notNull().default(0),
   playlistType: varchar('playlist_type', { length: 20 }).notNull().default('custom'),
   coverUrl: text('cover_url'),
+  totalItems: integer('total_items').notNull().default(0),
+  totalDurationMin: integer('total_duration_min').notNull().default(0),
+  tags: text('tags').array(),
+  featured: boolean('featured').notNull().default(false),
+  viewCount: integer('view_count').notNull().default(0),
   createdAt: timestamp('created_at').notNull().defaultNow(),
   updatedAt: timestamp('updated_at').notNull().defaultNow(),
 });
@@ -206,6 +213,41 @@ export const playlistItems = pgTable('playlist_items', {
         name: 'unique_playlist_item_supabase',
     },
 }));
+
+export const playlistFollowers = pgTable('playlist_followers', {
+    id: uuid('id').defaultRandom().primaryKey(),
+    playlistId: uuid('playlist_id').references(() => playlists.id, { onDelete: 'cascade' }).notNull(),
+    userId: uuid('user_id').references(() => users.id, { onDelete: 'cascade' }).notNull(),
+    followedAt: timestamp('followed_at').notNull().defaultNow(),
+}, (table) => ({
+    uniquePlaylistFollower: {
+        columns: [table.playlistId, table.userId],
+        name: 'unique_playlist_follower',
+    },
+}));
+
+export const playlistCollaborators = pgTable('playlist_collaborators', {
+    id: uuid('id').defaultRandom().primaryKey(),
+    playlistId: uuid('playlist_id').references(() => playlists.id, { onDelete: 'cascade' }).notNull(),
+    userId: uuid('user_id').references(() => users.id, { onDelete: 'cascade' }).notNull(),
+    role: varchar('role', { length: 20 }).notNull().default('viewer'),
+    invitedBy: uuid('invited_by').references(() => users.id),
+    invitedAt: timestamp('invited_at').notNull().defaultNow(),
+    acceptedAt: timestamp('accepted_at'),
+}, (table) => ({
+    uniquePlaylistCollaborator: {
+        columns: [table.playlistId, table.userId],
+        name: 'unique_playlist_collaborator',
+    },
+}));
+
+export const playlistActivity = pgTable('playlist_activity', {
+    id: uuid('id').defaultRandom().primaryKey(),
+    playlistId: uuid('playlist_id').references(() => playlists.id, { onDelete: 'cascade' }).notNull(),
+    userId: uuid('user_id').references(() => users.id),
+    activityType: varchar('activity_type', { length: 30 }).notNull(),
+    createdAt: timestamp('created_at').notNull().defaultNow(),
+});
 
 export const dailyUserMetrics = pgTable('daily_user_metrics', {
     id: uuid('id').defaultRandom().primaryKey(),
