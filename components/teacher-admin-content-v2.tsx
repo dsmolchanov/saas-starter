@@ -8,6 +8,9 @@ import { Badge } from '@/components/ui/badge';
 import { MyPlaylists } from '@/components/my-playlists';
 import { ClassManager } from '@/components/class-manager';
 import { CourseManager } from '@/components/course-manager';
+import { AsanaManager } from '@/components/content/AsanaManager';
+import { BreathingManager } from '@/components/content/BreathingManager';
+import { MeditationManager } from '@/components/content/MeditationManager';
 import { 
   Plus,
   BookOpen,
@@ -90,6 +93,26 @@ export function TeacherAdminContentV2({
       onClick: 'playlists'
     },
     {
+      id: 'asanas',
+      label: 'Asana Library',
+      icon: BookOpen,
+      count: 0,
+      color: 'bg-purple-100 text-purple-700',
+      description: 'Pose database',
+      href: '#',
+      onClick: 'asanas'
+    },
+    {
+      id: 'breathing',
+      label: 'Breathing',
+      icon: Wind,
+      count: 0,
+      color: 'bg-cyan-100 text-cyan-700',
+      description: 'Pranayama exercises',
+      href: '#',
+      onClick: 'breathing'
+    },
+    {
       id: 'meditations',
       label: 'Meditations',
       icon: Headphones,
@@ -105,7 +128,7 @@ export function TeacherAdminContentV2({
       icon: Trophy,
       count: 0,
       color: 'bg-orange-100 text-orange-700',
-      description: '30-day programs',
+      description: 'Multi-day programs',
       href: '#',
       onClick: 'challenges'
     },
@@ -118,16 +141,6 @@ export function TeacherAdminContentV2({
       description: 'Streaming sessions',
       href: '#',
       onClick: 'live'
-    },
-    {
-      id: 'breathing',
-      label: 'Breathing',
-      icon: Wind,
-      count: 0,
-      color: 'bg-cyan-100 text-cyan-700',
-      description: 'Pranayama exercises',
-      href: '#',
-      onClick: 'breathing'
     },
     {
       id: 'quickflows',
@@ -259,6 +272,18 @@ export function TeacherAdminContentV2({
       ) : selectedSection === 'courses' ? (
         <div className="px-4 py-6">
           <CourseManager />
+        </div>
+      ) : selectedSection === 'asanas' ? (
+        <div className="px-4 py-6">
+          <AsanaManager userId={user.id} />
+        </div>
+      ) : selectedSection === 'breathing' ? (
+        <div className="px-4 py-6">
+          <BreathingManager userId={user.id} />
+        </div>
+      ) : selectedSection === 'meditations' ? (
+        <div className="px-4 py-6">
+          <MeditationManager userId={user.id} />
         </div>
       ) : selectedSection !== 'overview' ? (
         <div className="px-4 py-6">
