@@ -15,10 +15,18 @@ export async function verifyOtpAndSignIn(
   try {
     // Verify OTP with Supabase
     const supabase = await createServerSupabaseClient();
+    // Verify OTP - Supabase uses 'email' type for OTP codes
     const { data, error } = await supabase.auth.verifyOtp({
       email,
       token,
       type: 'email'
+    });
+    
+    console.log('OTP verification result:', { 
+      success: !!data?.session, 
+      error: error?.message,
+      email,
+      tokenLength: token.length 
     });
 
     if (error || !data.session) {
@@ -53,6 +61,9 @@ export async function verifyOtpAndSignIn(
     redirect(redirectTo);
   } catch (error) {
     console.error('Error in verifyOtpAndSignIn:', error);
+    if (error instanceof Error) {
+      console.error('Error details:', error.message, error.stack);
+    }
     return { error: 'Failed to verify code' };
   }
 }
