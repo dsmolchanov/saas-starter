@@ -1,8 +1,6 @@
 'use client';
 
-import { verifyOtpAndSignIn } from './passwordless-actions';
-
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -10,10 +8,8 @@ import { Label } from '@/components/ui/label';
 import { createClient } from '@/lib/supabase/client';
 import { 
   Mail, 
-  ArrowRight, 
-  CheckCircle,
   Loader2,
-  ChevronLeft
+  CheckCircle
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -22,140 +18,35 @@ export function LoginPasswordless({ mode = 'signin' }: { mode?: 'signin' | 'sign
   const searchParams = useSearchParams();
   const redirect = searchParams?.get('redirect') || '/home';
   
-  const [step, setStep] = useState<'email' | 'code'>('email');
   const [email, setEmail] = useState('');
-  const [code, setCode] = useState(['', '', '', '', '', '']);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
-  const [resendTimer, setResendTimer] = useState(0);
+  const [success, setSuccess] = useState(false);
 
   const supabase = createClient();
 
-  // Handle resend timer
-  useEffect(() => {
-    if (resendTimer > 0) {
-      const timer = setTimeout(() => setResendTimer(resendTimer - 1), 1000);
-      return () => clearTimeout(timer);
-    }
-  }, [resendTimer]);
-
-  const handleSendCode = async (e: React.FormEvent) => {
+  const handleSendMagicLink = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError('');
+    setSuccess(false);
 
     try {
       const { error } = await supabase.auth.signInWithOtp({
         email,
         options: {
           shouldCreateUser: mode === 'signup',
+          emailRedirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(redirect)}`
         }
       });
 
       if (error) {
         setError(error.message);
       } else {
-        setStep('code');
-        setSuccess('Check your email for the verification code');
-        setResendTimer(60); // 60 second cooldown
+        setSuccess(true);
       }
     } catch (err: any) {
       setError(err.message || 'Something went wrong');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleVerifyCode = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    setError('');
-
-    const token = code.join('');
-    
-    if (token.length !== 6) {
-      setError('Please enter a complete 6-digit code');
-      setLoading(false);
-      return;
-    }
-
-    try {
-      // Use server action to verify OTP and set session
-      const result = await verifyOtpAndSignIn(email, token, redirect);
-      
-      if (result?.error) {
-        setError(result.error);
-        setLoading(false);
-      }
-      // If successful, the server action will redirect
-    } catch (err: any) {
-      setError(err.message || 'Invalid code');
-      setLoading(false);
-    }
-  };
-
-  const handleCodeChange = (index: number, value: string) => {
-    // Handle paste of full code
-    if (value.length > 1) {
-      const pastedCode = value.slice(0, 6).split('');
-      const newCode = [...code];
-      pastedCode.forEach((digit, i) => {
-        if (index + i < 6) {
-          newCode[index + i] = digit;
-        }
-      });
-      setCode(newCode);
-      
-      // Focus on the last filled input or the next empty one
-      const nextIndex = Math.min(index + pastedCode.length, 5);
-      const nextInput = document.getElementById(`code-${nextIndex}`);
-      nextInput?.focus();
-      return;
-    }
-    
-    const newCode = [...code];
-    newCode[index] = value;
-    setCode(newCode);
-
-    // Auto-focus next input
-    if (value && index < 5) {
-      const nextInput = document.getElementById(`code-${index + 1}`);
-      nextInput?.focus();
-    }
-  };
-
-  const handleCodeKeyDown = (index: number, e: React.KeyboardEvent) => {
-    if (e.key === 'Backspace' && !code[index] && index > 0) {
-      // Move to previous input on backspace
-      const prevInput = document.getElementById(`code-${index - 1}`);
-      prevInput?.focus();
-    }
-  };
-
-  const handleResendCode = async () => {
-    if (resendTimer > 0) return;
-    
-    setLoading(true);
-    setError('');
-    
-    try {
-      const { error } = await supabase.auth.signInWithOtp({
-        email,
-        options: {
-          shouldCreateUser: mode === 'signup',
-        }
-      });
-
-      if (error) {
-        setError(error.message);
-      } else {
-        setSuccess('New code sent to your email');
-        setResendTimer(60);
-        setCode(['', '', '', '', '', '']);
-      }
-    } catch (err: any) {
-      setError(err.message || 'Failed to resend code');
     } finally {
       setLoading(false);
     }
@@ -173,16 +64,13 @@ export function LoginPasswordless({ mode = 'signin' }: { mode?: 'signin' | 'sign
             {mode === 'signin' ? 'Welcome back' : 'Create account'}
           </h1>
           <p className="text-sm text-gray-500 mt-2">
-            {step === 'email' 
-              ? 'We\'ll send you a code'
-              : 'Check your email'
-            }
+            We'll send you a magic link to sign in
           </p>
         </div>
 
         <div className="space-y-6">
-          {step === 'email' ? (
-            <form onSubmit={handleSendCode} className="space-y-4">
+          {!success ? (
+            <form onSubmit={handleSendMagicLink} className="space-y-4">
               <div>
                 <Label htmlFor="email" className="text-xs font-normal text-gray-600">
                   Email
@@ -216,89 +104,33 @@ export function LoginPasswordless({ mode = 'signin' }: { mode?: 'signin' | 'sign
                 {loading ? (
                   <Loader2 className="w-4 h-4 animate-spin" />
                 ) : (
-                  <>Continue</>
+                  <>Send Magic Link</>
                 )}
               </Button>
             </form>
           ) : (
-            <form onSubmit={handleVerifyCode} className="space-y-4">
-              {/* Back button */}
+            <div className="text-center space-y-4">
+              <div className="inline-flex items-center justify-center w-16 h-16 bg-green-100 rounded-full mb-4">
+                <CheckCircle className="w-8 h-8 text-green-600" />
+              </div>
+              <h2 className="text-lg font-medium text-gray-900">Check your email</h2>
+              <p className="text-sm text-gray-600">
+                We sent a magic link to <span className="font-medium">{email}</span>
+              </p>
+              <p className="text-xs text-gray-500">
+                Click the link in the email to sign in. The link expires in 60 minutes.
+              </p>
+              
               <button
-                type="button"
-                onClick={() => setStep('email')}
-                className="flex items-center text-xs text-gray-500 hover:text-gray-700 transition-colors"
+                onClick={() => {
+                  setSuccess(false);
+                  setEmail('');
+                }}
+                className="text-xs text-gray-600 hover:text-gray-900 transition-colors"
               >
-                <ChevronLeft className="w-3 h-3 mr-1" />
-                {email}
+                Try a different email
               </button>
-
-              <div>
-                <Label className="text-xs font-normal text-gray-600">
-                  Enter 6-digit code
-                </Label>
-                <div className="mt-3 flex gap-2 justify-center">
-                  {code.map((digit, index) => (
-                    <Input
-                      key={index}
-                      id={`code-${index}`}
-                      type="text"
-                      inputMode="numeric"
-                      pattern="[0-9]"
-                      maxLength={1}
-                      value={digit}
-                      onChange={(e) => handleCodeChange(index, e.target.value)}
-                      onKeyDown={(e) => handleCodeKeyDown(index, e)}
-                      onPaste={(e) => {
-                        e.preventDefault();
-                        const pastedData = e.clipboardData.getData('text');
-                        handleCodeChange(index, pastedData);
-                      }}
-                      className="w-12 h-12 text-center text-lg font-normal border-gray-200 focus:border-gray-900 focus:ring-0 rounded-lg transition-colors"
-                      required
-                    />
-                  ))}
-                </div>
-              </div>
-
-              {success && (
-                <div className="flex items-center text-xs text-gray-600">
-                  <CheckCircle className="w-3 h-3 mr-2" />
-                  {success}
-                </div>
-              )}
-
-              {error && (
-                <div className="text-xs text-red-600">
-                  {error}
-                </div>
-              )}
-
-              <Button
-                type="submit"
-                disabled={loading || code.some(d => !d)}
-                className="w-full h-11 rounded-lg bg-gray-900 hover:bg-gray-800 text-white text-sm font-normal transition-colors"
-              >
-                {loading ? (
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                ) : (
-                  <>Verify</>
-                )}
-              </Button>
-
-              <div className="text-center">
-                <button
-                  type="button"
-                  onClick={handleResendCode}
-                  disabled={resendTimer > 0}
-                  className="text-xs text-gray-600 hover:text-gray-900 disabled:text-gray-400 transition-colors"
-                >
-                  {resendTimer > 0 
-                    ? `Resend code in ${resendTimer}s`
-                    : 'Resend code'
-                  }
-                </button>
-              </div>
-            </form>
+            </div>
           )}
 
           {/* Divider */}

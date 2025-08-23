@@ -63,9 +63,9 @@ export async function GET(request: NextRequest) {
     }
   }
 
-  // Handle magic link/OTP
+  // Handle magic link
   if (token_hash && type) {
-    console.log('Magic link callback - verifying OTP');
+    console.log('Magic link callback - verifying token');
     const { data, error } = await supabase.auth.verifyOtp({
       token_hash,
       type: type as any,
