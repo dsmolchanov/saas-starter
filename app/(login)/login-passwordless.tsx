@@ -1,5 +1,7 @@
 'use client';
 
+import { verifyOtpAndSignIn } from './passwordless-actions';
+
 import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
@@ -79,27 +81,38 @@ export function LoginPasswordless({ mode = 'signin' }: { mode?: 'signin' | 'sign
     }
 
     try {
-      const { error, data } = await supabase.auth.verifyOtp({
-        email,
-        token,
-        type: 'email'
-      });
-
-      if (error) {
-        setError(error.message);
-      } else if (data.session) {
-        // Success! Redirect to intended page
-        router.push(redirect);
+      // Use server action to verify OTP and set session
+      const result = await verifyOtpAndSignIn(email, token, redirect);
+      
+      if (result?.error) {
+        setError(result.error);
+        setLoading(false);
       }
+      // If successful, the server action will redirect
     } catch (err: any) {
       setError(err.message || 'Invalid code');
-    } finally {
       setLoading(false);
     }
   };
 
   const handleCodeChange = (index: number, value: string) => {
-    if (value.length > 1) return; // Only allow single digit
+    // Handle paste of full code
+    if (value.length > 1) {
+      const pastedCode = value.slice(0, 6).split('');
+      const newCode = [...code];
+      pastedCode.forEach((digit, i) => {
+        if (index + i < 6) {
+          newCode[index + i] = digit;
+        }
+      });
+      setCode(newCode);
+      
+      // Focus on the last filled input or the next empty one
+      const nextIndex = Math.min(index + pastedCode.length, 5);
+      const nextInput = document.getElementById(`code-${nextIndex}`);
+      nextInput?.focus();
+      return;
+    }
     
     const newCode = [...code];
     newCode[index] = value;
@@ -235,6 +248,11 @@ export function LoginPasswordless({ mode = 'signin' }: { mode?: 'signin' | 'sign
                       value={digit}
                       onChange={(e) => handleCodeChange(index, e.target.value)}
                       onKeyDown={(e) => handleCodeKeyDown(index, e)}
+                      onPaste={(e) => {
+                        e.preventDefault();
+                        const pastedData = e.clipboardData.getData('text');
+                        handleCodeChange(index, pastedData);
+                      }}
                       className="w-12 h-12 text-center text-lg font-normal border-gray-200 focus:border-gray-900 focus:ring-0 rounded-lg transition-colors"
                       required
                     />
