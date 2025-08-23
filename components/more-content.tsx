@@ -61,6 +61,7 @@ interface MoreContentProps {
 
 export function MoreContent({ user, stats }: MoreContentProps) {
   const isTeacher = user.role === 'teacher' || !!user.teacherProfile;
+  const isAdmin = user.role === 'admin' || user.role === 'owner';
   const formatDate = (date: Date) => {
     return date.toLocaleDateString('en-US', { 
       month: 'long',
@@ -74,6 +75,15 @@ export function MoreContent({ user, stats }: MoreContentProps) {
   };
 
   const menuItems = [
+    ...(isAdmin ? [{
+      icon: Shield,
+      label: 'Admin Panel',
+      href: '/admin',
+      description: 'System administration and management',
+      badge: 'Admin',
+      badgeVariant: 'destructive' as const,
+      iconColor: 'text-red-600'
+    }] : []),
     ...(isTeacher ? [{
       icon: LayoutDashboard,
       label: 'Teacher Admin',
