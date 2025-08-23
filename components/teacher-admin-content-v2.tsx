@@ -346,48 +346,55 @@ export function TeacherAdminContentV2({
         </div>
         
         <div className="space-y-3">
-          {[...courses.slice(0, 2), ...standaloneClasses.slice(0, 2)].map((item, index) => (
-            <Card key={item.id} className="p-4 border-0 shadow-sm">
-              <div className="flex items-start justify-between">
-                <div className="flex-1">
-                  <div className="flex items-center gap-2">
-                    <Badge variant="outline" className="text-xs">
-                      {item.classes ? 'Course' : 'Class'}
-                    </Badge>
-                    {item.isPublished ? (
-                      <Badge className="bg-green-100 text-green-700 text-xs">Published</Badge>
-                    ) : (
-                      <Badge className="bg-gray-100 text-gray-600 text-xs">Draft</Badge>
-                    )}
-                  </div>
-                  <h3 className="font-medium text-gray-900 mt-2">{item.title}</h3>
-                  <p className="text-sm text-gray-500 mt-1 line-clamp-2">{item.description}</p>
-                  <div className="flex items-center gap-4 mt-3 text-xs text-gray-500">
-                    {item.classes ? (
-                      <>
-                        <span>{item.classes.length} classes</span>
-                        <span>•</span>
-                        <span>{item.classes.reduce((acc: number, c: any) => acc + c.durationMin, 0)} min</span>
-                      </>
-                    ) : (
-                      <>
-                        <span>{item.durationMin} min</span>
-                        {item.viewCount && (
+          {[...courses.slice(0, 2), ...standaloneClasses.slice(0, 2)].map((item, index) => {
+            // Determine the URL based on whether it's a course or class
+            const href = item.classes ? `/course/${item.id}` : `/classes/${item.id}`;
+            
+            return (
+              <Link key={item.id} href={href}>
+                <Card className="p-4 border-0 shadow-sm hover:shadow-md transition-shadow cursor-pointer">
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2">
+                        <Badge variant="outline" className="text-xs">
+                          {item.classes ? 'Course' : 'Class'}
+                        </Badge>
+                        {item.isPublished ? (
+                          <Badge className="bg-green-100 text-green-700 text-xs">Published</Badge>
+                        ) : (
+                          <Badge className="bg-gray-100 text-gray-600 text-xs">Draft</Badge>
+                        )}
+                      </div>
+                      <h3 className="font-medium text-gray-900 mt-2">{item.title}</h3>
+                      <p className="text-sm text-gray-500 mt-1 line-clamp-2">{item.description}</p>
+                      <div className="flex items-center gap-4 mt-3 text-xs text-gray-500">
+                        {item.classes ? (
                           <>
+                            <span>{item.classes.length} classes</span>
                             <span>•</span>
-                            <span>{item.viewCount} views</span>
+                            <span>{item.classes.reduce((acc: number, c: any) => acc + c.durationMin, 0)} min</span>
+                          </>
+                        ) : (
+                          <>
+                            <span>{item.durationMin} min</span>
+                            {item.viewCount && (
+                              <>
+                                <span>•</span>
+                                <span>{item.viewCount} views</span>
+                              </>
+                            )}
                           </>
                         )}
-                      </>
-                    )}
+                      </div>
+                    </div>
+                    <div className="flex items-center">
+                      <ChevronRight className="w-4 h-4 text-gray-400" />
+                    </div>
                   </div>
-                </div>
-                <Button variant="ghost" size="icon">
-                  <ChevronRight className="w-4 h-4" />
-                </Button>
-              </div>
-            </Card>
-          ))}
+                </Card>
+              </Link>
+            );
+          })}
         </div>
       </div>
 
