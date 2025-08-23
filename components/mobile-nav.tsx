@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Search, Activity } from 'lucide-react';
+import { Search, Activity, Menu } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 type NavItem = {
@@ -16,9 +16,10 @@ const LogoIcon = ({ className }: { className?: string }) => (
 );
 
 const navItems: NavItem[] = [
-  { name: 'Home', href: '/', icon: LogoIcon },
+  { name: 'Home', href: '/home', icon: LogoIcon },
   { name: 'Browse', href: '/browse', icon: Search },
   { name: 'My Practice', href: '/my_practice', icon: Activity },
+  { name: 'More', href: '/more', icon: Menu },
 ];
 
 export function MobileNav() {

@@ -8,6 +8,8 @@ import { SimpleLanguageToggle } from '@/components/simple-language-toggle';
 import { MobileNav } from '@/components/mobile-nav';
 import { HeroSimple } from '@/components/ui/hero-simple';
 import { EnhancedCardSimple } from '@/components/ui/enhanced-card-simple';
+import { getUser } from '@/lib/db/queries';
+import { redirect } from 'next/navigation';
 import { 
   Heart, 
   Settings, 
@@ -209,7 +211,15 @@ function getExtendedTranslations(locale: string = 'ru') {
   return translations[locale as keyof typeof translations] || translations.en;
 }
 
-export default async function HomePage({ params }: { params?: { locale?: string } } = {}) {
+export default async function LandingPage({ params }: { params?: { locale?: string } } = {}) {
+  // Check if user is authenticated
+  const user = await getUser();
+  
+  // If authenticated, redirect to home page
+  if (user) {
+    redirect('/home');
+  }
+  
   // Extract locale from URL or default to 'ru'
   const currentLocale = params?.locale || 'ru';
   

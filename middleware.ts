@@ -25,6 +25,9 @@ export async function middleware(request: NextRequest) {
     pathname.startsWith('/auth/') ||
     pathname.startsWith('/dashboard') ||
     pathname.startsWith('/browse') ||
+    pathname.startsWith('/home') ||        // Skip (app) route group routes
+    pathname.startsWith('/more') ||        // Skip (app) route group routes
+    pathname.startsWith('/teacher-admin') || // Skip (app) route group routes
     pathname.startsWith('/lesson/') ||
     pathname.startsWith('/teacher/') ||
     pathname.startsWith('/course/') ||

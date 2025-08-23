@@ -6,6 +6,8 @@ import {
   integer,
   uuid,
   date,
+  time,
+  boolean,
 } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
 
@@ -223,6 +225,151 @@ export const dailyTeacherMetrics = pgTable('daily_teacher_metrics', {
     lessonsCompleted: integer('lessons_completed').notNull().default(0),
 });
 
+// Yoga Enhancement Tables
+
+export const breathingExercises = pgTable('breathing_exercises', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  name: varchar('name', { length: 100 }).notNull(),
+  sanskritName: varchar('sanskrit_name', { length: 100 }),
+  durationPattern: varchar('duration_pattern', { length: 50 }),
+  description: text('description'),
+  difficulty: varchar('difficulty', { length: 20 }),
+  benefits: text('benefits'),
+  instructions: text('instructions'),
+  contraindications: text('contraindications'),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+  updatedAt: timestamp('updated_at').notNull().defaultNow(),
+});
+
+export const chakras = pgTable('chakras', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  name: varchar('name', { length: 50 }).notNull(),
+  sanskritName: varchar('sanskrit_name', { length: 50 }).notNull(),
+  number: integer('number').notNull(),
+  color: varchar('color', { length: 20 }).notNull(),
+  element: varchar('element', { length: 30 }),
+  location: text('location'),
+  description: text('description'),
+  healingPractices: text('healing_practices'),
+  mantra: varchar('mantra', { length: 20 }),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+});
+
+export const yogaQuotes = pgTable('yoga_quotes', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  text: text('text').notNull(),
+  author: varchar('author', { length: 100 }),
+  category: varchar('category', { length: 50 }),
+  language: varchar('language', { length: 10 }).default('en'),
+  source: varchar('source', { length: 200 }),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+});
+
+export const userPreferences = pgTable('user_preferences', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  userId: uuid('user_id').references(() => users.id).notNull().unique(),
+  preferredTime: varchar('preferred_time', { length: 20 }),
+  preferredDuration: integer('preferred_duration'),
+  preferredStyle: varchar('preferred_style', { length: 50 }),
+  preferredIntensity: varchar('preferred_intensity', { length: 20 }),
+  experienceLevel: varchar('experience_level', { length: 20 }),
+  injuriesLimitations: text('injuries_limitations'),
+  notificationEnabled: boolean('notification_enabled').default(true),
+  notificationTime: time('notification_time'),
+  theme: varchar('theme', { length: 20 }).default('light'),
+  language: varchar('language', { length: 10 }).default('en'),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+  updatedAt: timestamp('updated_at').notNull().defaultNow(),
+});
+
+export const practiceStreaks = pgTable('practice_streaks', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  userId: uuid('user_id').references(() => users.id).notNull().unique(),
+  startDate: date('start_date').notNull(),
+  currentStreak: integer('current_streak').notNull().default(0),
+  longestStreak: integer('longest_streak').notNull().default(0),
+  lastPracticeDate: date('last_practice_date'),
+  totalPracticeDays: integer('total_practice_days').notNull().default(0),
+  streakFrozenUntil: date('streak_frozen_until'),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+  updatedAt: timestamp('updated_at').notNull().defaultNow(),
+});
+
+export const classTags = pgTable('class_tags', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  classId: uuid('class_id').references(() => classes.id).notNull(),
+  tagName: varchar('tag_name', { length: 50 }).notNull(),
+  tagCategory: varchar('tag_category', { length: 50 }),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+});
+
+export const yogaStyles = pgTable('yoga_styles', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  name: varchar('name', { length: 50 }).notNull().unique(),
+  description: text('description'),
+  intensityLevel: varchar('intensity_level', { length: 20 }),
+  benefits: text('benefits'),
+  typicalDuration: integer('typical_duration'),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+});
+
+export const classEquipment = pgTable('class_equipment', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  classId: uuid('class_id').references(() => classes.id).notNull(),
+  equipmentName: varchar('equipment_name', { length: 50 }).notNull(),
+  isRequired: boolean('is_required').default(false),
+  quantity: integer('quantity').default(1),
+  alternatives: text('alternatives'),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+});
+
+export const userGoals = pgTable('user_goals', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  userId: uuid('user_id').references(() => users.id).notNull(),
+  goalType: varchar('goal_type', { length: 50 }).notNull(),
+  description: text('description'),
+  targetDate: date('target_date'),
+  targetValue: integer('target_value'),
+  currentValue: integer('current_value').default(0),
+  status: varchar('status', { length: 20 }).default('active'),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+  completedAt: timestamp('completed_at'),
+});
+
+export const practiceReminders = pgTable('practice_reminders', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  userId: uuid('user_id').references(() => users.id).notNull(),
+  reminderTime: time('reminder_time').notNull(),
+  enabled: boolean('enabled').default(true),
+  notificationType: varchar('notification_type', { length: 20 }).default('push'),
+  message: text('message'),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+  updatedAt: timestamp('updated_at').notNull().defaultNow(),
+});
+
+export const teacherSpecializations = pgTable('teacher_specializations', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  teacherId: uuid('teacher_id').references(() => users.id).notNull(),
+  specialization: varchar('specialization', { length: 50 }).notNull(),
+  certification: text('certification'),
+  yearsExperience: integer('years_experience'),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+});
+
+export const meditationSessions = pgTable('meditation_sessions', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  title: varchar('title', { length: 150 }).notNull(),
+  description: text('description'),
+  durationMin: integer('duration_min').notNull(),
+  type: varchar('type', { length: 50 }),
+  teacherId: uuid('teacher_id').references(() => users.id),
+  audioUrl: text('audio_url'),
+  thumbnailUrl: text('thumbnail_url'),
+  focus: varchar('focus', { length: 50 }),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+  updatedAt: timestamp('updated_at').notNull().defaultNow(),
+});
+
 // RELATIONS
 
 export const usersRelations = relations(users, ({ many, one }) => ({
@@ -242,6 +389,18 @@ export const usersRelations = relations(users, ({ many, one }) => ({
     teamMemberships: many(teamMembers),
     invitationsSent: many(invitations),
     activityLogs: many(activityLogs),
+    preferences: one(userPreferences, {
+        fields: [users.id],
+        references: [userPreferences.userId],
+    }),
+    practiceStreak: one(practiceStreaks, {
+        fields: [users.id],
+        references: [practiceStreaks.userId],
+    }),
+    goals: many(userGoals),
+    reminders: many(practiceReminders),
+    specializations: many(teacherSpecializations),
+    meditationSessions: many(meditationSessions),
 }));
 
 export const teamsRelations = relations(teams, ({ many }) => ({
@@ -311,6 +470,8 @@ export const classesRelations = relations(classes, ({ one, many }) => ({
   }),
   progress: many(progress),
   focusAreas: many(lessonFocusAreas),
+  tags: many(classTags),
+  equipment: many(classEquipment),
 }));
 
 // Alias for backward compatibility
@@ -398,6 +559,64 @@ export const dailyUserMetricsRelations = relations(dailyUserMetrics, ({ one }) =
 export const dailyTeacherMetricsRelations = relations(dailyTeacherMetrics, ({ one }) => ({
   teacher: one(users, {
     fields: [dailyTeacherMetrics.teacherId],
+    references: [users.id],
+  }),
+}));
+
+// New table relations
+
+export const userPreferencesRelations = relations(userPreferences, ({ one }) => ({
+  user: one(users, {
+    fields: [userPreferences.userId],
+    references: [users.id],
+  }),
+}));
+
+export const practiceStreaksRelations = relations(practiceStreaks, ({ one }) => ({
+  user: one(users, {
+    fields: [practiceStreaks.userId],
+    references: [users.id],
+  }),
+}));
+
+export const classTagsRelations = relations(classTags, ({ one }) => ({
+  class: one(classes, {
+    fields: [classTags.classId],
+    references: [classes.id],
+  }),
+}));
+
+export const classEquipmentRelations = relations(classEquipment, ({ one }) => ({
+  class: one(classes, {
+    fields: [classEquipment.classId],
+    references: [classes.id],
+  }),
+}));
+
+export const userGoalsRelations = relations(userGoals, ({ one }) => ({
+  user: one(users, {
+    fields: [userGoals.userId],
+    references: [users.id],
+  }),
+}));
+
+export const practiceRemindersRelations = relations(practiceReminders, ({ one }) => ({
+  user: one(users, {
+    fields: [practiceReminders.userId],
+    references: [users.id],
+  }),
+}));
+
+export const teacherSpecializationsRelations = relations(teacherSpecializations, ({ one }) => ({
+  teacher: one(users, {
+    fields: [teacherSpecializations.teacherId],
+    references: [users.id],
+  }),
+}));
+
+export const meditationSessionsRelations = relations(meditationSessions, ({ one }) => ({
+  teacher: one(users, {
+    fields: [meditationSessions.teacherId],
     references: [users.id],
   }),
 }));
