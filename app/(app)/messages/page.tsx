@@ -11,7 +11,7 @@ export default async function MessagesPage() {
   const user = await getUser();
   
   if (!user) {
-    redirect('/');
+    redirect('/sign-in?redirect=/messages');
   }
 
   return (

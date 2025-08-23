@@ -11,7 +11,7 @@ export default async function MorePage() {
   const user = await getUser();
   
   if (!user) {
-    redirect('/');
+    redirect('/sign-in?redirect=/more');
   }
 
   // Get user's complete profile with teacher info if applicable

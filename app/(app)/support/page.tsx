@@ -14,7 +14,7 @@ export default async function SupportPage() {
   const user = await getUser();
   
   if (!user) {
-    redirect('/');
+    redirect('/sign-in?redirect=/support');
   }
 
   return (

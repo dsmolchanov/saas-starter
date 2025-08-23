@@ -8,7 +8,7 @@ export default async function AdminPage() {
   const user = await getUser();
   
   if (!user) {
-    redirect('/');
+    redirect('/sign-in?redirect=/admin');
   }
 
   // Check if user is admin

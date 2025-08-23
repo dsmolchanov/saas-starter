@@ -11,7 +11,7 @@ export default async function SharePage() {
   const user = await getUser();
   
   if (!user) {
-    redirect('/');
+    redirect('/sign-in?redirect=/share');
   }
 
   const shareUrl = `https://dzen.yoga/invite?ref=${user.id}`;

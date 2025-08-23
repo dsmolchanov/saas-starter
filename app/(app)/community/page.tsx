@@ -12,7 +12,7 @@ export default async function CommunityPage() {
   const user = await getUser();
   
   if (!user) {
-    redirect('/');
+    redirect('/sign-in?redirect=/community');
   }
 
   return (

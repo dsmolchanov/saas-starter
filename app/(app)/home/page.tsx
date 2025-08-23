@@ -11,7 +11,7 @@ export default async function HomePage() {
   const user = await getUser();
   
   if (!user) {
-    redirect('/');
+    redirect('/sign-in?redirect=/home');
   }
 
   // Get today's date for various features

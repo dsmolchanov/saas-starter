@@ -13,7 +13,7 @@ export default async function NotificationSettingsPage() {
   const user = await getUser();
   
   if (!user) {
-    redirect('/');
+    redirect('/sign-in?redirect=/settings/notifications');
   }
 
   const notificationSettings = [

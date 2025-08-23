@@ -11,7 +11,7 @@ export default async function TeacherAdminPage() {
   const user = await getUser();
   
   if (!user) {
-    redirect('/');
+    redirect('/sign-in?redirect=/teacher-admin');
   }
 
   // Check if user is a teacher

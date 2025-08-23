@@ -11,7 +11,7 @@ export default async function HelpPage() {
   const user = await getUser();
   
   if (!user) {
-    redirect('/');
+    redirect('/sign-in?redirect=/help');
   }
 
   const helpCategories = [
