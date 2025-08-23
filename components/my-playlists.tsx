@@ -43,7 +43,8 @@ import {
   Heart,
   Share2,
   Copy,
-  ChevronRight
+  ChevronRight,
+  Star
 } from 'lucide-react';
 
 interface Playlist {

@@ -6,7 +6,7 @@ import { eq, and } from 'drizzle-orm';
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const user = await getUser();
@@ -14,7 +14,7 @@ export async function PUT(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const playlistId = params.id;
+    const { id: playlistId } = await params;
     const body = await request.json();
     const { name, description, visibility, tags } = body;
 
@@ -52,7 +52,7 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const user = await getUser();
@@ -60,7 +60,7 @@ export async function DELETE(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const playlistId = params.id;
+    const { id: playlistId } = await params;
 
     // Check if user owns the playlist
     const existingPlaylist = await db.query.playlists.findFirst({

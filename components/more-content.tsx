@@ -77,7 +77,16 @@ export function MoreContent({ user, stats }: MoreContentProps) {
     return num.toLocaleString();
   };
 
-  const menuItems = [
+  const menuItems: Array<{
+    icon: any;
+    label: string;
+    href: string;
+    description: string;
+    iconColor: string;
+    badge?: string;
+    badgeVariant?: 'default' | 'destructive' | 'secondary' | 'outline';
+    onClick?: string;
+  }> = [
     ...(isAdmin ? [{
       icon: Shield,
       label: 'Admin Panel',
@@ -272,7 +281,7 @@ export function MoreContent({ user, stats }: MoreContentProps) {
               <Card 
                 key={index} 
                 className="p-4 border-0 shadow-sm hover:shadow-md transition-all hover:scale-[1.01] cursor-pointer"
-                onClick={() => setActiveSection(item.onClick)}
+                onClick={() => setActiveSection(item.onClick || null)}
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
