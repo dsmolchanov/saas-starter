@@ -297,6 +297,11 @@ export async function removeFromPlaylist(playlistId: string, itemType: string, i
     );
 }
 
+// DEPRECATED: These functions are replaced by the new favorites table and "Liked" playlist system
+// The new system uses database triggers to automatically sync favorites with the Liked playlist
+// See /api/favorites for the new implementation
+
+/* 
 export async function getFavoritesPlaylist(userId: string) {
   let favoritesPlaylist = await db
     .select()
@@ -380,3 +385,4 @@ export async function checkIfFavorite(userId: string, itemType: 'lesson' | 'cour
 
   return favorite.length > 0;
 }
+*/

@@ -35,6 +35,7 @@ interface TeacherAdminContentProps {
   user: any;
   courses: any[];
   standaloneClasses: any[];
+  playlists: any[];
   stats: {
     totalCourses: number;
     totalClasses: number;
@@ -50,6 +51,7 @@ export function TeacherAdminContentV2({
   user,
   courses,
   standaloneClasses,
+  playlists,
   stats,
   recentActivity,
   popularClasses,
@@ -81,7 +83,7 @@ export function TeacherAdminContentV2({
       id: 'playlists',
       label: 'Playlists',
       icon: Heart,
-      count: 0,
+      count: Math.max(1, playlists.length), // Always show at least 1 (includes the system "Liked" playlist)
       color: 'bg-pink-100 text-pink-700',
       description: 'Curated collections',
       href: '#',

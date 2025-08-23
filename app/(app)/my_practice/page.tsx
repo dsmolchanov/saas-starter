@@ -39,11 +39,11 @@ export default async function MyPracticePage() {
     orderBy: [desc(playlists.updatedAt)],
   });
 
-  // Get saved/favorited items (using playlists with specific types)
+  // Get saved/favorited items (using the "Liked" playlist)
   const savedPlaylist = await db.query.playlists.findFirst({
     where: and(
       eq(playlists.userId, user.id),
-      eq(playlists.playlistType, 'favorites')
+      eq(playlists.playlistType, 'liked')
     ),
     with: {
       items: {

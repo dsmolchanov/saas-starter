@@ -2,7 +2,7 @@ import { getUser } from '@/lib/db/queries';
 import { redirect } from 'next/navigation';
 import { TeacherAdminContentV2 as TeacherAdminContent } from '@/components/teacher-admin-content-v2';
 import { db } from '@/lib/db/drizzle';
-import { courses, classes, users, progress, teachers } from '@/lib/db/schema';
+import { courses, classes, users, progress, teachers, playlists } from '@/lib/db/schema';
 import { eq, desc, sql, and } from 'drizzle-orm';
 
 export const dynamic = 'force-dynamic';
@@ -67,6 +67,15 @@ export default async function TeacherAdminPage() {
         sql`${classes.courseId} IS NULL`
       ),
       orderBy: [desc(classes.createdAt)],
+    });
+
+    // Get teacher's playlists (exclude system "Liked" playlist)
+    const teacherPlaylists = await db.query.playlists.findMany({
+      where: and(
+        eq(playlists.userId, user.id),
+        sql`${playlists.playlistType} != 'liked' OR ${playlists.playlistType} IS NULL`
+      ),
+      orderBy: [desc(playlists.createdAt)],
     });
 
     // Calculate statistics
@@ -141,6 +150,7 @@ export default async function TeacherAdminPage() {
         user={userProfile!}
         courses={teacherCourses}
         standaloneClasses={standaloneClasses}
+        playlists={teacherPlaylists}
         stats={{
           totalCourses: teacherCourses.length,
           totalClasses,
@@ -161,6 +171,7 @@ export default async function TeacherAdminPage() {
         user={userProfile!}
         courses={[]}
         standaloneClasses={[]}
+        playlists={[]}
         stats={{
           totalCourses: 0,
           totalClasses: 0,
