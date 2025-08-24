@@ -38,6 +38,7 @@ import {
   ChevronLeft,
   X
 } from 'lucide-react';
+import { CompactLanguageSwitcher } from '@/components/ui/language-switcher-compact';
 import { CourseManager } from '@/components/course-manager';
 import { ClassManager } from '@/components/class-manager';
 
@@ -71,6 +72,7 @@ interface TeacherAdminContentProps {
   user: any;
   courses: Course[];
   standaloneClasses: Class[];
+  playlists: any[];
   stats: Stats;
   recentActivity: any[];
   popularClasses: Class[];
@@ -80,6 +82,7 @@ export function TeacherAdminContent({
   user,
   courses,
   standaloneClasses,
+  playlists,
   stats,
   recentActivity,
   popularClasses,
@@ -162,10 +165,7 @@ export function TeacherAdminContent({
               </Badge>
             </div>
             <div className="flex items-center gap-2">
-              <Button variant="outline" size="sm" className="hidden md:flex">
-                <Settings className="w-4 h-4 mr-2" />
-                Settings
-              </Button>
+              <CompactLanguageSwitcher currentLocale="ru" />
               <Button 
                 size="sm"
                 className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"

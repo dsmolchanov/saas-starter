@@ -1,6 +1,6 @@
 import { getUser } from '@/lib/db/queries';
 import { redirect } from 'next/navigation';
-import { TeacherAdminContent } from '@/components/teacher-admin-content-with-lang';
+import { TeacherAdminContent } from '@/components/teacher-admin-content';
 import { db } from '@/lib/db/drizzle';
 import { courses, classes, users, progress, teachers, playlists } from '@/lib/db/schema';
 import { eq, desc, sql, and } from 'drizzle-orm';
