@@ -114,7 +114,7 @@ importers:
         specifier: 15.4.0-canary.47
         version: 15.4.0-canary.47(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       next-intl:
-        specifier: ^3
+        specifier: ^3.26.5
         version: 3.26.5(next@15.4.0-canary.47(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react@19.1.0)
       perf_hooks:
         specifier: ^0.0.1
