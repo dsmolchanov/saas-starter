@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
@@ -73,14 +73,26 @@ interface MoreContentProps {
 export function MoreContent({ user, stats }: MoreContentProps) {
   const [activeSection, setActiveSection] = useState<string | null>(null);
   const [showLanguageModal, setShowLanguageModal] = useState(false);
+  const [currentLanguage, setCurrentLanguage] = useState<string | null>(null);
   const router = useRouter();
   const isTeacher = user.role === 'teacher' || !!(user.teacherProfile && user.teacherProfile.id);
   const isAdmin = user.role === 'admin' || user.role === 'owner';
   
+  // Only access localStorage on the client side
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const lang = localStorage.getItem('preferred-language');
+      setCurrentLanguage(lang);
+    }
+  }, []);
+  
   const handleLanguageChange = (locale: 'ru' | 'es' | 'en') => {
     // Store preference
-    localStorage.setItem('preferred-language', locale);
-    document.documentElement.lang = locale;
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('preferred-language', locale);
+      document.documentElement.lang = locale;
+    }
+    setCurrentLanguage(locale);
     
     // Just refresh the current page with the new locale stored
     router.refresh();
@@ -415,7 +427,7 @@ export function MoreContent({ user, stats }: MoreContentProps) {
                     <p className="text-sm text-gray-500">Russian</p>
                   </div>
                 </div>
-                {localStorage.getItem('preferred-language') === 'ru' && (
+                {currentLanguage === 'ru' && (
                   <Badge className="bg-purple-100 text-purple-700">Current</Badge>
                 )}
               </div>
@@ -433,7 +445,7 @@ export function MoreContent({ user, stats }: MoreContentProps) {
                     <p className="text-sm text-gray-500">Spanish</p>
                   </div>
                 </div>
-                {localStorage.getItem('preferred-language') === 'es' && (
+                {currentLanguage === 'es' && (
                   <Badge className="bg-purple-100 text-purple-700">Current</Badge>
                 )}
               </div>
@@ -451,7 +463,7 @@ export function MoreContent({ user, stats }: MoreContentProps) {
                     <p className="text-sm text-gray-500">English</p>
                   </div>
                 </div>
-                {localStorage.getItem('preferred-language') === 'en' && (
+                {currentLanguage === 'en' && (
                   <Badge className="bg-purple-100 text-purple-700">Current</Badge>
                 )}
               </div>

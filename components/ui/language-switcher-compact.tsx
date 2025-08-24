@@ -27,11 +27,11 @@ export function CompactLanguageSwitcher({
 
   const handleLanguageChange = (newLocale: Locale) => {
     startTransition(() => {
-      // Store preference in localStorage
-      localStorage.setItem('preferred-language', newLocale);
-      
-      // Update document language
-      document.documentElement.lang = newLocale;
+      // Store preference in localStorage (only on client side)
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('preferred-language', newLocale);
+        document.documentElement.lang = newLocale;
+      }
       
       // Just refresh the current page with the new locale stored
       router.refresh();
