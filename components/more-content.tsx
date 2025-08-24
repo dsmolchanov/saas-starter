@@ -2,12 +2,20 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { MyPlaylists } from '@/components/my-playlists';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import { 
   ChevronRight,
   Share2,
@@ -31,7 +39,8 @@ import {
   Heart,
   Star,
   Award,
-  ListMusic
+  ListMusic,
+  Globe
 } from 'lucide-react';
 
 interface User {
@@ -63,8 +72,25 @@ interface MoreContentProps {
 
 export function MoreContent({ user, stats }: MoreContentProps) {
   const [activeSection, setActiveSection] = useState<string | null>(null);
+  const [showLanguageModal, setShowLanguageModal] = useState(false);
+  const router = useRouter();
   const isTeacher = user.role === 'teacher' || !!user.teacherProfile;
   const isAdmin = user.role === 'admin' || user.role === 'owner';
+  
+  const handleLanguageChange = (locale: 'ru' | 'es' | 'en') => {
+    // Store preference
+    localStorage.setItem('preferred-language', locale);
+    document.documentElement.lang = locale;
+    
+    // Refresh the page with new locale
+    if (locale !== 'ru') {
+      router.push(`/${locale}/more`);
+    } else {
+      router.push('/more');
+    }
+    router.refresh();
+    setShowLanguageModal(false);
+  };
   const formatDate = (date: Date) => {
     return date.toLocaleDateString('en-US', { 
       month: 'long',
@@ -140,6 +166,14 @@ export function MoreContent({ user, stats }: MoreContentProps) {
       href: '/settings/notifications',
       description: 'Manage your alerts',
       iconColor: 'text-orange-600'
+    },
+    {
+      icon: Globe,
+      label: 'Language / Язык / Idioma',
+      href: '#language',
+      description: 'Change app language',
+      iconColor: 'text-blue-600',
+      onClick: 'language'
     },
     {
       icon: Settings,
@@ -281,7 +315,13 @@ export function MoreContent({ user, stats }: MoreContentProps) {
               <Card 
                 key={index} 
                 className="p-4 border-0 shadow-sm hover:shadow-md transition-all hover:scale-[1.01] cursor-pointer"
-                onClick={() => setActiveSection(item.onClick || null)}
+                onClick={() => {
+                  if (item.onClick === 'language') {
+                    setShowLanguageModal(true);
+                  } else {
+                    setActiveSection(item.onClick || null);
+                  }
+                }}
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
@@ -357,6 +397,73 @@ export function MoreContent({ user, stats }: MoreContentProps) {
         </>
         )}
       </div>
+      
+      {/* Language Selection Modal */}
+      <Dialog open={showLanguageModal} onOpenChange={setShowLanguageModal}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Choose Language / Выберите язык / Elige idioma</DialogTitle>
+            <DialogDescription>
+              Select your preferred language for the app
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-3 py-4">
+            <Card 
+              className="p-4 cursor-pointer hover:bg-gray-50 transition-colors"
+              onClick={() => handleLanguageChange('ru')}
+            >
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <span className="text-2xl">🇷🇺</span>
+                  <div>
+                    <p className="font-semibold">Русский</p>
+                    <p className="text-sm text-gray-500">Russian</p>
+                  </div>
+                </div>
+                {localStorage.getItem('preferred-language') === 'ru' && (
+                  <Badge className="bg-purple-100 text-purple-700">Current</Badge>
+                )}
+              </div>
+            </Card>
+            
+            <Card 
+              className="p-4 cursor-pointer hover:bg-gray-50 transition-colors"
+              onClick={() => handleLanguageChange('es')}
+            >
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <span className="text-2xl">🇪🇸</span>
+                  <div>
+                    <p className="font-semibold">Español</p>
+                    <p className="text-sm text-gray-500">Spanish</p>
+                  </div>
+                </div>
+                {localStorage.getItem('preferred-language') === 'es' && (
+                  <Badge className="bg-purple-100 text-purple-700">Current</Badge>
+                )}
+              </div>
+            </Card>
+            
+            <Card 
+              className="p-4 cursor-pointer hover:bg-gray-50 transition-colors"
+              onClick={() => handleLanguageChange('en')}
+            >
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <span className="text-2xl">🇬🇧</span>
+                  <div>
+                    <p className="font-semibold">English</p>
+                    <p className="text-sm text-gray-500">English</p>
+                  </div>
+                </div>
+                {localStorage.getItem('preferred-language') === 'en' && (
+                  <Badge className="bg-purple-100 text-purple-700">Current</Badge>
+                )}
+              </div>
+            </Card>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

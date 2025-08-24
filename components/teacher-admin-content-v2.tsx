@@ -27,12 +27,12 @@ import {
   Heart,
   Zap,
   BarChart3,
-  Settings,
   ChevronRight,
   TrendingUp,
   Clock,
   Star
 } from 'lucide-react';
+import { CompactLanguageSwitcher } from '@/components/ui/language-switcher-compact';
 
 interface TeacherAdminContentProps {
   user: any;
@@ -254,9 +254,7 @@ export function TeacherAdminContentV2({
                 </p>
               </div>
             </div>
-            <Button variant="ghost" size="icon">
-              <Settings className="w-5 h-5" />
-            </Button>
+            <CompactLanguageSwitcher currentLocale="ru" />
           </div>
         </div>
       </div>
@@ -331,30 +329,60 @@ export function TeacherAdminContentV2({
       </div>
 
       {/* Content Types - Horizontal Scroll */}
-      <div className="px-4 pb-4">
-        <h2 className="text-sm font-medium text-gray-700 mb-3">Create & Manage</h2>
-        <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
-          {contentTypes.map((type) => (
-            <Card
-              key={type.id}
-              className="flex-shrink-0 w-32 p-4 border-0 shadow-sm cursor-pointer hover:shadow-md transition-shadow"
-              onClick={() => {
-                if (type.onClick) {
-                  setSelectedSection(type.onClick);
-                } else {
-                  // Navigate to href if no onClick handler
-                  if (type.href && !type.href.startsWith('#')) {
-                    window.location.href = type.href;
+      <div className="pb-6">
+        <div className="px-4 mb-4 flex items-center justify-between">
+          <div>
+            <h2 className="text-base font-semibold text-gray-900">Create & Manage Content</h2>
+            <p className="text-xs text-gray-500 mt-0.5">Choose a content type to get started</p>
+          </div>
+          <button className="text-xs text-purple-600 hover:text-purple-700 font-medium flex items-center">
+            View all
+            <ChevronRight className="w-3 h-3 ml-0.5" />
+          </button>
+        </div>
+        <div className="relative">
+          {/* Left gradient fade */}
+          <div className="absolute left-0 top-0 bottom-4 w-8 bg-gradient-to-r from-white to-transparent z-10 pointer-events-none" />
+          {/* Right gradient fade */}
+          <div className="absolute right-0 top-0 bottom-4 w-8 bg-gradient-to-l from-white to-transparent z-10 pointer-events-none" />
+          
+          <div className="flex gap-4 overflow-x-auto pb-4 px-4 snap-x snap-mandatory scrollbar-thin scroll-smooth">
+            {contentTypes.map((type) => (
+              <Card
+                key={type.id}
+                className="flex-shrink-0 w-44 h-48 snap-start border border-gray-100 shadow-sm cursor-pointer hover:shadow-xl hover:border-purple-200 transition-all duration-200 hover:-translate-y-1 bg-white group"
+                onClick={() => {
+                  if (type.onClick) {
+                    setSelectedSection(type.onClick);
+                  } else {
+                    // Navigate to href if no onClick handler
+                    if (type.href && !type.href.startsWith('#')) {
+                      window.location.href = type.href;
+                    }
                   }
-                }
               }}
             >
-              <div className={`w-10 h-10 rounded-lg ${type.color} flex items-center justify-center mb-3`}>
-                <type.icon className="w-5 h-5" />
+              <div className="p-4 h-full flex flex-col justify-between">
+                <div>
+                  <div className={`w-14 h-14 rounded-2xl ${type.color.split(' ')[0]} ${type.color.split(' ')[1]} bg-opacity-10 flex items-center justify-center mb-3 mx-auto group-hover:scale-110 transition-transform`}>
+                    <type.icon className={`w-7 h-7 ${type.color.split(' ')[1]}`} />
+                  </div>
+                  <h3 className="text-sm font-semibold text-gray-900 text-center line-clamp-1">{type.label}</h3>
+                  <p className="text-xs text-gray-500 text-center mt-1 line-clamp-2">{type.description}</p>
+                </div>
+                <div>
+                  <div className="text-center mb-2">
+                    <span className="text-2xl font-bold text-gray-900">{type.count}</span>
+                    <span className="text-xs text-gray-500 ml-1">items</span>
+                  </div>
+                  <div className="pt-2 border-t border-gray-100">
+                    <span className="text-xs text-purple-600 font-medium flex items-center justify-center group-hover:text-purple-700">
+                      {type.count > 0 ? 'Manage' : 'Get Started'} 
+                      <ChevronRight className="w-3 h-3 ml-1 group-hover:translate-x-0.5 transition-transform" />
+                    </span>
+                  </div>
+                </div>
               </div>
-              <h3 className="text-sm font-medium text-gray-900">{type.label}</h3>
-              <p className="text-xs text-gray-500 mt-1">{type.count} items</p>
-              <p className="text-xs text-gray-400 mt-2">{type.description}</p>
             </Card>
           ))}
         </div>
