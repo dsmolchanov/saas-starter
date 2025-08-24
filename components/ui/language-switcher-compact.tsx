@@ -27,31 +27,14 @@ export function CompactLanguageSwitcher({
 
   const handleLanguageChange = (newLocale: Locale) => {
     startTransition(() => {
-      // Remove current locale from pathname if present
-      let newPath = pathname || '/';
-      
-      // Check if pathname starts with a locale
-      const pathSegments = newPath.split('/').filter(Boolean);
-      if (pathSegments[0] && locales.includes(pathSegments[0] as Locale)) {
-        // Remove the current locale
-        pathSegments.shift();
-        newPath = '/' + pathSegments.join('/');
-      }
-      
-      // Add new locale (if not default Russian, as it can be omitted)
-      if (newLocale !== 'ru') {
-        newPath = `/${newLocale}${newPath}`;
-      }
-      
-      // Navigate to the new path
-      router.push(newPath);
-      router.refresh();
-      
       // Store preference in localStorage
       localStorage.setItem('preferred-language', newLocale);
       
       // Update document language
       document.documentElement.lang = newLocale;
+      
+      // Just refresh the current page with the new locale stored
+      router.refresh();
       
       setIsOpen(false);
     });

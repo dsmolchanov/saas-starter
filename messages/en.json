@@ -1,8 +1,9 @@
 {
   "homeTitle": "Build Your Yoga Practice",
-  "homeSubtitle": "Practice anytime, anywhere with video lessons",
+  "homeSubtitle": "Practice anytime, anywhere",
   
   "common": {
+    "appName": "Dzen Yoga",
     "signIn": "Sign In",
     "signOut": "Sign Out",
     "signUp": "Sign Up",
@@ -11,6 +12,7 @@
     "delete": "Delete",
     "edit": "Edit",
     "create": "Create",
+    "update": "Update",
     "approve": "Approve",
     "reject": "Reject",
     "loading": "Loading...",
@@ -22,15 +24,36 @@
     "title": "Title",
     "description": "Description",
     "submit": "Submit",
-    "close": "Close"
+    "close": "Close",
+    "back": "Back",
+    "next": "Next",
+    "search": "Search",
+    "filter": "Filter",
+    "all": "All",
+    "view": "View",
+    "viewAll": "View All",
+    "add": "Add",
+    "settings": "Settings",
+    "profile": "Profile",
+    "logout": "Log Out",
+    "login": "Log In",
+    "min": "min",
+    "minutes": "minutes",
+    "hours": "hours",
+    "days": "days",
+    "items": "items"
   },
 
   "navigation": {
+    "home": "Home",
     "myPractice": "My Practice",
     "browse": "Browse",
     "teachers": "Teachers",
     "courses": "Courses",
-    "classes": "Classes"
+    "classes": "Classes",
+    "more": "More",
+    "community": "Community",
+    "messages": "Messages"
   },
 
   "auth": {
@@ -47,112 +70,121 @@
 
   "myPractice": {
     "title": "MY PRACTICE",
-    "adminView": "Admin View",
-    "teacherView": "Teacher View",
-    "studentView": "Student View",
     "completed": "COMPLETED",
     "classes": "CLASSES",
-    "series": "SERIES",
-    "playlists": "MY PLAYLISTS",
     "activeDays": "ACTIVE DAYS",
     "weekStreak": "WEEK STREAK",
     "totalTime": "TOTAL TIME",
-    "filters": "FILTERS",
-    "last30Days": "LAST 30 DAYS",
-    "newest": "NEWEST",
-    "noVideosYet": "NO VIDEOS HERE YET...",
-    "comingSoon": "Coming soon",
-    "stats": {
-      "completed": "COMPLETED",
-      "activeDays": "ACTIVE DAYS",
-      "weekStreak": "WEEK STREAK",
-      "totalTime": "TOTAL TIME"
-    }
+    "practiceMinutes": "Practice Minutes",
+    "sessions": "Sessions",
+    "currentStreak": "Current Streak",
+    "longestStreak": "Longest Streak",
+    "dayStreak": "Day Streak"
+  },
+
+  "more": {
+    "title": "More",
+    "memberSince": "Member Since",
+    "teacher": "Teacher",
+    "admin": "Admin",
+    "adminPanel": "Admin Panel",
+    "teacherAdmin": "Teacher Admin",
+    "myPlaylists": "My Playlists",
+    "shareApp": "Share Dzen Yoga",
+    "shareDescription": "Give a free month of unlimited access",
+    "community": "Community",
+    "communityDescription": "Connect with other yogis",
+    "messages": "Messages",
+    "messagesDescription": "Your conversations",
+    "notifications": "Notifications & Reminders",
+    "notificationsDescription": "Manage your alerts",
+    "language": "Language / Язык / Idioma",
+    "languageDescription": "Change app language",
+    "accountSettings": "Account Settings",
+    "accountDescription": "Profile and preferences",
+    "faq": "FAQ & Info",
+    "faqDescription": "Get answers to common questions",
+    "contactSupport": "Contact Support",
+    "supportDescription": "We're here to help",
+    "signOut": "Sign Out",
+    "signOutDescription": "Log out of your account",
+    "version": "Version",
+    "madeWith": "Made with",
+    "forYogis": "for yogis"
   },
 
   "teacher": {
-    "becomeTeacher": "Become a Teacher",
-    "sharePassion": "Share your passion for yoga and earn revenue by teaching on our platform",
-    "createCourses": "Create Courses",
-    "structuredLearning": "Build structured learning experiences",
-    "globalReach": "Global Reach",
-    "teachWorldwide": "Teach students worldwide",
-    "revenueShare": "Revenue Share Model",
-    "earn70Percent": "Earn 70% of subscription revenue from students who attend your classes each month",
-    "requestToBeTeacher": "Request to be a Teacher",
-    "applicationProcess": "Application process takes 5-10 minutes. We'll review within 2-3 business days",
-    "application": {
-      "title": "Teacher Application",
-      "status": "Application Status",
-      "submittedOn": "Submitted on",
-      "pending": "PENDING",
-      "approved": "APPROVED",
-      "rejected": "REJECTED",
-      "underReview": "UNDER REVIEW",
-      "whatsNext": "What's next?",
-      "reviewTime": "• Review process typically takes 2-3 business days",
-      "emailNotification": "• We'll email you with the decision",
-      "accessTools": "• If approved, you'll get immediate access to teacher tools",
-      "underReviewText": "Your application is currently under detailed review. We'll update you soon!",
-      "congratulations": "Congratulations! Your teacher application has been approved. You now have access to all teacher features",
-      "accessDashboard": "Access Teacher Dashboard",
-      "rejected": "Unfortunately, your application was not approved at this time. You can submit a new application after addressing any feedback",
-      "submitNew": "Submit New Application"
-    }
-  },
-
-  "admin": {
-    "title": "ADMIN DASHBOARD",
-    "unauthorizedAccess": "Unauthorized - Admin access required",
-    "teacherApplications": "Teacher Applications",
-    "noApplicationsYet": "No Applications Yet",
-    "applicationsWillAppear": "Teacher applications will appear here when users submit them",
-    "experienceLevel": "Experience Level",
-    "regularStudents": "Regular Students",
-    "revenueModel": "Revenue Model",
-    "trainingBackground": "Training Background",
-    "currentPractice": "Current Practice",
-    "motivation": "Motivation",
-    "additionalInfo": "Additional Information",
-    "reviewNotes": "Review Notes (Optional)",
-    "addFeedback": "Add any feedback or notes for the applicant...",
-    "reviewNotesLabel": "Review Notes",
-    "reviewedOn": "Reviewed on"
-  },
-
-  "teacherDashboard": {
-    "profile": "Profile",
-    "courses": "Courses",
-    "classes": "Classes",
+    "dashboard": "Dashboard",
+    "studio": "Teacher Studio",
+    "createManage": "Create & manage your content",
+    "content": "Content",
+    "students": "Students",
     "analytics": "Analytics",
-    "welcomeTeacher": "Welcome, Teacher!",
-    "manageContent": "Manage your content and track student progress",
-    "profileForm": {
-      "bio": "Bio",
-      "bioPlaceholder": "Tell us about your yoga experience, training, and teaching philosophy...",
-      "instagram": "Instagram Username",
-      "instagramPlaceholder": "your_username",
-      "saveProfile": "Save Profile",
-      "saving": "Saving...",
-      "profileSaved": "Profile saved successfully!",
-      "invalidInstagram": "Instagram username can only contain letters, numbers, dots, and underscores",
-      "instagramLength": "Instagram username must be between 1 and 30 characters"
-    }
+    "asanas": "Asanas",
+    "breathingExercises": "Breathing Exercises",
+    "meditations": "Meditations",
+    "challenges": "Challenges",
+    "courses": "Courses",
+    "coursesDesc": "Multi-class programs",
+    "classes": "Classes",
+    "classesDesc": "Individual sessions",
+    "playlists": "Playlists",
+    "playlistsDesc": "Curated collections",
+    "asanasDesc": "Pose database",
+    "breathing": "Breathing",
+    "breathingDesc": "Pranayama exercises",
+    "meditationsDesc": "Guided audio",
+    "challengesDesc": "Multi-day programs",
+    "live": "Live Classes",
+    "liveDesc": "Streaming sessions",
+    "quickFlows": "Quick Flows",
+    "quickFlowsDesc": "5-15 min sessions",
+    "workshops": "Workshops",
+    "workshopsDesc": "Extended sessions",
+    "articles": "Articles",
+    "articlesDesc": "Blog & education",
+    "groups": "Student Groups",
+    "groupsDesc": "Private communities",
+    "totalStudents": "Total Students",
+    "totalViews": "Total Views",
+    "practiceMinutes": "Practice Minutes",
+    "avgRating": "Avg Rating",
+    "recentContent": "Recent Content",
+    "published": "Published",
+    "draft": "Draft",
+    "views": "views",
+    "manage": "Manage",
+    "getStarted": "Get Started",
+    "comingSoon": "Coming Soon"
   },
 
-  "errors": {
-    "unauthenticated": "Unauthenticated",
-    "failedToLoad": "Failed to load",
-    "failedToSave": "Failed to save",
-    "failedToDelete": "Failed to delete",
-    "networkError": "Network error occurred. Please try again",
-    "tryAgain": "Please try again"
+  "classes": {
+    "title": "Classes",
+    "duration": "Duration",
+    "level": "Level",
+    "instructor": "Instructor",
+    "minutes": "minutes",
+    "course": "Course",
+    "class": "Class"
+  },
+
+  "playlists": {
+    "myPlaylists": "My Playlists",
+    "manageCollections": "Manage your practice collections",
+    "liked": "Liked"
   },
 
   "language": {
-    "switch": "Switch Language",
+    "chooseLanguage": "Choose Language / Выберите язык / Elige idioma",
+    "selectPreferred": "Select your preferred language for the app",
     "russian": "Русский",
     "english": "English",
-    "spanish": "Español"
+    "spanish": "Español",
+    "current": "Current"
+  },
+
+  "errors": {
+    "failedToLoad": "Failed to load",
+    "tryAgain": "Please try again"
   }
 }

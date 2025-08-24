@@ -82,12 +82,7 @@ export function MoreContent({ user, stats }: MoreContentProps) {
     localStorage.setItem('preferred-language', locale);
     document.documentElement.lang = locale;
     
-    // Refresh the page with new locale
-    if (locale !== 'ru') {
-      router.push(`/${locale}/more`);
-    } else {
-      router.push('/more');
-    }
+    // Just refresh the current page with the new locale stored
     router.refresh();
     setShowLanguageModal(false);
   };
