@@ -11,6 +11,7 @@ export default async function TeacherAdminPage() {
   const user = await getUser();
   
   if (!user) {
+    console.error('No user found in teacher-admin page, redirecting to sign-in');
     redirect('/sign-in?redirect=/teacher-admin');
   }
 
@@ -22,10 +23,11 @@ export default async function TeacherAdminPage() {
     }
   });
 
-  // Check if user is a teacher
-  const isTeacher = userProfile?.role === 'teacher' || !!userProfile?.teacherProfile;
+  // Check if user is a teacher - must have either teacher role or a valid teacher profile with ID
+  const isTeacher = userProfile?.role === 'teacher' || (userProfile?.teacherProfile && userProfile?.teacherProfile?.id);
   
   if (!isTeacher) {
+    console.log('User is not a teacher, redirecting to more page');
     redirect('/more');
   }
 

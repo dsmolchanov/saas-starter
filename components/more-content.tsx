@@ -74,7 +74,7 @@ export function MoreContent({ user, stats }: MoreContentProps) {
   const [activeSection, setActiveSection] = useState<string | null>(null);
   const [showLanguageModal, setShowLanguageModal] = useState(false);
   const router = useRouter();
-  const isTeacher = user.role === 'teacher' || !!user.teacherProfile;
+  const isTeacher = user.role === 'teacher' || !!(user.teacherProfile && user.teacherProfile.id);
   const isAdmin = user.role === 'admin' || user.role === 'owner';
   
   const handleLanguageChange = (locale: 'ru' | 'es' | 'en') => {
