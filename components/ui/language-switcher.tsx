@@ -29,10 +29,10 @@ export function LanguageSwitcher({
   const handleLanguageChange = (newLocale: Locale) => {
     startTransition(() => {
       // Remove current locale from pathname if present
-      let newPath = pathname;
+      let newPath = pathname || '/';
       
       // Check if pathname starts with a locale
-      const pathSegments = pathname.split('/').filter(Boolean);
+      const pathSegments = newPath.split('/').filter(Boolean);
       if (pathSegments[0] && locales.includes(pathSegments[0] as Locale)) {
         // Remove the current locale
         pathSegments.shift();

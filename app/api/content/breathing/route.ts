@@ -12,16 +12,7 @@ export async function GET(request: NextRequest) {
     const difficulty = searchParams.get('difficulty');
     const teacherId = searchParams.get('teacherId');
     
-    // Build query
-    let query = db
-      .select({
-        exercise: breathingExercises,
-        content: contentItems,
-      })
-      .from(breathingExercises)
-      .innerJoin(contentItems, eq(breathingExercises.contentItemId, contentItems.id));
-    
-    // Apply filters
+    // Build filters
     const conditions = [];
     
     if (teacherId) {
@@ -39,11 +30,16 @@ export async function GET(request: NextRequest) {
     // Only show published content
     conditions.push(eq(contentItems.status, 'published'));
     
-    if (conditions.length > 0) {
-      query = query.where(and(...conditions));
-    }
-    
-    const results = await query.orderBy(desc(contentItems.createdAt));
+    // Build and execute query
+    const results = await db
+      .select({
+        exercise: breathingExercises,
+        content: contentItems,
+      })
+      .from(breathingExercises)
+      .innerJoin(contentItems, eq(breathingExercises.contentItemId, contentItems.id))
+      .where(conditions.length > 0 ? and(...conditions) : undefined)
+      .orderBy(desc(contentItems.createdAt));
     
     return NextResponse.json({ 
       exercises: results.map(r => ({

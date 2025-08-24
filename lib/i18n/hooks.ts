@@ -13,7 +13,7 @@ export function useLocale(): Locale {
 
   useEffect(() => {
     // Check URL for locale
-    const pathSegments = pathname.split('/').filter(Boolean);
+    const pathSegments = (pathname || '/').split('/').filter(Boolean);
     const urlLocale = pathSegments[0];
     
     if (urlLocale && locales.includes(urlLocale as Locale)) {

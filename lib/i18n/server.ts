@@ -7,7 +7,7 @@ import { sql } from 'drizzle-orm';
  * Get locale from request headers or cookies
  */
 export async function getLocaleFromRequest(): Promise<Locale> {
-  const headersList = headers();
+  const headersList = await headers();
   
   // Check Accept-Language header
   const acceptLanguage = headersList.get('accept-language');
@@ -52,7 +52,7 @@ export async function getTranslations(
   );
   
   const translations: Record<string, string> = {};
-  for (const row of result.rows) {
+  for (const row of result) {
     translations[row.field_name as string] = row.translated_text as string;
   }
   
@@ -95,7 +95,7 @@ export async function getContentWithTranslations<T extends Record<string, any>>(
   const translations = await getTranslations(entityType, content.id, locale);
   
   // Apply translations to content
-  const translatedContent = { ...content };
+  const translatedContent = { ...content } as any;
   for (const [field, value] of Object.entries(translations)) {
     if (field in translatedContent) {
       translatedContent[field] = value;
@@ -133,7 +133,7 @@ export async function getBatchTranslations(
   
   const translationsMap = new Map<string, Record<string, string>>();
   
-  for (const row of result.rows) {
+  for (const row of result) {
     const entityId = row.entity_id as string;
     const fieldName = row.field_name as string;
     const text = row.translated_text as string;
@@ -193,7 +193,7 @@ export async function getAvailableLanguages(
     `
   );
   
-  return result.rows.map(row => row.language as Locale);
+  return result.map(row => row.language as Locale);
 }
 
 /**

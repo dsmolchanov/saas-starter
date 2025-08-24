@@ -72,18 +72,22 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
     const result = await db.transaction(async (tx) => {
       // Update content item
       if (body.englishName || body.description || body.status || body.difficulty || body.tags) {
-        await tx
-          .update(contentItems)
-          .set({
-            title: body.englishName,
-            description: body.description,
-            status: body.status,
-            difficulty: body.difficulty,
-            tags: body.tags,
-            thumbnailUrl: body.imageUrls?.[0],
-            updatedAt: new Date(),
-          })
-          .where(eq(contentItems.id, existing[0].contentItemId));
+        // contentItemId should always exist due to inner join, but TypeScript needs assurance
+        const contentId = existing[0].contentItemId;
+        if (contentId) {
+          await tx
+            .update(contentItems)
+            .set({
+              title: body.englishName,
+              description: body.description,
+              status: body.status,
+              difficulty: body.difficulty,
+              tags: body.tags,
+              thumbnailUrl: body.imageUrls?.[0],
+              updatedAt: new Date(),
+            })
+            .where(eq(contentItems.id, contentId));
+        }
       }
       
       // Update asana
@@ -147,9 +151,12 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
     }
     
     // Delete content item (will cascade delete asana)
-    await db
-      .delete(contentItems)
-      .where(eq(contentItems.id, existing[0].contentItemId));
+    const contentId = existing[0].contentItemId;
+    if (contentId) {
+      await db
+        .delete(contentItems)
+        .where(eq(contentItems.id, contentId));
+    }
     
     return NextResponse.json({ success: true });
   } catch (error) {

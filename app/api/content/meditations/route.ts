@@ -12,12 +12,7 @@ export async function GET(request: NextRequest) {
     const duration = searchParams.get('duration');
     const teacherId = searchParams.get('teacherId');
     
-    // Build query
-    let query = db
-      .select()
-      .from(meditationSessions);
-    
-    // Apply filters
+    // Build filters
     const conditions = [];
     
     if (teacherId) {
@@ -35,11 +30,12 @@ export async function GET(request: NextRequest) {
       }
     }
     
-    if (conditions.length > 0) {
-      query = query.where(and(...conditions));
-    }
-    
-    const results = await query.orderBy(desc(meditationSessions.createdAt));
+    // Build and execute query
+    const results = await db
+      .select()
+      .from(meditationSessions)
+      .where(conditions.length > 0 ? and(...conditions) : undefined)
+      .orderBy(desc(meditationSessions.createdAt));
     
     return NextResponse.json({ 
       meditations: results,

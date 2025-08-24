@@ -279,7 +279,7 @@ export function AsanaForm({ open, onOpenChange, onSuccess, editingAsana }: Asana
               </Button>
             </div>
             <div className="flex flex-wrap gap-2">
-              {formData.benefits.map((benefit, i) => (
+              {formData.benefits.map((benefit: string, i: number) => (
                 <Badge key={i} variant="secondary">
                   {benefit}
                   <button
@@ -318,7 +318,7 @@ export function AsanaForm({ open, onOpenChange, onSuccess, editingAsana }: Asana
               </Button>
             </div>
             <div className="flex flex-wrap gap-2">
-              {formData.contraindications.map((item, i) => (
+              {formData.contraindications.map((item: string, i: number) => (
                 <Badge key={i} variant="destructive">
                   {item}
                   <button
@@ -357,7 +357,7 @@ export function AsanaForm({ open, onOpenChange, onSuccess, editingAsana }: Asana
               </Button>
             </div>
             <div className="flex flex-wrap gap-2">
-              {formData.alignmentCues.map((cue, i) => (
+              {formData.alignmentCues.map((cue: string, i: number) => (
                 <Badge key={i} variant="outline">
                   {cue}
                   <button

@@ -283,12 +283,24 @@ export function AsanaManager({ userId }: AsanaManagerProps) {
               </div>
             </div>
           </div>
-          <Button>
+          <Button onClick={() => setFormOpen(true)}>
             <Plus className="w-4 h-4 mr-2" />
             Create Your First Asana
           </Button>
         </div>
       </Card>
+      )}
+
+      {/* Asana Form Dialog */}
+      <AsanaForm
+        open={formOpen}
+        onOpenChange={(open) => {
+          setFormOpen(open);
+          if (!open) setEditingAsana(null);
+        }}
+        onSuccess={handleFormSuccess}
+        editingAsana={editingAsana}
+      />
     </div>
   );
 }

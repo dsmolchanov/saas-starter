@@ -13,16 +13,7 @@ export async function GET(request: NextRequest) {
     const search = searchParams.get('search');
     const teacherId = searchParams.get('teacherId');
     
-    // Build query
-    let query = db
-      .select({
-        asana: asanas,
-        content: contentItems,
-      })
-      .from(asanas)
-      .innerJoin(contentItems, eq(asanas.contentItemId, contentItems.id));
-    
-    // Apply filters
+    // Build filters
     const conditions = [];
     
     if (teacherId) {
@@ -48,11 +39,16 @@ export async function GET(request: NextRequest) {
       conditions.push(eq(contentItems.status, 'published'));
     }
     
-    if (conditions.length > 0) {
-      query = query.where(and(...conditions));
-    }
-    
-    const results = await query.orderBy(desc(contentItems.createdAt));
+    // Build and execute query
+    const results = await db
+      .select({
+        asana: asanas,
+        content: contentItems,
+      })
+      .from(asanas)
+      .innerJoin(contentItems, eq(asanas.contentItemId, contentItems.id))
+      .where(conditions.length > 0 ? and(...conditions) : undefined)
+      .orderBy(desc(contentItems.createdAt));
     
     return NextResponse.json({ 
       asanas: results.map(r => ({

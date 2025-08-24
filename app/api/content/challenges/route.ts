@@ -12,16 +12,7 @@ export async function GET(request: NextRequest) {
     const teacherId = searchParams.get('teacherId');
     const includeDetails = searchParams.get('includeDetails') === 'true';
     
-    // Build query
-    let query = db
-      .select({
-        challenge: challenges,
-        content: contentItems,
-      })
-      .from(challenges)
-      .innerJoin(contentItems, eq(challenges.contentItemId, contentItems.id));
-    
-    // Apply filters
+    // Build filters
     const conditions = [];
     
     if (teacherId) {
@@ -38,14 +29,19 @@ export async function GET(request: NextRequest) {
     // Only show published challenges
     conditions.push(eq(contentItems.status, 'published'));
     
-    if (conditions.length > 0) {
-      query = query.where(and(...conditions));
-    }
-    
-    const results = await query.orderBy(desc(contentItems.createdAt));
+    // Build and execute query
+    const results = await db
+      .select({
+        challenge: challenges,
+        content: contentItems,
+      })
+      .from(challenges)
+      .innerJoin(contentItems, eq(challenges.contentItemId, contentItems.id))
+      .where(conditions.length > 0 ? and(...conditions) : undefined)
+      .orderBy(desc(contentItems.createdAt));
     
     // Optionally include challenge days
-    let challengesWithDays = results;
+    let challengesWithDays: any[] = [];
     if (includeDetails) {
       challengesWithDays = await Promise.all(
         results.map(async (r) => {
@@ -152,7 +148,7 @@ export async function POST(request: NextRequest) {
         .returning();
       
       // Create challenge days if provided
-      let createdDays = [];
+      let createdDays: any[] = [];
       if (days && days.length > 0) {
         createdDays = await tx
           .insert(challengeDays)

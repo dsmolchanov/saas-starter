@@ -363,7 +363,7 @@ export function BreathingForm({ open, onOpenChange, onSuccess, editingExercise }
               </Button>
             </div>
             <div className="space-y-2">
-              {formData.instructions.map((instruction, i) => (
+              {formData.instructions.map((instruction: string, i: number) => (
                 <div key={i} className="flex items-center gap-2 p-2 bg-gray-50 rounded">
                   <span className="text-sm font-medium text-gray-500">{i + 1}.</span>
                   <span className="flex-1 text-sm">{instruction}</span>
@@ -403,7 +403,7 @@ export function BreathingForm({ open, onOpenChange, onSuccess, editingExercise }
               </Button>
             </div>
             <div className="flex flex-wrap gap-2">
-              {formData.benefits.map((benefit, i) => (
+              {formData.benefits.map((benefit: string, i: number) => (
                 <Badge key={i} variant="secondary">
                   {benefit}
                   <button
@@ -442,7 +442,7 @@ export function BreathingForm({ open, onOpenChange, onSuccess, editingExercise }
               </Button>
             </div>
             <div className="flex flex-wrap gap-2">
-              {formData.contraindications.map((item, i) => (
+              {formData.contraindications.map((item: string, i: number) => (
                 <Badge key={i} variant="destructive">
                   {item}
                   <button
