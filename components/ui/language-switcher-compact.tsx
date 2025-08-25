@@ -31,6 +31,8 @@ export function CompactLanguageSwitcher({
       if (typeof window !== 'undefined') {
         localStorage.setItem('preferred-language', newLocale);
         document.documentElement.lang = newLocale;
+        // Also set a cookie for server-side access
+        document.cookie = `locale=${newLocale};path=/;max-age=31536000`;
       }
       
       // Just refresh the current page with the new locale stored

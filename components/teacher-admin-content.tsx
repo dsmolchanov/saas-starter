@@ -85,6 +85,7 @@ export function TeacherAdminContent({
 }: TeacherAdminContentProps) {
   const t = useTranslations('teacher');
   const tCommon = useTranslations('common');
+  
   const [showCourseManager, setShowCourseManager] = useState(false);
   const [showClassManager, setShowClassManager] = useState(false);
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
