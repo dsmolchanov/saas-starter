@@ -10,6 +10,8 @@ import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { MyPlaylists } from '@/components/my-playlists';
 import { SignOutButton } from '@/components/sign-out-button';
+import { CompactLanguageSwitcher } from '@/components/ui/language-switcher-compact';
+import { useTranslations, useIntl } from '@/components/providers/simple-intl-provider';
 import {
   Dialog,
   DialogContent,
@@ -72,35 +74,29 @@ interface MoreContentProps {
 }
 
 export function MoreContent({ user, stats }: MoreContentProps) {
+  const t = useTranslations('more');
+  const tCommon = useTranslations('common');
+  const tNav = useTranslations('navigation');
+  const { locale, setLocale } = useIntl();
   const [activeSection, setActiveSection] = useState<string | null>(null);
   const [showLanguageModal, setShowLanguageModal] = useState(false);
-  const [currentLanguage, setCurrentLanguage] = useState<string | null>(null);
   const router = useRouter();
   const isTeacher = user.role === 'teacher' || !!(user.teacherProfile && user.teacherProfile.id);
   const isAdmin = user.role === 'admin' || user.role === 'owner';
   
-  // Only access localStorage on the client side
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const lang = localStorage.getItem('preferred-language');
-      setCurrentLanguage(lang);
-    }
-  }, []);
-  
-  const handleLanguageChange = (locale: 'ru' | 'es' | 'en') => {
-    // Store preference
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('preferred-language', locale);
-      document.documentElement.lang = locale;
-    }
-    setCurrentLanguage(locale);
-    
-    // Just refresh the current page with the new locale stored
-    router.refresh();
+  const handleLanguageChange = (newLocale: 'ru' | 'es' | 'en') => {
+    // Use the context's setLocale which handles localStorage
+    setLocale(newLocale);
     setShowLanguageModal(false);
+    // No need to refresh, context will trigger re-render
   };
   const formatDate = (date: Date) => {
-    return date.toLocaleDateString('en-US', { 
+    const localeMap = {
+      'en': 'en-US',
+      'ru': 'ru-RU',
+      'es': 'es-ES'
+    };
+    return date.toLocaleDateString(localeMap[locale] || 'en-US', { 
       month: 'long',
       day: 'numeric',
       year: 'numeric' 
@@ -123,85 +119,85 @@ export function MoreContent({ user, stats }: MoreContentProps) {
   }> = [
     ...(isAdmin ? [{
       icon: Shield,
-      label: 'Admin Panel',
+      label: t('adminPanel'),
       href: '/admin',
-      description: 'System administration and management',
-      badge: 'Admin',
+      description: t('adminPanelDesc'),
+      badge: t('adminBadge'),
       badgeVariant: 'destructive' as const,
       iconColor: 'text-red-600'
     }] : []),
     ...(isTeacher ? [{
       icon: LayoutDashboard,
-      label: 'Teacher Admin',
+      label: t('teacherAdmin'),
       href: '/teacher-admin',
-      description: 'Manage your courses and content',
-      badge: 'Teacher',
+      description: t('teacherAdminDesc'),
+      badge: t('teacherBadge'),
       badgeVariant: 'default' as const,
       iconColor: 'text-purple-600'
     }] : []),
     {
       icon: ListMusic,
-      label: 'My Playlists',
+      label: t('myPlaylists'),
       href: '#playlists',
-      description: 'Manage your practice collections',
+      description: t('myPlaylistsDesc'),
       iconColor: 'text-indigo-600',
       onClick: 'playlists'
     },
     {
       icon: Share2,
-      label: 'Share Dzen Yoga',
+      label: t('shareDzenYoga'),
       href: '/share',
-      description: 'Give a free month of unlimited access',
+      description: t('shareDzenYogaDesc'),
       iconColor: 'text-blue-600'
     },
     {
       icon: Users,
-      label: 'Community',
+      label: t('community'),
       href: '/community',
-      description: 'Connect with other yogis',
+      description: t('communityDesc'),
       iconColor: 'text-green-600'
     },
     {
       icon: MessageSquare,
-      label: 'Messages',
+      label: t('messages'),
       href: '/messages',
-      description: 'Your conversations',
+      description: t('messagesDesc'),
       iconColor: 'text-indigo-600'
     },
     {
       icon: Bell,
-      label: 'Notifications & Reminders',
+      label: t('notifications'),
       href: '/settings/notifications',
-      description: 'Manage your alerts',
+      description: t('notificationsDesc'),
       iconColor: 'text-orange-600'
     },
     {
       icon: Globe,
-      label: 'Language / Язык / Idioma',
+      label: t('language'),
       href: '#language',
-      description: 'Change app language',
+      description: t('languageDesc'),
       iconColor: 'text-blue-600',
       onClick: 'language'
     },
     {
       icon: Settings,
-      label: 'Account Settings',
+      label: t('accountSettings'),
       href: '/settings/account',
-      description: 'Profile and preferences',
+      description: t('accountSettingsDesc'),
       iconColor: 'text-gray-600'
     },
     {
       icon: HelpCircle,
-      label: 'FAQ & Info',
+      label: t('faqInfo'),
       href: '/help',
-      description: 'Get answers to common questions',
+      description: t('faqInfoDesc'),
       iconColor: 'text-teal-600'
     },
     {
       icon: Mail,
-      label: 'Contact Support',
+      label: t('contactSupport'),
       href: '/support',
-      description: 'We\'re here to help',
+      description: t('contactSupportDesc'),
       iconColor: 'text-pink-600'
     },
   ];
@@ -211,20 +207,23 @@ export function MoreContent({ user, stats }: MoreContentProps) {
       {/* Header */}
       <div className="bg-white border-b border-gray-100">
         <div className="container max-w-md mx-auto px-4 py-6">
-          <div className="flex items-center gap-2">
-            {activeSection && (
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setActiveSection(null)}
-                className="mr-2"
-              >
-                <ChevronRight className="w-5 h-5 rotate-180" />
-              </Button>
-            )}
-            <h1 className="text-2xl font-bold text-gray-900">
-              {activeSection === 'playlists' ? 'My Playlists' : 'More'}
-            </h1>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              {activeSection && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setActiveSection(null)}
+                  className="mr-2"
+                >
+                  <ChevronRight className="w-5 h-5 rotate-180" />
+                </Button>
+              )}
+              <h1 className="text-2xl font-bold text-gray-900">
+                {activeSection === 'playlists' ? t('myPlaylists') : tNav('more')}
+              </h1>
+            </div>
+            <CompactLanguageSwitcher />
           </div>
         </div>
       </div>
@@ -248,11 +247,11 @@ export function MoreContent({ user, stats }: MoreContentProps) {
             </Avatar>
             <div className="flex-1">
               <h2 className="text-xl font-semibold text-gray-900">{user.name || 'Yogi'}</h2>
-              <p className="text-sm text-gray-500">Member Since {formatDate(stats.memberSince)}</p>
+              <p className="text-sm text-gray-500">{t('memberSince')} {formatDate(stats.memberSince)}</p>
               {isTeacher && (
                 <Badge className="mt-1 bg-purple-100 text-purple-700 border-purple-200">
                   <GraduationCap className="w-3 h-3 mr-1" />
-                  Teacher
+                  {t('teacherBadge')}
                 </Badge>
               )}
             </div>
@@ -267,7 +266,7 @@ export function MoreContent({ user, stats }: MoreContentProps) {
                 <Activity className="w-5 h-5 text-blue-500" />
               </div>
               <p className="text-2xl font-bold text-gray-900">{formatNumber(stats.practiceMinutes)}</p>
-              <p className="text-xs text-gray-500">Practice Minutes</p>
+              <p className="text-xs text-gray-500">{t('practiceMinutes')}</p>
             </div>
             
             <div className="text-center p-3 bg-gray-50 rounded-lg">
@@ -275,7 +274,7 @@ export function MoreContent({ user, stats }: MoreContentProps) {
                 <Clock className="w-5 h-5 text-green-500" />
               </div>
               <p className="text-2xl font-bold text-gray-900">{formatNumber(stats.totalMinutes)}</p>
-              <p className="text-xs text-gray-500">Total Minutes</p>
+              <p className="text-xs text-gray-500">{t('totalMinutes')}</p>
             </div>
             
             <div className="text-center p-3 bg-gray-50 rounded-lg">
@@ -283,7 +282,7 @@ export function MoreContent({ user, stats }: MoreContentProps) {
                 <Trophy className="w-5 h-5 text-yellow-500" />
               </div>
               <p className="text-2xl font-bold text-gray-900">{formatNumber(stats.sessions)}</p>
-              <p className="text-xs text-gray-500">Sessions</p>
+              <p className="text-xs text-gray-500">{t('sessions')}</p>
             </div>
             
             <div className="text-center p-3 bg-gray-50 rounded-lg">
@@ -291,7 +290,7 @@ export function MoreContent({ user, stats }: MoreContentProps) {
                 <Calendar className="w-5 h-5 text-purple-500" />
               </div>
               <p className="text-2xl font-bold text-gray-900">{formatNumber(stats.activeDays)}</p>
-              <p className="text-xs text-gray-500">Active Days</p>
+              <p className="text-xs text-gray-500">{t('activeDays')}</p>
             </div>
           </div>
 
@@ -305,10 +304,10 @@ export function MoreContent({ user, stats }: MoreContentProps) {
               </div>
               <div>
                 <p className="font-semibold text-gray-900">
-                  {stats.currentStreak} Day Streak
+                  {stats.currentStreak} {t('dayStreak')}
                 </p>
                 <p className="text-xs text-gray-600">
-                  Longest: {stats.longestStreak} days
+                  {t('longest')}: {stats.longestStreak} {t('days')}
                 </p>
               </div>
             </div>
@@ -384,8 +383,8 @@ export function MoreContent({ user, stats }: MoreContentProps) {
 
         {/* App Version */}
         <div className="text-center py-4">
-          <p className="text-xs text-gray-400">Dzen Yoga v1.0.0</p>
-          <p className="text-xs text-gray-400 mt-1">Made with {<Heart className="w-3 h-3 inline text-red-500" />} for yogis</p>
+          <p className="text-xs text-gray-400">{tCommon('appName')} v1.0.0</p>
+          <p className="text-xs text-gray-400 mt-1">{t('madeWith')} {<Heart className="w-3 h-3 inline text-red-500" />} {t('forYogis')}</p>
         </div>
         </>
         )}
@@ -413,8 +412,8 @@ export function MoreContent({ user, stats }: MoreContentProps) {
                     <p className="text-sm text-gray-500">Russian</p>
                   </div>
                 </div>
-                {currentLanguage === 'ru' && (
-                  <Badge className="bg-purple-100 text-purple-700">Current</Badge>
+                {locale === 'ru' && (
+                  <Badge className="bg-purple-100 text-purple-700">{t('current')}</Badge>
                 )}
               </div>
             </Card>
@@ -431,8 +430,8 @@ export function MoreContent({ user, stats }: MoreContentProps) {
                     <p className="text-sm text-gray-500">Spanish</p>
                   </div>
                 </div>
-                {currentLanguage === 'es' && (
-                  <Badge className="bg-purple-100 text-purple-700">Current</Badge>
+                {locale === 'es' && (
+                  <Badge className="bg-purple-100 text-purple-700">{t('current')}</Badge>
                 )}
               </div>
             </Card>
@@ -449,8 +448,8 @@ export function MoreContent({ user, stats }: MoreContentProps) {
                     <p className="text-sm text-gray-500">English</p>
                   </div>
                 </div>
-                {currentLanguage === 'en' && (
-                  <Badge className="bg-purple-100 text-purple-700">Current</Badge>
+                {locale === 'en' && (
+                  <Badge className="bg-purple-100 text-purple-700">{t('current')}</Badge>
                 )}
               </div>
             </Card>
