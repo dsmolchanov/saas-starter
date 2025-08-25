@@ -146,7 +146,8 @@
   },
 
   "myPractice": {
-    "title": "MY PRACTICE",
+    "title": "My Library",
+    "history": "History",
     "completed": "COMPLETED",
     "classes": "CLASSES",
     "activeDays": "ACTIVE DAYS",
@@ -305,6 +306,7 @@
 
   "browse": {
     "title": "Browse",
+    "subtitle": "Discover amazing instructors, classes, and courses",
     "searchPlaceholder": "Search classes, courses, teachers...",
     "filters": "Filters",
     "sortBy": "Sort by",

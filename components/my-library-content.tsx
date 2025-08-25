@@ -5,6 +5,8 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { CompactLanguageSwitcher } from '@/components/ui/language-switcher-compact';
+import { useTranslations } from '@/components/providers/simple-intl-provider';
 import { 
   Plus,
   Clock,
@@ -100,6 +102,8 @@ export function MyLibraryContent({
   stats,
   recentClasses,
 }: MyLibraryContentProps) {
+  const t = useTranslations('myPractice');
+  const tCommon = useTranslations('common');
   const [activeTab, setActiveTab] = useState<'playlists' | 'courses' | 'saved'>('playlists');
   const [sortBy, setSortBy] = useState<'recent' | 'name' | 'duration'>('recent');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('list');
@@ -141,16 +145,19 @@ export function MyLibraryContent({
       <div className="bg-white border-b sticky top-0 z-10">
         <div className="container max-w-4xl mx-auto px-4 py-5">
           <div className="flex items-center justify-between mb-4">
-            <h1 className="text-2xl font-bold text-gray-900">My Library</h1>
-            <Button
-              variant="outline"
-              size="sm"
-              className="rounded-full px-4"
-              onClick={() => setShowHistory(!showHistory)}
-            >
-              History
-              <Clock className="w-4 h-4 ml-2" />
-            </Button>
+            <h1 className="text-2xl font-bold text-gray-900">{t('title')}</h1>
+            <div className="flex items-center gap-2">
+              <CompactLanguageSwitcher />
+              <Button
+                variant="outline"
+                size="sm"
+                className="rounded-full px-4"
+                onClick={() => setShowHistory(!showHistory)}
+              >
+                {t('history')}
+                <Clock className="w-4 h-4 ml-2" />
+              </Button>
+            </div>
           </div>
 
           {/* Tab Pills */}

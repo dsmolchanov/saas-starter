@@ -7,6 +7,7 @@ import { Card } from '@/components/ui/card';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { useTranslations } from '@/components/providers/simple-intl-provider';
+import { CompactLanguageSwitcher } from '@/components/ui/language-switcher-compact';
 import { 
   Play, 
   Flame, 
@@ -169,7 +170,7 @@ export function HomeContent({
       <div className="bg-white/80 backdrop-blur-sm sticky top-0 z-10 border-b border-gray-100">
         <div className="container max-w-md mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
-            <div>
+            <div className="flex-1">
               <h1 className="text-xl font-medium text-gray-900">
                 {t(greeting)}, {user.name?.split(' ')[0]}
               </h1>
@@ -177,13 +178,16 @@ export function HomeContent({
                 {currentTime.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
               </p>
             </div>
-            <Link href="/my_practice">
-              <Avatar className="w-10 h-10 ring-2 ring-gray-100">
-                <AvatarFallback className="bg-gradient-to-br from-purple-100 to-pink-100 text-purple-700">
-                  {user.name?.charAt(0) || 'Y'}
-                </AvatarFallback>
-              </Avatar>
-            </Link>
+            <div className="flex items-center gap-3">
+              <CompactLanguageSwitcher />
+              <Link href="/my_practice">
+                <Avatar className="w-10 h-10 ring-2 ring-gray-100">
+                  <AvatarFallback className="bg-gradient-to-br from-purple-100 to-pink-100 text-purple-700">
+                    {user.name?.charAt(0) || 'Y'}
+                  </AvatarFallback>
+                </Avatar>
+              </Link>
+            </div>
           </div>
         </div>
       </div>

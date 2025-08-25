@@ -13,6 +13,8 @@ import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTr
 import { Home, Filter, Play, Clock, User } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Checkbox } from '@/components/ui/checkbox';
+import { CompactLanguageSwitcher } from '@/components/ui/language-switcher-compact';
+import { useTranslations } from '@/components/providers/simple-intl-provider';
 
 // Disable static prerendering for DB queries
 export const dynamic = 'force-dynamic';
@@ -63,6 +65,8 @@ interface Filters {
 }
 
 export default function BrowsePage() {
+  const t = useTranslations('browse');
+  const tCommon = useTranslations('common');
   const [teachers, setTeachers] = useState<Teacher[]>([]);
   const [lessons, setLessons] = useState<Lesson[]>([]);
   const [courses, setCourses] = useState<Course[]>([]);
@@ -131,12 +135,13 @@ export default function BrowsePage() {
       <div className="flex items-center gap-4 mb-6 sm:mb-8">
         <BackButton />
         <div className="flex-1">
-          <h1 className="text-2xl sm:text-3xl font-bold">Browse</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold">{t('title')}</h1>
           <p className="text-muted-foreground text-sm sm:text-base">
-            Discover amazing instructors, classes, and courses
+            {t('subtitle')}
           </p>
         </div>
         <div className="flex items-center gap-2">
+          <CompactLanguageSwitcher />
           <Sheet>
             <SheetTrigger asChild>
               <Button variant="outline" size="sm" className="gap-2">
