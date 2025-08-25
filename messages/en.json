@@ -148,6 +148,7 @@
     "weekStreak": "WEEK STREAK",
     "totalTime": "TOTAL TIME",
     "practiceMinutes": "Practice minutes",
+    "totalMinutes": "Total minutes",
     "sessions": "Sessions",
     "currentStreak": "Current streak",
     "longestStreak": "Longest streak",
@@ -176,8 +177,11 @@
     "teacher": "Teacher",
     "admin": "Administrator",
     "adminPanel": "Admin Panel",
+    "adminPanelDescription": "System administration and management",
     "teacherAdmin": "Teacher Panel",
+    "teacherAdminDescription": "Manage your courses and content",
     "myPlaylists": "My Playlists",
+    "myPlaylistsDescription": "Manage your practice collections",
     "shareApp": "Share Dzen Yoga",
     "shareDescription": "Gift a month of unlimited access",
     "community": "Community",
@@ -204,7 +208,14 @@
     "signOutDescription": "Sign out of your account",
     "version": "Version",
     "madeWith": "Made with",
-    "forYogis": "for yogis"
+    "forYogis": "for yogis",
+    "practiceMinutes": "Practice Minutes",
+    "totalMinutes": "Total Minutes",
+    "sessions": "Sessions",
+    "activeDays": "Active Days",
+    "dayStreak": "Day Streak",
+    "longest": "Longest",
+    "days": "days"
   },
 
   "teacher": {

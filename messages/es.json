@@ -148,6 +148,7 @@
     "weekStreak": "RACHA SEMANAL",
     "totalTime": "TIEMPO TOTAL",
     "practiceMinutes": "Minutos de práctica",
+    "totalMinutes": "Total de minutos",
     "sessions": "Sesiones",
     "currentStreak": "Racha actual",
     "longestStreak": "Mejor racha",
@@ -176,8 +177,11 @@
     "teacher": "Profesor",
     "admin": "Administrador",
     "adminPanel": "Panel de administrador",
+    "adminPanelDescription": "Administración y gestión del sistema",
     "teacherAdmin": "Panel del profesor",
+    "teacherAdminDescription": "Gestiona tus cursos y contenido",
     "myPlaylists": "Mis listas",
+    "myPlaylistsDescription": "Gestiona tus colecciones de práctica",
     "shareApp": "Compartir Dzen Yoga",
     "shareDescription": "Regala un mes de acceso ilimitado",
     "community": "Comunidad",
@@ -204,7 +208,14 @@
     "signOutDescription": "Salir de tu cuenta",
     "version": "Versión",
     "madeWith": "Hecho con",
-    "forYogis": "para yoguis"
+    "forYogis": "para yoguis",
+    "practiceMinutes": "Minutos de práctica",
+    "totalMinutes": "Total de minutos",
+    "sessions": "Sesiones",
+    "activeDays": "Días activos",
+    "dayStreak": "Racha diaria",
+    "longest": "Más larga",
+    "days": "días"
   },
 
   "teacher": {
