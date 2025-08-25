@@ -23,6 +23,7 @@ const messagesMap: Record<Locale, Messages> = {
 };
 
 export function SimpleIntlProvider({ children }: { children: React.ReactNode }) {
+  const [mounted, setMounted] = useState(false);
   const [locale, setLocaleState] = useState<Locale>('ru');
   const [messages, setMessages] = useState<Messages>(ruMessages);
 
@@ -34,6 +35,7 @@ export function SimpleIntlProvider({ children }: { children: React.ReactNode }) 
         setLocaleState(savedLocale);
         setMessages(messagesMap[savedLocale]);
       }
+      setMounted(true);
     }
   }, []);
 
@@ -48,8 +50,13 @@ export function SimpleIntlProvider({ children }: { children: React.ReactNode }) 
     }
   };
 
+  // During SSR and initial hydration, always use default locale to prevent mismatches
+  // After mounting, use the saved locale from localStorage
+  const currentLocale = mounted ? locale : 'ru';
+  const currentMessages = mounted ? messages : ruMessages;
+
   return (
-    <IntlContext.Provider value={{ locale, messages, setLocale }}>
+    <IntlContext.Provider value={{ locale: currentLocale, messages: currentMessages, setLocale }}>
       {children}
     </IntlContext.Provider>
   );
