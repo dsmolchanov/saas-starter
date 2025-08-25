@@ -234,7 +234,7 @@ export function HomeContent({
               <Link href={`/lesson/${recommendedClass.id}`}>
                 <Button className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700">
                   <Play className="w-4 h-4 mr-2" />
-                  Start Practice
+                  {t('startPractice')}
                 </Button>
               </Link>
             </div>
@@ -247,7 +247,7 @@ export function HomeContent({
             <div className="flex flex-col items-center">
               <Flame className={`w-6 h-6 mb-1 ${currentStreak > 0 ? 'text-orange-500' : 'text-gray-400'}`} />
               <p className="text-2xl font-semibold">{currentStreak}</p>
-              <p className="text-xs text-gray-500">Day Streak</p>
+              <p className="text-xs text-gray-500">{t('dayStreak')}</p>
             </div>
           </Card>
           
@@ -255,7 +255,7 @@ export function HomeContent({
             <div className="flex flex-col items-center">
               <Activity className="w-6 h-6 mb-1 text-green-500" />
               <p className="text-2xl font-semibold">{Math.floor(totalMinutes / 60)}</p>
-              <p className="text-xs text-gray-500">Hours Total</p>
+              <p className="text-xs text-gray-500">{t('hoursTotal')}</p>
             </div>
           </Card>
           
@@ -263,7 +263,7 @@ export function HomeContent({
             <div className="flex flex-col items-center">
               <Target className="w-6 h-6 mb-1 text-blue-500" />
               <p className="text-2xl font-semibold">{practicedToday ? '✓' : '—'}</p>
-              <p className="text-xs text-gray-500">Today</p>
+              <p className="text-xs text-gray-500">{t('today')}</p>
             </div>
           </Card>
         </div>
@@ -285,7 +285,7 @@ export function HomeContent({
             <div>
               <div className="flex items-center gap-2 mb-2">
                 <Wind className="w-5 h-5 text-cyan-600" />
-                <p className="text-sm font-medium text-gray-900">Breathing Practice</p>
+                <p className="text-sm font-medium text-gray-900">{t('breathingPractice')}</p>
               </div>
               <p className="font-semibold text-gray-900">{breathingExercise.name}</p>
               <p className="text-xs text-gray-600">{breathingExercise.description}</p>
@@ -294,7 +294,7 @@ export function HomeContent({
               </Badge>
             </div>
             <Button variant="ghost" size="sm" className="text-cyan-600">
-              Try Now
+              {t('tryNow')}
               <ChevronRight className="w-4 h-4 ml-1" />
             </Button>
           </div>
@@ -305,7 +305,7 @@ export function HomeContent({
           <Card className="p-4 border-0 shadow-sm">
             <div className="flex items-center gap-2 mb-2">
               <div className={`w-3 h-3 rounded-full ${todayChakra.color}`} />
-              <p className="text-xs font-medium text-gray-600">Chakra Focus</p>
+              <p className="text-xs font-medium text-gray-600">{t('chakraFocus')}</p>
             </div>
             <p className="font-semibold text-sm">{todayChakra.name}</p>
             <p className="text-xs text-gray-500">{todayChakra.sanskrit}</p>
@@ -315,7 +315,7 @@ export function HomeContent({
           <Card className="p-4 border-0 shadow-sm">
             <div className="flex items-center gap-2 mb-2">
               <span className="text-lg">{moonPhase.icon}</span>
-              <p className="text-xs font-medium text-gray-600">Moon Phase</p>
+              <p className="text-xs font-medium text-gray-600">{t('moonPhase')}</p>
             </div>
             <p className="font-semibold text-sm">{moonPhase.name}</p>
             <p className="text-xs text-gray-500">{moonPhase.energy}</p>
@@ -326,7 +326,7 @@ export function HomeContent({
         {featuredTeacher && featuredTeacher.user && (
           <Card className="p-5 border-0 shadow-sm">
             <div className="flex items-center justify-between mb-3">
-              <p className="text-sm font-medium text-gray-600">Teacher Spotlight</p>
+              <p className="text-sm font-medium text-gray-600">{t('teacherSpotlight')}</p>
               <Star className="w-4 h-4 text-yellow-500" />
             </div>
             <Link href={`/teacher/${featuredTeacher.id}`}>
@@ -342,7 +342,7 @@ export function HomeContent({
                 </Avatar>
                 <div className="flex-1">
                   <p className="font-semibold text-gray-900">{featuredTeacher.user.name}</p>
-                  <p className="text-xs text-gray-500 line-clamp-2">{featuredTeacher.bio || 'Expert Yoga Teacher'}</p>
+                  <p className="text-xs text-gray-500 line-clamp-2">{featuredTeacher.bio || t('expertYogaTeacher')}</p>
                 </div>
                 <ChevronRight className="w-5 h-5 text-gray-400" />
               </div>
@@ -353,9 +353,9 @@ export function HomeContent({
         {/* Popular Classes */}
         <div>
           <div className="flex items-center justify-between mb-3">
-            <h3 className="font-semibold text-gray-900">Popular Now</h3>
+            <h3 className="font-semibold text-gray-900">{t('popularNow')}</h3>
             <Link href="/classes" className="text-sm text-purple-600 hover:text-purple-700">
-              See all
+              {tCommon('seeAll')}
             </Link>
           </div>
           <div className="space-y-2">
@@ -385,9 +385,9 @@ export function HomeContent({
         {/* Latest Classes */}
         <div>
           <div className="flex items-center justify-between mb-3">
-            <h3 className="font-semibold text-gray-900">Just Added</h3>
+            <h3 className="font-semibold text-gray-900">{t('justAdded')}</h3>
             <Link href="/classes" className="text-sm text-purple-600 hover:text-purple-700">
-              See all
+              {tCommon('seeAll')}
             </Link>
           </div>
           <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
@@ -419,8 +419,8 @@ export function HomeContent({
                   <BookOpen className="w-5 h-5 text-purple-600" />
                 </div>
                 <div>
-                  <p className="font-medium text-sm">Explore</p>
-                  <p className="text-xs text-gray-500">All classes</p>
+                  <p className="font-medium text-sm">{t('explore')}</p>
+                  <p className="text-xs text-gray-500">{t('allClasses')}</p>
                 </div>
               </div>
             </Card>
@@ -433,8 +433,8 @@ export function HomeContent({
                   <Heart className="w-5 h-5 text-blue-600" />
                 </div>
                 <div>
-                  <p className="font-medium text-sm">Progress</p>
-                  <p className="text-xs text-gray-500">Your journey</p>
+                  <p className="font-medium text-sm">{t('progress')}</p>
+                  <p className="text-xs text-gray-500">{t('yourJourney')}</p>
                 </div>
               </div>
             </Card>
@@ -447,14 +447,14 @@ export function HomeContent({
             <div>
               <div className="flex items-center gap-2 mb-1">
                 <Users className="w-5 h-5 text-green-600" />
-                <p className="text-sm font-medium text-gray-900">Community</p>
+                <p className="text-sm font-medium text-gray-900">{t('community')}</p>
               </div>
               <p className="text-xs text-gray-600">
-                <span className="font-semibold">23 yogis</span> practicing now
+                <span className="font-semibold">23</span> {t('yogisPracticingNow')}
               </p>
             </div>
             <Button variant="ghost" size="sm" className="text-green-600">
-              Join Live
+              {t('joinLive')}
               <ArrowRight className="w-4 h-4 ml-1" />
             </Button>
           </div>

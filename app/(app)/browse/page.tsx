@@ -146,7 +146,7 @@ export default function BrowsePage() {
             <SheetTrigger asChild>
               <Button variant="outline" size="sm" className="gap-2">
                 <Filter className="h-4 w-4" />
-                Filters
+                {t('filters')}
                 {(filters.focusAreas.length + filters.difficulties.length + filters.styles.length) > 0 && (
                   <Badge variant="secondary" className="ml-1 px-1.5 py-0.5 text-xs">
                     {filters.focusAreas.length + filters.difficulties.length + filters.styles.length}
@@ -156,15 +156,15 @@ export default function BrowsePage() {
             </SheetTrigger>
             <SheetContent side="bottom" className="h-[80vh]">
               <SheetHeader>
-                <SheetTitle>Filters</SheetTitle>
+                <SheetTitle>{t('filters')}</SheetTitle>
                 <SheetDescription>
-                  Filter classes by focus areas, difficulty levels, and yoga styles to find your perfect practice.
+                  {t('filtersDescription')}
                 </SheetDescription>
               </SheetHeader>
               <div className="space-y-6 mt-6">
                 {/* Focus Areas */}
                 <div>
-                  <h3 className="font-medium mb-3">Focus Areas</h3>
+                  <h3 className="font-medium mb-3">{t('focusAreas')}</h3>
                   <div className="grid grid-cols-2 gap-2">
                     {allFocusAreas.map(area => (
                       <div key={area.id} className="flex items-center space-x-2">
@@ -187,7 +187,7 @@ export default function BrowsePage() {
 
                 {/* Difficulties */}
                 <div>
-                  <h3 className="font-medium mb-3">Difficulty</h3>
+                  <h3 className="font-medium mb-3">{t('difficulty')}</h3>
                   <div className="grid grid-cols-2 gap-2">
                     {allDifficulties.map(difficulty => (
                       <div key={difficulty} className="flex items-center space-x-2">
@@ -210,7 +210,7 @@ export default function BrowsePage() {
 
                 {/* Styles */}
                 <div>
-                  <h3 className="font-medium mb-3">Styles</h3>
+                  <h3 className="font-medium mb-3">{t('styles')}</h3>
                   <div className="grid grid-cols-2 gap-2">
                     {allStyles.map(style => (
                       <div key={style} className="flex items-center space-x-2">
@@ -237,7 +237,7 @@ export default function BrowsePage() {
                   className="w-full"
                   onClick={() => setFilters({ focusAreas: [], difficulties: [], styles: [] })}
                 >
-                  Clear All Filters
+                  {t('clearAllFilters')}
                 </Button>
               </div>
             </SheetContent>
@@ -297,9 +297,9 @@ export default function BrowsePage() {
       {/* Teachers Section */}
       <section>
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-semibold">Featured Instructors</h2>
+          <h2 className="text-xl font-semibold">{t('featuredInstructors')}</h2>
           <Link href="/teachers" className="text-sm font-medium text-primary hover:underline">
-            View all
+            {tCommon('viewAll')}
           </Link>
         </div>
 
@@ -313,7 +313,7 @@ export default function BrowsePage() {
                     <User className="w-6 h-6" />
                   </AvatarFallback>
                 </Avatar>
-                <p className="text-xs font-medium truncate">{teacher.user?.name || 'Instructor'}</p>
+                <p className="text-xs font-medium truncate">{teacher.user?.name || t('instructor')}</p>
               </Link>
             </div>
           ))}
@@ -323,9 +323,9 @@ export default function BrowsePage() {
       {/* Lessons Section */}
       <section>
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-semibold">Classes</h2>
+          <h2 className="text-xl font-semibold">{t('classes')}</h2>
           <Link href="/classes" className="text-sm font-medium text-primary hover:underline">
-            View all
+            {tCommon('viewAll')}
           </Link>
         </div>
 
@@ -354,7 +354,7 @@ export default function BrowsePage() {
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-3">
                     <Button size="sm" className="gap-1">
                       <Play className="w-3 h-3" />
-                      Play
+                      {t('play')}
                     </Button>
                   </div>
                 </div>
@@ -389,9 +389,9 @@ export default function BrowsePage() {
       {/* Courses Section */}
       <section>
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-semibold">Courses</h2>
+          <h2 className="text-xl font-semibold">{t('courses')}</h2>
           <Link href="/courses" className="text-sm font-medium text-primary hover:underline">
-            View all
+            {tCommon('viewAll')}
           </Link>
         </div>
 
@@ -417,13 +417,13 @@ export default function BrowsePage() {
                     </div>
                   )}
                   <div className="absolute bottom-2 right-2 bg-black/70 text-white text-xs px-2 py-1 rounded">
-                    {course.lessons.length} {course.lessons.length === 1 ? 'lesson' : 'lessons'}
+                    {course.lessons.length} {course.lessons.length === 1 ? t('lesson') : t('lessons')}
                   </div>
                 </div>
                 <div>
                   <h3 className="font-medium line-clamp-2 mb-1">{course.title}</h3>
                   <p className="text-xs text-muted-foreground">
-                    By {course.teacher?.name || 'Instructor'}
+                    {t('by')} {course.teacher?.name || t('instructor')}
                   </p>
                   {course.level && (
                     <Badge variant="outline" className="text-xs px-1 py-0 mt-1">
