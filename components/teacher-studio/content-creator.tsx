@@ -60,7 +60,7 @@ import {
   Wind,
   Zap
 } from 'lucide-react';
-import { useTranslations } from '@/components/providers/simple-intl-provider';
+// import { useTranslations } from '@/components/providers/simple-intl-provider';
 import { cn } from '@/lib/utils';
 
 // Step configuration for different content types
@@ -97,7 +97,7 @@ interface ContentCreatorProps {
 export function ContentCreator({ contentType, userId }: ContentCreatorProps) {
   const router = useRouter();
   const { toast } = useToast();
-  const t = useTranslations('teacherStudio');
+  // const t = useTranslations('teacherStudio');
   
   const [currentStep, setCurrentStep] = useState(0);
   const [isPublishing, setIsPublishing] = useState(false);

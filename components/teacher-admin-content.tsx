@@ -159,7 +159,7 @@ export function TeacherAdminContent({
         {/* Create & Manage Section - Horizontal Scroll */}
         <div>
           <div className="flex items-center justify-between px-4 mb-3">
-            <h2 className="text-sm font-semibold text-gray-700">Create & Manage</h2>
+            <h2 className="text-sm font-semibold text-gray-700">{t('createAndManage')}</h2>
           </div>
           <div className="flex gap-3 overflow-x-auto pb-2 px-4 snap-x snap-mandatory scrollbar-hide">
             <Card 
@@ -170,8 +170,8 @@ export function TeacherAdminContent({
                 <BookOpen className="w-8 h-8 text-purple-600" />
                 <Plus className="w-4 h-4 text-gray-400" />
               </div>
-              <p className="font-semibold text-sm">Create Course</p>
-              <p className="text-xs text-gray-500 mt-1">Build a full program</p>
+              <p className="font-semibold text-sm">{t('createCourse')}</p>
+              <p className="text-xs text-gray-500 mt-1">{t('buildFullProgram')}</p>
             </Card>
             <Card 
               className="min-w-[160px] snap-center p-4 bg-white border border-gray-200 hover:shadow-md transition-shadow cursor-pointer"
@@ -181,40 +181,40 @@ export function TeacherAdminContent({
                 <Video className="w-8 h-8 text-blue-600" />
                 <Plus className="w-4 h-4 text-gray-400" />
               </div>
-              <p className="font-semibold text-sm">Create Class</p>
-              <p className="text-xs text-gray-500 mt-1">Single yoga session</p>
+              <p className="font-semibold text-sm">{t('createClass')}</p>
+              <p className="text-xs text-gray-500 mt-1">{t('singleYogaSession')}</p>
             </Card>
             <Card className="min-w-[160px] snap-center p-4 bg-white border border-gray-200 hover:shadow-md transition-shadow cursor-pointer">
               <div className="flex items-center justify-between mb-3">
                 <Zap className="w-8 h-8 text-yellow-600" />
                 <Plus className="w-4 h-4 text-gray-400" />
               </div>
-              <p className="font-semibold text-sm">Create Flow</p>
-              <p className="text-xs text-gray-500 mt-1">Quick sequence</p>
+              <p className="font-semibold text-sm">{t('createFlow')}</p>
+              <p className="text-xs text-gray-500 mt-1">{t('quickSequence')}</p>
             </Card>
             <Card className="min-w-[160px] snap-center p-4 bg-white border border-gray-200 hover:shadow-md transition-shadow cursor-pointer">
               <div className="flex items-center justify-between mb-3">
                 <Sparkles className="w-8 h-8 text-green-600" />
                 <Plus className="w-4 h-4 text-gray-400" />
               </div>
-              <p className="font-semibold text-sm">Breathing Exercise</p>
-              <p className="text-xs text-gray-500 mt-1">Pranayama practice</p>
+              <p className="font-semibold text-sm">{t('breathingExercise')}</p>
+              <p className="text-xs text-gray-500 mt-1">{t('pranayamaPractice')}</p>
             </Card>
             <Card className="min-w-[160px] snap-center p-4 bg-white border border-gray-200 hover:shadow-md transition-shadow cursor-pointer">
               <div className="flex items-center justify-between mb-3">
                 <Music className="w-8 h-8 text-pink-600" />
                 <Plus className="w-4 h-4 text-gray-400" />
               </div>
-              <p className="font-semibold text-sm">Meditation</p>
-              <p className="text-xs text-gray-500 mt-1">Guided meditation</p>
+              <p className="font-semibold text-sm">{t('meditation')}</p>
+              <p className="text-xs text-gray-500 mt-1">{t('guidedMeditation')}</p>
             </Card>
             <Card className="min-w-[160px] snap-center p-4 bg-white border border-gray-200 hover:shadow-md transition-shadow cursor-pointer">
               <div className="flex items-center justify-between mb-3">
                 <ListMusic className="w-8 h-8 text-indigo-600" />
                 <Plus className="w-4 h-4 text-gray-400" />
               </div>
-              <p className="font-semibold text-sm">Create Playlist</p>
-              <p className="text-xs text-gray-500 mt-1">Content collection</p>
+              <p className="font-semibold text-sm">{t('createPlaylist')}</p>
+              <p className="text-xs text-gray-500 mt-1">{t('contentCollection')}</p>
             </Card>
           </div>
         </div>
@@ -223,9 +223,9 @@ export function TeacherAdminContent({
         {courses.length > 0 && (
           <div>
             <div className="flex items-center justify-between px-4 mb-3">
-              <h2 className="text-sm font-semibold text-gray-700">Your Courses</h2>
+              <h2 className="text-sm font-semibold text-gray-700">{t('yourCourses')}</h2>
               <Button variant="ghost" size="sm" className="text-xs">
-                See All
+                {t('seeAll')}
                 <ChevronRight className="w-3 h-3 ml-1" />
               </Button>
             </div>
@@ -241,7 +241,7 @@ export function TeacherAdminContent({
                       </div>
                     )}
                     <Badge className="absolute top-2 right-2 bg-black/50 text-white border-0">
-                      {course.classes.length} classes
+                      {course.classes.length} {t('classes')}
                     </Badge>
                   </div>
                   <div className="p-3">
@@ -249,7 +249,7 @@ export function TeacherAdminContent({
                     <p className="text-xs text-gray-500 line-clamp-2">{course.description}</p>
                     <div className="flex items-center justify-between mt-3">
                       <Badge variant={course.isPublished ? 'default' : 'secondary'} className="text-xs">
-                        {course.isPublished ? 'Live' : 'Draft'}
+                        {course.isPublished ? t('live') : t('draft')}
                       </Badge>
                       <Button 
                         variant="ghost" 
@@ -273,9 +273,9 @@ export function TeacherAdminContent({
         {standaloneClasses.length > 0 && (
           <div>
             <div className="flex items-center justify-between px-4 mb-3">
-              <h2 className="text-sm font-semibold text-gray-700">Your Classes</h2>
+              <h2 className="text-sm font-semibold text-gray-700">{t('yourClasses')}</h2>
               <Button variant="ghost" size="sm" className="text-xs">
-                See All
+                {t('seeAll')}
                 <ChevronRight className="w-3 h-3 ml-1" />
               </Button>
             </div>
@@ -297,7 +297,7 @@ export function TeacherAdminContent({
                   <div className="p-3">
                     <h3 className="font-semibold text-sm mb-1 line-clamp-1">{cls.title}</h3>
                     <div className="flex items-center justify-between mt-2">
-                      <span className="text-xs text-gray-500">{cls.viewCount || 0} views</span>
+                      <span className="text-xs text-gray-500">{cls.viewCount || 0} {t('views')}</span>
                       <Button 
                         variant="ghost" 
                         size="sm"
@@ -320,9 +320,9 @@ export function TeacherAdminContent({
         {popularClasses.length > 0 && (
           <div>
             <div className="flex items-center justify-between px-4 mb-3">
-              <h2 className="text-sm font-semibold text-gray-700">Popular Content</h2>
+              <h2 className="text-sm font-semibold text-gray-700">{t('popularContent')}</h2>
               <Button variant="ghost" size="sm" className="text-xs">
-                Analytics
+                {t('analytics')}
                 <BarChart3 className="w-3 h-3 ml-1" />
               </Button>
             </div>
@@ -338,7 +338,7 @@ export function TeacherAdminContent({
                       <p className="text-xs text-gray-500 mt-1">{formatDuration(cls.durationMin)}</p>
                       <div className="flex items-center gap-1 mt-2">
                         <Eye className="w-3 h-3 text-gray-400" />
-                        <span className="text-xs text-gray-600">{cls.viewCount} views</span>
+                        <span className="text-xs text-gray-600">{cls.viewCount} {t('views')}</span>
                       </div>
                     </div>
                   </div>
@@ -352,9 +352,9 @@ export function TeacherAdminContent({
         {playlists.length > 0 && (
           <div>
             <div className="flex items-center justify-between px-4 mb-3">
-              <h2 className="text-sm font-semibold text-gray-700">Your Playlists</h2>
+              <h2 className="text-sm font-semibold text-gray-700">{t('yourPlaylists')}</h2>
               <Button variant="ghost" size="sm" className="text-xs">
-                See All
+                {t('seeAll')}
                 <ChevronRight className="w-3 h-3 ml-1" />
               </Button>
             </div>
@@ -363,7 +363,7 @@ export function TeacherAdminContent({
                 <Card key={playlist.id} className="min-w-[160px] snap-center p-4 bg-gradient-to-br from-indigo-50 to-purple-50 border-0">
                   <ListMusic className="w-6 h-6 text-indigo-600 mb-2" />
                   <h3 className="font-semibold text-sm line-clamp-1">{playlist.name}</h3>
-                  <p className="text-xs text-gray-500 mt-1">{playlist.isPublic ? 'Public' : 'Private'}</p>
+                  <p className="text-xs text-gray-500 mt-1">{playlist.isPublic ? t('public') : t('private')}</p>
                 </Card>
               ))}
             </div>
@@ -373,28 +373,28 @@ export function TeacherAdminContent({
         {/* Quick Actions */}
         <div>
           <div className="flex items-center justify-between px-4 mb-3">
-            <h2 className="text-sm font-semibold text-gray-700">Quick Actions</h2>
+            <h2 className="text-sm font-semibold text-gray-700">{t('quickActions')}</h2>
           </div>
           <div className="flex gap-3 overflow-x-auto pb-2 px-4 snap-x snap-mandatory scrollbar-hide">
             <Card className="min-w-[120px] snap-center p-3 bg-white border border-gray-200 text-center cursor-pointer hover:shadow-md transition-shadow">
               <Upload className="w-6 h-6 text-green-600 mx-auto mb-2" />
-              <p className="text-xs font-medium">Bulk Upload</p>
+              <p className="text-xs font-medium">{t('bulkUpload')}</p>
             </Card>
             <Card className="min-w-[120px] snap-center p-3 bg-white border border-gray-200 text-center cursor-pointer hover:shadow-md transition-shadow">
               <MessageSquare className="w-6 h-6 text-blue-600 mx-auto mb-2" />
-              <p className="text-xs font-medium">Messages</p>
+              <p className="text-xs font-medium">{t('messages')}</p>
             </Card>
             <Card className="min-w-[120px] snap-center p-3 bg-white border border-gray-200 text-center cursor-pointer hover:shadow-md transition-shadow">
               <Star className="w-6 h-6 text-yellow-600 mx-auto mb-2" />
-              <p className="text-xs font-medium">Reviews</p>
+              <p className="text-xs font-medium">{t('reviews')}</p>
             </Card>
             <Card className="min-w-[120px] snap-center p-3 bg-white border border-gray-200 text-center cursor-pointer hover:shadow-md transition-shadow">
               <Award className="w-6 h-6 text-purple-600 mx-auto mb-2" />
-              <p className="text-xs font-medium">Achievements</p>
+              <p className="text-xs font-medium">{t('achievements')}</p>
             </Card>
             <Card className="min-w-[120px] snap-center p-3 bg-white border border-gray-200 text-center cursor-pointer hover:shadow-md transition-shadow">
               <FileText className="w-6 h-6 text-gray-600 mx-auto mb-2" />
-              <p className="text-xs font-medium">Resources</p>
+              <p className="text-xs font-medium">{t('resources')}</p>
             </Card>
           </div>
         </div>

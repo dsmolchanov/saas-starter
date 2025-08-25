@@ -32,7 +32,7 @@ import {
   Edit,
   MoreVertical
 } from 'lucide-react';
-import { useTranslations } from '@/components/providers/simple-intl-provider';
+// import { useTranslations } from '@/components/providers/simple-intl-provider';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -140,7 +140,7 @@ export function TeacherStudioDashboard({
   recentContent,
   contentTypes
 }: TeacherStudioDashboardProps) {
-  const t = useTranslations('teacherStudio');
+  // const t = useTranslations('teacherStudio');
   const router = useRouter();
   const [selectedType, setSelectedType] = useState<string | null>(null);
 
