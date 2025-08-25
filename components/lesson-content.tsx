@@ -41,7 +41,7 @@ interface LessonContentProps {
     } | null;
     focusAreas: Array<{
       focusArea: {
-        id: number;
+        id: string;
         name: string;
         icon: string | null;
       };

@@ -10,18 +10,44 @@ import { useTranslations } from '@/components/providers/simple-intl-provider';
 
 interface ClassData {
   id: string;
+  createdAt: Date;
+  updatedAt: Date;
   title: string;
-  durationMin: number | null;
+  teacherId: string;
+  description: string | null;
+  imageUrl: string | null;
+  courseId: string | null;
+  durationMin: number;
   difficulty: string | null;
   intensity: string | null;
   thumbnailUrl: string | null;
+  style: string | null;
+  equipment: string | null;
+  videoPath: string | null;
+  videoUrl: string | null;
+  videoType: string | null;
+  muxAssetId: string | null;
+  muxPlaybackId: string | null;
+  muxUploadId: string | null;
+  muxStatus: string | null;
+  orderIndex: number | null;
   teacher: {
+    id: string;
     name: string | null;
+    email: string | null;
+    avatarUrl: string | null;
+    passwordHash: string | null;
+    role: string;
+    teacherApplicationStatus: string | null;
   } | null;
   focusAreas: Array<{
+    id: string;
+    classId: string;
+    focusAreaId: string;
     focusArea: {
-      id: number;
+      id: string;
       name: string;
+      icon: string | null;
     };
   }>;
 }
@@ -31,7 +57,7 @@ interface ClassesContentProps {
   availableFilters: {
     styles: Array<{ value: string; label: string; count: number }>;
     levels: Array<{ value: string; label: string; count: number }>;
-    focusAreas: Array<{ value: number; label: string }>;
+    focusAreas: Array<{ value: string; label: string }>;
   };
   searchQuery: string;
 }
