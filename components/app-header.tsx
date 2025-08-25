@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation';
 import { useTranslations } from '@/components/providers/simple-intl-provider';
 
 export function AppHeader() {
-  const pathname = usePathname();
+  const pathname = usePathname() || '';
   const t = useTranslations('navigation');
   
   const getPageTitle = () => {

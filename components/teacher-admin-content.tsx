@@ -121,7 +121,7 @@ export function TeacherAdminContent({
                 <p className="text-xs text-gray-500">{t('manageContent')}</p>
               </div>
             </div>
-            <CompactLanguageSwitcher currentLocale="ru" />
+            <CompactLanguageSwitcher />
           </div>
         </div>
       </div>
