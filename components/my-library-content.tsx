@@ -132,8 +132,8 @@ export function MyLibraryContent({
   // Default saved sessions playlist
   const defaultSavedPlaylist = {
     id: 'saved',
-    name: 'My Saved Sessions',
-    description: 'Your Playlist',
+    name: t('mySavedSessions'),
+    description: t('yourPlaylist'),
     coverUrl: null,
     itemCount: savedItems.length,
     isSystem: true,
@@ -172,7 +172,7 @@ export function MyLibraryContent({
               }`}
               onClick={() => setActiveTab('playlists')}
             >
-              Playlists
+              {t('playlists')}
             </Button>
             <Button
               variant={activeTab === 'courses' ? 'default' : 'outline'}
@@ -184,7 +184,7 @@ export function MyLibraryContent({
               }`}
               onClick={() => setActiveTab('courses')}
             >
-              Courses
+              {t('courses')}
             </Button>
             <Button
               variant={activeTab === 'saved' ? 'default' : 'outline'}
@@ -196,7 +196,7 @@ export function MyLibraryContent({
               }`}
               onClick={() => setActiveTab('saved')}
             >
-              Saved
+              {t('saved')}
             </Button>
           </div>
         </div>
@@ -208,7 +208,7 @@ export function MyLibraryContent({
           <div className="fixed inset-y-0 right-0 w-full md:w-96 bg-white shadow-2xl z-50 overflow-y-auto">
             <div className="sticky top-0 bg-white border-b p-4">
               <div className="flex items-center justify-between">
-                <h2 className="text-lg font-semibold">Practice History</h2>
+                <h2 className="text-lg font-semibold">{t('practiceHistory')}</h2>
                 <Button
                   variant="ghost"
                   size="sm"
@@ -272,7 +272,7 @@ export function MyLibraryContent({
               className="w-full py-4 border-2 border-dashed border-gray-300 hover:border-gray-400 bg-white"
             >
               <Plus className="w-5 h-5 mr-2" />
-              Create a Playlist
+              {t('createPlaylist')}
             </Button>
 
             {/* Saved Sessions (Default Playlist) */}
@@ -285,18 +285,18 @@ export function MyLibraryContent({
                   <h3 className="font-semibold text-lg text-gray-900">
                     {defaultSavedPlaylist.name}
                   </h3>
-                  <p className="text-sm text-gray-500">Your Playlist</p>
+                  <p className="text-sm text-gray-500">{t('yourPlaylist')}</p>
                   <div className="flex items-center gap-4 mt-2 text-sm text-gray-600">
-                    <span>{defaultSavedPlaylist.itemCount} sessions</span>
+                    <span>{defaultSavedPlaylist.itemCount} {t('sessions')}</span>
                     <span>•</span>
                     <button className="hover:text-gray-900">
                       <Play className="w-4 h-4 inline mr-1" />
-                      Play
+                      {t('play')}
                     </button>
                     <span>•</span>
                     <button className="hover:text-gray-900">
                       <Download className="w-4 h-4 inline mr-1" />
-                      Download
+                      {t('download')}
                     </button>
                   </div>
                 </div>
@@ -309,15 +309,15 @@ export function MyLibraryContent({
                   <DropdownMenuContent align="end">
                     <DropdownMenuItem>
                       <Play className="w-4 h-4 mr-2" />
-                      Play
+                      {t('play')}
                     </DropdownMenuItem>
                     <DropdownMenuItem>
                       <Share2 className="w-4 h-4 mr-2" />
-                      Share
+                      {tCommon('share')}
                     </DropdownMenuItem>
                     <DropdownMenuItem>
                       <Download className="w-4 h-4 mr-2" />
-                      Download
+                      {t('download')}
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
@@ -344,14 +344,14 @@ export function MyLibraryContent({
                       {playlist.name}
                     </h3>
                     <p className="text-sm text-gray-500">
-                      {playlist.description || 'Your Playlist'}
+                      {playlist.description || t('yourPlaylist')}
                     </p>
                     <div className="flex items-center gap-4 mt-2 text-sm text-gray-600">
-                      <span>{playlist.items.length} sessions</span>
+                      <span>{playlist.items.length} {t('sessions')}</span>
                       {playlist.isPublic === 0 && (
                         <>
                           <span>•</span>
-                          <span>Private</span>
+                          <span>{t('private')}</span>
                         </>
                       )}
                     </div>
@@ -365,19 +365,19 @@ export function MyLibraryContent({
                     <DropdownMenuContent align="end">
                       <DropdownMenuItem>
                         <Play className="w-4 h-4 mr-2" />
-                        Play
+                        {t('play')}
                       </DropdownMenuItem>
                       <DropdownMenuItem>
                         <Edit className="w-4 h-4 mr-2" />
-                        Edit
+                        {tCommon('edit')}
                       </DropdownMenuItem>
                       <DropdownMenuItem>
                         <Share2 className="w-4 h-4 mr-2" />
-                        Share
+                        {tCommon('share')}
                       </DropdownMenuItem>
                       <DropdownMenuItem className="text-red-600">
                         <Trash2 className="w-4 h-4 mr-2" />
-                        Delete
+                        {tCommon('delete')}
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
@@ -392,13 +392,13 @@ export function MyLibraryContent({
             {enrolledCourses.length === 0 ? (
               <Card className="p-8 text-center border-0 shadow-sm">
                 <BookOpen className="w-12 h-12 text-gray-400 mx-auto mb-3" />
-                <h3 className="text-lg font-semibold text-gray-900 mb-1">No Courses Yet</h3>
+                <h3 className="text-lg font-semibold text-gray-900 mb-1">{t('noCoursesYet')}</h3>
                 <p className="text-sm text-gray-500 mb-4">
-                  Start a course to track your progress
+                  {t('startCoursePrompt')}
                 </p>
                 <Link href="/courses">
                   <Button className="bg-gradient-to-r from-purple-600 to-pink-600">
-                    Browse Courses
+                    {t('browseCourses')}
                   </Button>
                 </Link>
               </Card>
@@ -422,7 +422,7 @@ export function MyLibraryContent({
                         {item.course.title}
                       </h3>
                       <p className="text-sm text-gray-500">
-                        {item.course.description || 'Course'}
+                        {item.course.description || t('course')}
                       </p>
                       <div className="flex items-center gap-2 mt-2">
                         <div className="flex-1 bg-gray-200 rounded-full h-2">
@@ -438,7 +438,7 @@ export function MyLibraryContent({
                     </div>
                     <Link href={`/course/${item.course.id}`}>
                       <Button variant="ghost" size="sm">
-                        Continue
+                        {t('continue')}
                       </Button>
                     </Link>
                   </div>
@@ -453,13 +453,13 @@ export function MyLibraryContent({
             {savedItems.length === 0 ? (
               <Card className="p-8 text-center border-0 shadow-sm">
                 <Heart className="w-12 h-12 text-gray-400 mx-auto mb-3" />
-                <h3 className="text-lg font-semibold text-gray-900 mb-1">No Saved Classes</h3>
+                <h3 className="text-lg font-semibold text-gray-900 mb-1">{t('noSavedClasses')}</h3>
                 <p className="text-sm text-gray-500 mb-4">
-                  Save classes to practice them later
+                  {t('saveClassesPrompt')}
                 </p>
                 <Link href="/browse">
                   <Button className="bg-gradient-to-r from-purple-600 to-pink-600">
-                    Browse Classes
+                    {t('browseClasses')}
                   </Button>
                 </Link>
               </Card>
@@ -473,15 +473,15 @@ export function MyLibraryContent({
                       </div>
                       <div className="flex-1">
                         <h3 className="font-semibold text-lg text-gray-900">
-                          Saved Class
+                          {t('savedClass')}
                         </h3>
                         <p className="text-sm text-gray-500">
-                          Added {formatDate(new Date(item.addedAt))}
+                          {t('added')} {formatDate(new Date(item.addedAt))}
                         </p>
                       </div>
                       <Button variant="ghost" size="sm">
                         <Play className="w-4 h-4 mr-2" />
-                        Play
+                        {t('play')}
                       </Button>
                     </div>
                   </Card>
@@ -493,25 +493,25 @@ export function MyLibraryContent({
 
         {/* Stats Section */}
         <div className="mt-8 pt-8 border-t">
-          <h3 className="text-sm font-medium text-gray-600 mb-4">Your Practice Stats</h3>
+          <h3 className="text-sm font-medium text-gray-600 mb-4">{t('yourPracticeStats')}</h3>
           <div className="grid grid-cols-3 gap-4">
             <Card className="p-4 text-center border-0 shadow-sm">
               <p className="text-2xl font-bold text-gray-900">
                 {Math.floor(stats.totalMinutes / 60)}h
               </p>
-              <p className="text-xs text-gray-500">Total Practice</p>
+              <p className="text-xs text-gray-500">{t('totalPractice')}</p>
             </Card>
             <Card className="p-4 text-center border-0 shadow-sm">
               <p className="text-2xl font-bold text-gray-900">
                 {stats.totalSessions}
               </p>
-              <p className="text-xs text-gray-500">Sessions</p>
+              <p className="text-xs text-gray-500">{t('sessions')}</p>
             </Card>
             <Card className="p-4 text-center border-0 shadow-sm">
               <p className="text-2xl font-bold text-gray-900">
                 {stats.uniqueTeachers}
               </p>
-              <p className="text-xs text-gray-500">Teachers</p>
+              <p className="text-xs text-gray-500">{t('teachers')}</p>
             </Card>
           </div>
         </div>
