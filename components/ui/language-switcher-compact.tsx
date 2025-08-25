@@ -1,7 +1,6 @@
 'use client';
 
-import { usePathname, useRouter } from 'next/navigation';
-import { useState, useTransition } from 'react';
+import { useState } from 'react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -9,6 +8,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
+import { useIntl } from '@/components/providers/simple-intl-provider';
 import { locales, type Locale } from '@/i18n';
 
 interface CompactLanguageSwitcherProps {
@@ -17,29 +17,16 @@ interface CompactLanguageSwitcherProps {
 }
 
 export function CompactLanguageSwitcher({ 
-  currentLocale = 'ru', 
+  currentLocale, 
   className 
 }: CompactLanguageSwitcherProps) {
-  const router = useRouter();
-  const pathname = usePathname();
-  const [isPending, startTransition] = useTransition();
+  const { locale, setLocale } = useIntl();
   const [isOpen, setIsOpen] = useState(false);
+  const actualLocale = currentLocale || locale;
 
   const handleLanguageChange = (newLocale: Locale) => {
-    startTransition(() => {
-      // Store preference in localStorage (only on client side)
-      if (typeof window !== 'undefined') {
-        localStorage.setItem('preferred-language', newLocale);
-        document.documentElement.lang = newLocale;
-        // Also set a cookie for server-side access
-        document.cookie = `locale=${newLocale};path=/;max-age=31536000`;
-      }
-      
-      // Just refresh the current page with the new locale stored
-      router.refresh();
-      
-      setIsOpen(false);
-    });
+    setLocale(newLocale);
+    setIsOpen(false);
   };
 
   const getLanguageCode = (locale: Locale): string => {
@@ -67,9 +54,8 @@ export function CompactLanguageSwitcher({
           variant="ghost" 
           size="icon"
           className={`h-8 w-8 rounded-lg border border-gray-200 hover:border-gray-300 ${className}`}
-          disabled={isPending}
         >
-          <span className="text-xs font-semibold">{getLanguageCode(currentLocale)}</span>
+          <span className="text-xs font-semibold">{getLanguageCode(actualLocale)}</span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-32">
@@ -78,7 +64,7 @@ export function CompactLanguageSwitcher({
             key={locale}
             onClick={() => handleLanguageChange(locale)}
             className={`cursor-pointer justify-between ${
-              locale === currentLocale ? 'bg-accent' : ''
+              locale === actualLocale ? 'bg-accent' : ''
             }`}
           >
             <span className="font-medium text-xs">{getLanguageCode(locale)}</span>

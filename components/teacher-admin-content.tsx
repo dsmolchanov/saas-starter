@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { useTranslations } from 'next-intl';
+import { useTranslations } from '@/components/providers/simple-intl-provider';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -117,8 +117,8 @@ export function TeacherAdminContent({
                 </Button>
               </Link>
               <div>
-                <h1 className="text-lg font-bold">Teacher Studio</h1>
-                <p className="text-xs text-gray-500">Manage your content</p>
+                <h1 className="text-lg font-bold">{t('teacherStudio')}</h1>
+                <p className="text-xs text-gray-500">{t('manageContent')}</p>
               </div>
             </div>
             <CompactLanguageSwitcher currentLocale="ru" />
@@ -130,28 +130,28 @@ export function TeacherAdminContent({
         {/* Quick Stats - Horizontal Scroll */}
         <div>
           <div className="flex items-center justify-between px-4 mb-3">
-            <h2 className="text-sm font-semibold text-gray-700">Quick Stats</h2>
+            <h2 className="text-sm font-semibold text-gray-700">{t('quickStats')}</h2>
           </div>
           <div className="flex gap-3 overflow-x-auto pb-2 px-4 snap-x snap-mandatory scrollbar-hide">
             <Card className="min-w-[140px] snap-center p-4 bg-gradient-to-br from-purple-500 to-pink-500 text-white border-0">
               <PlayCircle className="w-5 h-5 mb-2 opacity-80" />
               <p className="text-2xl font-bold">{formatNumber(stats.totalViews)}</p>
-              <p className="text-xs opacity-90">Total Views</p>
+              <p className="text-xs opacity-90">{t('totalViews')}</p>
             </Card>
             <Card className="min-w-[140px] snap-center p-4 bg-gradient-to-br from-blue-500 to-cyan-500 text-white border-0">
               <Users className="w-5 h-5 mb-2 opacity-80" />
               <p className="text-2xl font-bold">{formatNumber(stats.uniqueStudents)}</p>
-              <p className="text-xs opacity-90">Students</p>
+              <p className="text-xs opacity-90">{t('students')}</p>
             </Card>
             <Card className="min-w-[140px] snap-center p-4 bg-gradient-to-br from-green-500 to-emerald-500 text-white border-0">
               <Clock className="w-5 h-5 mb-2 opacity-80" />
               <p className="text-2xl font-bold">{formatNumber(stats.totalMinutesWatched)}</p>
-              <p className="text-xs opacity-90">Minutes</p>
+              <p className="text-xs opacity-90">{tCommon('minutes')}</p>
             </Card>
             <Card className="min-w-[140px] snap-center p-4 bg-gradient-to-br from-orange-500 to-red-500 text-white border-0">
               <TrendingUp className="w-5 h-5 mb-2 opacity-80" />
               <p className="text-2xl font-bold">+24%</p>
-              <p className="text-xs opacity-90">Growth</p>
+              <p className="text-xs opacity-90">{t('growth')}</p>
             </Card>
           </div>
         </div>
