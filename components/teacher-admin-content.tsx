@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -82,6 +83,8 @@ export function TeacherAdminContent({
   recentActivity,
   popularClasses,
 }: TeacherAdminContentProps) {
+  const t = useTranslations('teacher');
+  const tCommon = useTranslations('common');
   const [showCourseManager, setShowCourseManager] = useState(false);
   const [showClassManager, setShowClassManager] = useState(false);
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
