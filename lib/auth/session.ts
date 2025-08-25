@@ -30,7 +30,7 @@ export async function signToken(payload: SessionData) {
   return await new SignJWT(payload)
     .setProtectedHeader({ alg: 'HS256' })
     .setIssuedAt()
-    .setExpirationTime('1 day from now')
+    .setExpirationTime('7 days from now')
     .sign(key);
 }
 
@@ -41,7 +41,10 @@ export async function verifyToken(input: string) {
     });
     return payload as SessionData;
   } catch (error) {
-    console.error('Token verification failed:', error);
+    // Only log detailed errors in development
+    if (process.env.NODE_ENV === 'development') {
+      console.error('Token verification failed:', error);
+    }
     throw error;
   }
 }
@@ -53,14 +56,15 @@ export async function getSession() {
 }
 
 export async function setSession(user: NewUser) {
-  const expiresInOneDay = new Date(Date.now() + 24 * 60 * 60 * 1000);
+  // Set session to expire in 7 days for better user experience
+  const expiresInSevenDays = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
   const session: SessionData = {
     user: { id: user.id! },
-    expires: expiresInOneDay.toISOString(),
+    expires: expiresInSevenDays.toISOString(),
   };
   const encryptedSession = await signToken(session);
   (await cookies()).set('session', encryptedSession, {
-    expires: expiresInOneDay,
+    expires: expiresInSevenDays,
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'lax',

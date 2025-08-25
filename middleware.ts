@@ -49,25 +49,36 @@ export async function middleware(request: NextRequest) {
     const response = NextResponse.next();
     const sessionCookie = request.cookies.get('session');
     
+    // Only refresh session for valid sessions, don't touch expired/invalid ones
     if (sessionCookie && request.method === 'GET') {
       try {
         const parsed = await verifyToken(sessionCookie.value);
-        const expiresInOneDay = new Date(Date.now() + 24 * 60 * 60 * 1000);
         
-        response.cookies.set({
-          name: 'session',
-          value: await signToken({
-            ...parsed,
-            expires: expiresInOneDay.toISOString()
-          }),
-          httpOnly: true,
-          secure: process.env.NODE_ENV === 'production',
-          sameSite: 'lax',
-          expires: expiresInOneDay,
-          path: '/'
-        });
+        // Check if session is still valid (not expired)
+        if (parsed && parsed.expires && new Date(parsed.expires) > new Date()) {
+          // Only refresh if session expires in less than 3 days
+          const daysUntilExpiry = (new Date(parsed.expires).getTime() - Date.now()) / (1000 * 60 * 60 * 24);
+          
+          if (daysUntilExpiry < 3) {
+            const expiresInSevenDays = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+            
+            response.cookies.set({
+              name: 'session',
+              value: await signToken({
+                ...parsed,
+                expires: expiresInSevenDays.toISOString()
+              }),
+              httpOnly: true,
+              secure: process.env.NODE_ENV === 'production',
+              sameSite: 'lax',
+              expires: expiresInSevenDays,
+              path: '/'
+            });
+          }
+        }
       } catch (error) {
-        console.error('Error updating session:', error);
+        // Don't log every verification error, it's expected for expired tokens
+        // console.error('Session verification failed:', error);
       }
     }
     
@@ -94,28 +105,37 @@ export async function middleware(request: NextRequest) {
     if (sessionCookie && request.method === 'GET') {
       try {
         const parsed = await verifyToken(sessionCookie.value);
-        const expiresInOneDay = new Date(Date.now() + 24 * 60 * 60 * 1000);
+        
+        // Check if session is still valid (not expired)
+        if (parsed && parsed.expires && new Date(parsed.expires) > new Date()) {
+          // Only refresh if session expires in less than 3 days
+          const daysUntilExpiry = (new Date(parsed.expires).getTime() - Date.now()) / (1000 * 60 * 60 * 24);
+          
+          if (daysUntilExpiry < 3) {
+            const expiresInSevenDays = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
 
-        // Clone response to modify cookies
-        const res = response || NextResponse.next();
-        
-        res.cookies.set({
-          name: 'session',
-          value: await signToken({
-            ...parsed,
-            expires: expiresInOneDay.toISOString()
-          }),
-          httpOnly: true,
-          secure: process.env.NODE_ENV === 'production',
-          sameSite: 'lax',
-          expires: expiresInOneDay,
-          path: '/'
-        });
-        
-        return res;
+            // Clone response to modify cookies
+            const res = response || NextResponse.next();
+            
+            res.cookies.set({
+              name: 'session',
+              value: await signToken({
+                ...parsed,
+                expires: expiresInSevenDays.toISOString()
+              }),
+              httpOnly: true,
+              secure: process.env.NODE_ENV === 'production',
+              sameSite: 'lax',
+              expires: expiresInSevenDays,
+              path: '/'
+            });
+            
+            return res;
+          }
+        }
       } catch (error) {
-        console.error('Error updating session:', error);
-        // Don't delete session cookie, just continue
+        // Don't log every verification error, it's expected for expired tokens
+        // console.error('Session verification failed:', error);
       }
     }
 

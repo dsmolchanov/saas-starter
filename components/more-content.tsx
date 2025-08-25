@@ -9,6 +9,7 @@ import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { MyPlaylists } from '@/components/my-playlists';
+import { SignOutButton } from '@/components/sign-out-button';
 import {
   Dialog,
   DialogContent,
@@ -379,22 +380,7 @@ export function MoreContent({ user, stats }: MoreContentProps) {
         </div>
 
         {/* Sign Out Button */}
-        <Card className="p-4 border-0 shadow-sm">
-          <Link href="/api/auth/signout">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-red-50 rounded-full flex items-center justify-center">
-                  <LogOut className="w-5 h-5 text-red-600" />
-                </div>
-                <div>
-                  <p className="font-medium text-red-600">Sign Out</p>
-                  <p className="text-xs text-gray-500">Log out of your account</p>
-                </div>
-              </div>
-              <ChevronRight className="w-5 h-5 text-gray-400" />
-            </div>
-          </Link>
-        </Card>
+        <SignOutButton />
 
         {/* App Version */}
         <div className="text-center py-4">

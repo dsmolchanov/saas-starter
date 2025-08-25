@@ -22,23 +22,10 @@ export async function POST(request: NextRequest) {
   }
 }
 
-export async function GET(request: NextRequest) {
-  try {
-    const cookieStore = await cookies();
-    
-    // Delete session cookie
-    cookieStore.delete('session');
-    
-    // Delete any other auth-related cookies
-    cookieStore.delete('supabase-auth-token');
-    cookieStore.delete('sb-refresh-token');
-    
-    console.log('Session cookies cleared via GET');
-    
-    // Redirect to home page
-    return NextResponse.redirect(new URL('/', request.url));
-  } catch (error) {
-    console.error('Error clearing session:', error);
-    return NextResponse.redirect(new URL('/', request.url));
-  }
-} 
+// Remove GET handler - signout should only be POST to prevent accidental logouts
+// export async function GET(request: NextRequest) {
+//   return NextResponse.json(
+//     { error: 'Method not allowed. Use POST to sign out.' }, 
+//     { status: 405 }
+//   );
+// } 
