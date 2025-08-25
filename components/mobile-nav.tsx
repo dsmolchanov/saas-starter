@@ -4,9 +4,10 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Search, Activity, Menu } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useTranslations } from '@/components/providers/simple-intl-provider';
 
 type NavItem = {
-  name: string;
+  key: string;
   href: string;
   icon: React.ComponentType<{ className?: string }>;
 };
@@ -16,14 +17,15 @@ const LogoIcon = ({ className }: { className?: string }) => (
 );
 
 const navItems: NavItem[] = [
-  { name: 'Home', href: '/home', icon: LogoIcon },
-  { name: 'Browse', href: '/browse', icon: Search },
-  { name: 'My Practice', href: '/my_practice', icon: Activity },
-  { name: 'More', href: '/more', icon: Menu },
+  { key: 'home', href: '/home', icon: LogoIcon },
+  { key: 'browse', href: '/browse', icon: Search },
+  { key: 'myPractice', href: '/my_practice', icon: Activity },
+  { key: 'more', href: '/more', icon: Menu },
 ];
 
 export function MobileNav() {
   const pathname = usePathname() || '';
+  const t = useTranslations('navigation');
 
   return (
     <nav className="fixed inset-x-0 bottom-0 bg-background border-t border-border z-50">
@@ -43,7 +45,7 @@ export function MobileNav() {
               )}
             >
               <item.icon className={cn('h-5 w-5', isActive ? 'text-primary' : '')} />
-              <span className="text-xs mt-1">{item.name}</span>
+              <span className="text-xs mt-1">{t(item.key)}</span>
             </Link>
           );
         })}

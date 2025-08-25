@@ -119,6 +119,9 @@
 
   "home": {
     "welcomeBack": "Welcome back",
+    "goodMorning": "Good morning",
+    "goodAfternoon": "Good afternoon",
+    "goodEvening": "Good evening",
     "startPractice": "Start practice",
     "continueWatching": "Continue watching",
     "recommended": "Recommended",
@@ -137,7 +140,9 @@
     "setGoals": "Set goals",
     "viewSchedule": "View schedule",
     "upcomingClasses": "Upcoming classes",
-    "savedForLater": "Saved for later"
+    "savedForLater": "Saved for later",
+    "with": "with",
+    "expertTeacher": "Expert Teacher"
   },
 
   "myPractice": {

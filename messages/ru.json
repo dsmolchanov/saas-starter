@@ -119,6 +119,9 @@
 
   "home": {
     "welcomeBack": "С возвращением",
+    "goodMorning": "Доброе утро",
+    "goodAfternoon": "Добрый день",
+    "goodEvening": "Добрый вечер",
     "startPractice": "Начать практику",
     "continueWatching": "Продолжить просмотр",
     "recommended": "Рекомендованное",
@@ -137,7 +140,9 @@
     "setGoals": "Установить цели",
     "viewSchedule": "Посмотреть расписание",
     "upcomingClasses": "Предстоящие классы",
-    "savedForLater": "Сохранено на потом"
+    "savedForLater": "Сохранено на потом",
+    "with": "с",
+    "expertTeacher": "Опытный учитель"
   },
 
   "myPractice": {

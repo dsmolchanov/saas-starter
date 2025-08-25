@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
+import { useTranslations } from '@/components/providers/simple-intl-provider';
 import { 
   Play, 
   Flame, 
@@ -105,7 +106,9 @@ export function HomeContent({
   practicedToday,
   totalMinutes,
 }: HomeContentProps) {
-  const [greeting, setGreeting] = useState('');
+  const t = useTranslations('home');
+  const tCommon = useTranslations('common');
+  const [greeting, setGreeting] = useState('goodMorning');
   const [timeOfDay, setTimeOfDay] = useState<'morning' | 'afternoon' | 'evening'>('morning');
   const [currentTime, setCurrentTime] = useState(new Date());
   const [quote, setQuote] = useState(yogaQuotes[0]);
@@ -119,13 +122,13 @@ export function HomeContent({
       setCurrentTime(now);
       
       if (hour < 12) {
-        setGreeting('Good morning');
+        setGreeting('goodMorning');
         setTimeOfDay('morning');
       } else if (hour < 17) {
-        setGreeting('Good afternoon');
+        setGreeting('goodAfternoon');
         setTimeOfDay('afternoon');
       } else {
-        setGreeting('Good evening');
+        setGreeting('goodEvening');
         setTimeOfDay('evening');
       }
 
@@ -168,7 +171,7 @@ export function HomeContent({
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-xl font-medium text-gray-900">
-                {greeting}, {user.name?.split(' ')[0]}
+                {t(greeting)}, {user.name?.split(' ')[0]}
               </h1>
               <p className="text-sm text-gray-500">
                 {currentTime.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
@@ -192,10 +195,10 @@ export function HomeContent({
             <div className="p-6">
               <div className="flex items-start justify-between mb-4">
                 <div>
-                  <p className="text-sm font-medium text-purple-600 mb-1">Today's Practice</p>
+                  <p className="text-sm font-medium text-purple-600 mb-1">{t('todaysPractice')}</p>
                   <h2 className="text-xl font-semibold text-gray-900">{recommendedClass.title}</h2>
                   <p className="text-sm text-gray-600 mt-1">
-                    with {recommendedClass.teacher?.name || 'Expert Teacher'}
+                    {t('with')} {recommendedClass.teacher?.name || t('expertTeacher')}
                   </p>
                 </div>
                 {timeOfDay === 'morning' ? (

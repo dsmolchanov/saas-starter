@@ -9,20 +9,19 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
 import { useIntl } from '@/components/providers/simple-intl-provider';
-import { locales, type Locale } from '@/i18n';
+
+type Locale = 'ru' | 'es' | 'en';
 
 interface CompactLanguageSwitcherProps {
-  currentLocale?: Locale;
   className?: string;
 }
 
 export function CompactLanguageSwitcher({ 
-  currentLocale, 
   className 
 }: CompactLanguageSwitcherProps) {
   const { locale, setLocale } = useIntl();
   const [isOpen, setIsOpen] = useState(false);
-  const actualLocale = currentLocale || locale;
+  const locales: Locale[] = ['ru', 'es', 'en'];
 
   const handleLanguageChange = (newLocale: Locale) => {
     setLocale(newLocale);
@@ -55,20 +54,20 @@ export function CompactLanguageSwitcher({
           size="icon"
           className={`h-8 w-8 rounded-lg border border-gray-200 hover:border-gray-300 ${className}`}
         >
-          <span className="text-xs font-semibold">{getLanguageCode(actualLocale)}</span>
+          <span className="text-xs font-semibold">{getLanguageCode(locale)}</span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-32">
-        {locales.map((locale) => (
+        {locales.map((loc) => (
           <DropdownMenuItem
-            key={locale}
-            onClick={() => handleLanguageChange(locale)}
+            key={loc}
+            onClick={() => handleLanguageChange(loc)}
             className={`cursor-pointer justify-between ${
-              locale === actualLocale ? 'bg-accent' : ''
+              loc === locale ? 'bg-accent' : ''
             }`}
           >
-            <span className="font-medium text-xs">{getLanguageCode(locale)}</span>
-            <span className="text-xs text-gray-600">{getLanguageName(locale)}</span>
+            <span className="font-medium text-xs">{getLanguageCode(loc)}</span>
+            <span className="text-xs text-gray-600">{getLanguageName(loc)}</span>
           </DropdownMenuItem>
         ))}
       </DropdownMenuContent>

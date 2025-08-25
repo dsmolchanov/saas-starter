@@ -119,6 +119,9 @@
 
   "home": {
     "welcomeBack": "Bienvenido de vuelta",
+    "goodMorning": "Buenos días",
+    "goodAfternoon": "Buenas tardes",
+    "goodEvening": "Buenas noches",
     "startPractice": "Comenzar práctica",
     "continueWatching": "Continuar viendo",
     "recommended": "Recomendado",
@@ -137,7 +140,9 @@
     "setGoals": "Establecer metas",
     "viewSchedule": "Ver horario",
     "upcomingClasses": "Próximas clases",
-    "savedForLater": "Guardado para después"
+    "savedForLater": "Guardado para después",
+    "with": "con",
+    "expertTeacher": "Profesor experto"
   },
 
   "myPractice": {
