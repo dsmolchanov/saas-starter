@@ -703,5 +703,30 @@
     "inviteSent": "Invitación enviada",
     "requestSent": "Solicitud enviada",
     "connectionMade": "Conexión establecida"
+  },
+
+  "teachers": {
+    "title": "Instructores",
+    "subtitle": "Conoce a nuestro equipo de instructores de yoga experimentados",
+    "searchPlaceholder": "Buscar instructores...",
+    "filters": "Filtros",
+    "noTeachersFound": "No se encontraron instructores",
+    "noResultsForSearch": "No hay resultados para \"{{query}}\". Intenta con otro término de búsqueda.",
+    "checkBackLater": "Vuelve más tarde para ver nuevos instructores.",
+    "defaultBio": "Instructor de Yoga",
+    "viewProfile": "Ver perfil",
+    "experience": "Experiencia",
+    "specialties": "Especialidades",
+    "certifications": "Certificaciones",
+    "classes": "Clases",
+    "students": "Estudiantes",
+    "rating": "Calificación",
+    "reviews": "Reseñas",
+    "availability": "Disponibilidad",
+    "bookSession": "Reservar sesión",
+    "sendMessage": "Enviar mensaje",
+    "follow": "Seguir",
+    "following": "Siguiendo",
+    "aboutInstructor": "Acerca del instructor"
   }
 }

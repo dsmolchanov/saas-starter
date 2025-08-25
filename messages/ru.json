@@ -703,5 +703,30 @@
     "inviteSent": "Приглашение отправлено",
     "requestSent": "Запрос отправлен",
     "connectionMade": "Соединение установлено"
+  },
+
+  "teachers": {
+    "title": "Инструкторы",
+    "subtitle": "Познакомьтесь с нашей командой опытных инструкторов йоги",
+    "searchPlaceholder": "Поиск инструкторов...",
+    "filters": "Фильтры",
+    "noTeachersFound": "Инструкторы не найдены",
+    "noResultsForSearch": "Нет результатов для \"{{query}}\". Попробуйте другой поисковый запрос.",
+    "checkBackLater": "Вернитесь позже за новыми инструкторами.",
+    "defaultBio": "Инструктор йоги",
+    "viewProfile": "Просмотр профиля",
+    "experience": "Опыт",
+    "specialties": "Специализации",
+    "certifications": "Сертификаты",
+    "classes": "Занятия",
+    "students": "Студенты",
+    "rating": "Рейтинг",
+    "reviews": "Отзывы",
+    "availability": "Доступность",
+    "bookSession": "Забронировать сеанс",
+    "sendMessage": "Отправить сообщение",
+    "follow": "Подписаться",
+    "following": "Подписан",
+    "aboutInstructor": "Об инструкторе"
   }
 }
