@@ -8,7 +8,7 @@ import { Card } from '@/components/ui/card';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { MyPlaylists } from '@/components/my-playlists';
+import { MyPlaylistsContent } from '@/components/my-playlists-content';
 import { SignOutButton } from '@/components/sign-out-button';
 import { CompactLanguageSwitcher } from '@/components/ui/language-switcher-compact';
 import { useTranslations, useIntl } from '@/components/providers/simple-intl-provider';
@@ -230,7 +230,7 @@ export function MoreContent({ user, stats }: MoreContentProps) {
 
       <div className="container max-w-md mx-auto px-4 py-6 space-y-6">
         {activeSection === 'playlists' ? (
-          <MyPlaylists userId={user.id} isTeacher={isTeacher} />
+          <MyPlaylistsContent userId={user.id} isTeacher={isTeacher} />
         ) : (
           <>
         {/* User Profile Card */}
