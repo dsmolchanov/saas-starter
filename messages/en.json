@@ -422,6 +422,12 @@
 
   "classes": {
     "title": "Yoga Classes",
+    "classes": "Classes",
+    "courses": "Courses",
+    "findPerfectClass": "Find the perfect workout or wellness class to match your mood.",
+    "noClassesFound": "No classes found",
+    "noResultsForSearch": "No results for \"{{query}}\". Try a different search term.",
+    "checkBackLater": "Check back later for new classes or try adjusting your filters.",
     "allLevels": "All Levels",
     "beginner": "Beginner",
     "intermediate": "Intermediate",
@@ -626,6 +632,29 @@
     "userNotFound": "User not found",
     "emailAlreadyExists": "Email already exists",
     "weakPassword": "Weak password"
+  },
+
+  "lesson": {
+    "minutes": "minutes",
+    "min": "min",
+    "intensity": "intensity",
+    "aboutThisClass": "About this class",
+    "equipmentNeeded": "Equipment needed",
+    "partOfCourse": "Part of course",
+    "yourInstructor": "Your Instructor",
+    "yogaInstructor": "Yoga Instructor",
+    "certifiedYogaTeacher": "Certified Yoga Teacher",
+    "followOnInstagram": "Follow on Instagram",
+    "classDetails": "Class Details",
+    "duration": "Duration",
+    "level": "Level",
+    "intensityLabel": "Intensity",
+    "style": "Style",
+    "created": "Created",
+    "schedulePractice": "Schedule Practice",
+    "focusAreas": "Focus Areas",
+    "lessonNotFound": "Lesson Not Found",
+    "lesson": "Lesson"
   },
 
   "success": {

@@ -422,6 +422,12 @@
 
   "classes": {
     "title": "Классы йоги",
+    "classes": "Занятия",
+    "courses": "Курсы",
+    "findPerfectClass": "Найдите идеальную тренировку или занятие для вашего настроения.",
+    "noClassesFound": "Занятия не найдены",
+    "noResultsForSearch": "Нет результатов для \"{{query}}\". Попробуйте другой поисковый запрос.",
+    "checkBackLater": "Загляните позже для новых занятий или попробуйте изменить фильтры.",
     "allLevels": "Все уровни",
     "beginner": "Начинающий",
     "intermediate": "Средний",
@@ -626,6 +632,29 @@
     "userNotFound": "Пользователь не найден",
     "emailAlreadyExists": "Email уже существует",
     "weakPassword": "Слабый пароль"
+  },
+
+  "lesson": {
+    "minutes": "минут",
+    "min": "мин",
+    "intensity": "интенсивность",
+    "aboutThisClass": "Об этом занятии",
+    "equipmentNeeded": "Необходимое оборудование",
+    "partOfCourse": "Часть курса",
+    "yourInstructor": "Ваш инструктор",
+    "yogaInstructor": "Инструктор йоги",
+    "certifiedYogaTeacher": "Сертифицированный учитель йоги",
+    "followOnInstagram": "Подписаться в Instagram",
+    "classDetails": "Детали занятия",
+    "duration": "Продолжительность",
+    "level": "Уровень",
+    "intensityLabel": "Интенсивность",
+    "style": "Стиль",
+    "created": "Создано",
+    "schedulePractice": "Запланировать практику",
+    "focusAreas": "Зоны фокуса",
+    "lessonNotFound": "Занятие не найдено",
+    "lesson": "Занятие"
   },
 
   "success": {

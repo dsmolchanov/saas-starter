@@ -1,12 +1,7 @@
 import { db } from '@/lib/db/drizzle';
 import { classes, lessonFocusAreas, focusAreas, courses } from '@/lib/db/schema';
 import { eq, and, inArray, sql, isNotNull, or, ilike } from 'drizzle-orm';
-import { ClassCard } from '@/components/class-card';
-import { Button } from '@/components/ui/button';
-import { List, LayoutGrid } from 'lucide-react';
-import Link from 'next/link';
-import { BrowseFilters } from '@/components/browse-filters';
-import { BrowseSearch } from '@/components/browse-search';
+import { ClassesContent } from '@/components/classes-content';
 
 // This page needs dynamic rendering for search params and i18n
 export const dynamic = 'force-dynamic';
@@ -124,72 +119,10 @@ export default async function ClassesPage({ searchParams }: { searchParams: Prom
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold">BROWSE</h1>
-        <p className="text-muted-foreground mt-1">
-          Find the perfect workout or wellness class to match your mood.
-        </p>
-      </div>
-
-      {/* Search Bar */}
-      <div className="mb-6">
-        <BrowseSearch />
-      </div>
-
-      <div className="w-full">
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex gap-1 p-1 bg-muted rounded-lg">
-            <Button variant="ghost" className="px-4 py-2 bg-background shadow-sm" size="sm">
-              Classes
-            </Button>
-            <Button variant="ghost" className="px-4 py-2" size="sm" asChild>
-              <Link href="/courses">Courses</Link>
-            </Button>
-          </div>
-          
-          <div className="flex items-center gap-2">
-            <BrowseFilters availableFilters={availableFilters} type="classes" />
-            
-            <Button variant="ghost" size="icon" className="h-9 w-9">
-              <List className="h-4 w-4" />
-            </Button>
-            <Button variant="ghost" size="icon" className="h-9 w-9">
-              <LayoutGrid className="h-4 w-4" />
-            </Button>
-          </div>
-        </div>
-
-        <div className="mt-0">
-          {filteredClasses.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-12 text-center">
-              <h3 className="text-xl font-medium">No classes found</h3>
-              <p className="text-muted-foreground mt-2">
-                {searchQuery 
-                  ? `No results for "${searchQuery}". Try a different search term.`
-                  : 'Check back later for new classes or try adjusting your filters.'}
-              </p>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {filteredClasses.map((lesson) => (
-                <ClassCard
-                  key={lesson.id}
-                  id={lesson.id}
-                  title={lesson.title}
-                  instructor={lesson.teacher?.name || 'Instructor'}
-                  duration={lesson.durationMin || 0}
-                  difficulty={lesson.difficulty || 'All Levels'}
-                  intensity={lesson.intensity?.toLowerCase() || 'moderate'}
-                  focusAreas={lesson.focusAreas.map(fa => fa.focusArea.name)}
-                  thumbnailUrl={lesson.thumbnailUrl || undefined}
-                  likes={Math.floor(Math.random() * 1000)}
-                />
-              ))}
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
+    <ClassesContent 
+      filteredClasses={filteredClasses}
+      availableFilters={availableFilters}
+      searchQuery={searchQuery}
+    />
   );
 }

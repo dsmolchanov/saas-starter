@@ -422,6 +422,12 @@
 
   "classes": {
     "title": "Clases de yoga",
+    "classes": "Clases",
+    "courses": "Cursos",
+    "findPerfectClass": "Encuentra la clase perfecta de entrenamiento o bienestar para tu estado de ánimo.",
+    "noClassesFound": "No se encontraron clases",
+    "noResultsForSearch": "No hay resultados para \"{{query}}\". Prueba con otro término de búsqueda.",
+    "checkBackLater": "Vuelve más tarde para ver nuevas clases o intenta ajustar tus filtros.",
     "allLevels": "Todos los niveles",
     "beginner": "Principiante",
     "intermediate": "Intermedio",
@@ -626,6 +632,29 @@
     "userNotFound": "Usuario no encontrado",
     "emailAlreadyExists": "El correo ya existe",
     "weakPassword": "Contraseña débil"
+  },
+
+  "lesson": {
+    "minutes": "minutos",
+    "min": "min",
+    "intensity": "intensidad",
+    "aboutThisClass": "Acerca de esta clase",
+    "equipmentNeeded": "Equipo necesario",
+    "partOfCourse": "Parte del curso",
+    "yourInstructor": "Tu instructor",
+    "yogaInstructor": "Instructor de yoga",
+    "certifiedYogaTeacher": "Profesor certificado de yoga",
+    "followOnInstagram": "Seguir en Instagram",
+    "classDetails": "Detalles de la clase",
+    "duration": "Duración",
+    "level": "Nivel",
+    "intensityLabel": "Intensidad",
+    "style": "Estilo",
+    "created": "Creado",
+    "schedulePractice": "Programar práctica",
+    "focusAreas": "Áreas de enfoque",
+    "lessonNotFound": "Clase no encontrada",
+    "lesson": "Clase"
   },
 
   "success": {
