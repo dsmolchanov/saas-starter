@@ -1,32 +1,41 @@
 import { createServerSupabaseClient } from '@/lib/supabase/server';
 import { AccessToken } from 'livekit-server-sdk';
-
-// Configuration for both Supabase instances
-const YOGA_SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const YOGA_SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
-
-const VOICE_SUPABASE_URL = process.env.VOICE_SUPABASE_URL!;
-const VOICE_SUPABASE_SERVICE_KEY = process.env.VOICE_SUPABASE_SERVICE_KEY!;
-
-// LiveKit Voice Agent API
-const VOICE_AGENT_API = process.env.VOICE_AGENT_API_URL || 'https://livekit-voice-worker.fly.dev';
-const LIVEKIT_API_KEY = process.env.LIVEKIT_API_KEY!;
-const LIVEKIT_API_SECRET = process.env.LIVEKIT_API_SECRET!;
-const LIVEKIT_URL = process.env.LIVEKIT_URL || 'wss://your-livekit-server.livekit.cloud';
-
 import { createClient as createSupabaseClient } from '@supabase/supabase-js';
 
-// Create client for Voice platform's Supabase
-const voiceSupabase = createSupabaseClient(
-  VOICE_SUPABASE_URL,
-  VOICE_SUPABASE_SERVICE_KEY,
-  {
-    auth: {
-      autoRefreshToken: false,
-      persistSession: false
-    }
+// Lazy-load environment variables to avoid build-time errors
+function getConfig() {
+  return {
+    YOGA_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    YOGA_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    VOICE_SUPABASE_URL: process.env.VOICE_SUPABASE_URL!,
+    VOICE_SUPABASE_SERVICE_KEY: process.env.VOICE_SUPABASE_SERVICE_KEY!,
+    VOICE_AGENT_API: process.env.VOICE_AGENT_API_URL || 'https://livekit-voice-worker.fly.dev',
+    LIVEKIT_API_KEY: process.env.LIVEKIT_API_KEY!,
+    LIVEKIT_API_SECRET: process.env.LIVEKIT_API_SECRET!,
+    LIVEKIT_URL: process.env.LIVEKIT_URL || 'wss://your-livekit-server.livekit.cloud'
+  };
+}
+
+// Create client for Voice platform's Supabase (lazy initialization)
+function getVoiceSupabase() {
+  const config = getConfig();
+  
+  // Skip if URL is not configured
+  if (!config.VOICE_SUPABASE_URL || !config.VOICE_SUPABASE_SERVICE_KEY) {
+    throw new Error('Voice platform Supabase configuration is missing');
   }
-);
+  
+  return createSupabaseClient(
+    config.VOICE_SUPABASE_URL,
+    config.VOICE_SUPABASE_SERVICE_KEY,
+    {
+      auth: {
+        autoRefreshToken: false,
+        persistSession: false
+      }
+    }
+  );
+}
 
 export interface YogaVoiceSessionConfig {
   classId: string;
@@ -104,20 +113,26 @@ export async function syncYogaAgentConfig(config: YogaVoiceSessionConfig) {
   };
 
   // Store agent config in Voice platform's Supabase
-  const { data, error } = await voiceSupabase
-    .from('agent_configs')
-    .upsert({
-      agent_id: agentId,
-      config: agentConfig,
-      platform: 'dzen-yoga',
-      created_at: new Date().toISOString()
-    }, {
-      onConflict: 'agent_id'
-    });
+  try {
+    const voiceSupabase = getVoiceSupabase();
+    const { data, error } = await voiceSupabase
+      .from('agent_configs')
+      .upsert({
+        agent_id: agentId,
+        config: agentConfig,
+        platform: 'dzen-yoga',
+        created_at: new Date().toISOString()
+      }, {
+        onConflict: 'agent_id'
+      });
 
-  if (error) {
-    console.error('Error syncing agent config to voice platform:', error);
-    throw new Error('Failed to sync agent configuration');
+    if (error) {
+      console.error('Error syncing agent config to voice platform:', error);
+      // Don't throw - allow session to continue even if sync fails
+    }
+  } catch (syncError) {
+    console.error('Could not sync to voice platform:', syncError);
+    // Continue without syncing to voice platform
   }
 
   return { agentId, agentConfig };
@@ -127,6 +142,8 @@ export async function syncYogaAgentConfig(config: YogaVoiceSessionConfig) {
  * Creates a voice session by coordinating between both platforms
  */
 export async function createVoiceSession(config: YogaVoiceSessionConfig) {
+  const settings = getConfig();
+  
   // 1. Sync agent configuration to voice platform
   const { agentId } = await syncYogaAgentConfig(config);
   
@@ -134,7 +151,7 @@ export async function createVoiceSession(config: YogaVoiceSessionConfig) {
   const roomName = `yoga-${config.classId}-${Date.now()}`;
   
   // 3. Create LiveKit access token for student
-  const userToken = new AccessToken(LIVEKIT_API_KEY, LIVEKIT_API_SECRET, {
+  const userToken = new AccessToken(settings.LIVEKIT_API_KEY, settings.LIVEKIT_API_SECRET, {
     identity: config.studentId,
     name: config.studentEmail,
     metadata: JSON.stringify({
@@ -163,7 +180,7 @@ export async function createVoiceSession(config: YogaVoiceSessionConfig) {
     headers['Authorization'] = `Bearer ${process.env.VOICE_AGENT_API_KEY}`;
   }
 
-  const dispatchResponse = await fetch(`${VOICE_AGENT_API}/join`, {
+  const dispatchResponse = await fetch(`${settings.VOICE_AGENT_API}/join`, {
     method: 'POST',
     headers,
     body: JSON.stringify({
@@ -214,26 +231,32 @@ export async function createVoiceSession(config: YogaVoiceSessionConfig) {
     console.error('Error creating yoga session record:', yogaError);
   }
 
-  // Store reference in voice platform database
-  const { data: voiceSession, error: voiceError } = await voiceSupabase
-    .from('platform_sessions')
-    .insert({
-      session_id: dispatchData.session_id,
-      room_name: roomName,
-      agent_id: agentId,
-      platform: 'dzen-yoga',
-      platform_session_id: yogaSession?.id,
-      platform_metadata: {
-        class_id: config.classId,
-        teacher_id: config.teacherId,
-        student_id: config.studentId,
-        class_type: config.classType
-      },
-      created_at: new Date().toISOString()
-    });
+  // Store reference in voice platform database (if configured)
+  try {
+    const voiceSupabase = getVoiceSupabase();
+    const { data: voiceSession, error: voiceError } = await voiceSupabase
+      .from('platform_sessions')
+      .insert({
+        session_id: dispatchData.session_id,
+        room_name: roomName,
+        agent_id: agentId,
+        platform: 'dzen-yoga',
+        platform_session_id: yogaSession?.id,
+        platform_metadata: {
+          class_id: config.classId,
+          teacher_id: config.teacherId,
+          student_id: config.studentId,
+          class_type: config.classType
+        },
+        created_at: new Date().toISOString()
+      });
 
-  if (voiceError) {
-    console.error('Error creating voice platform session reference:', voiceError);
+    if (voiceError) {
+      console.error('Error creating voice platform session reference:', voiceError);
+    }
+  } catch (error) {
+    console.error('Could not store session in voice platform:', error);
+    // Continue without storing in voice platform
   }
 
   return {
@@ -241,7 +264,7 @@ export async function createVoiceSession(config: YogaVoiceSessionConfig) {
     voiceSessionId: dispatchData.session_id,
     room: roomName,
     token: await userToken.toJwt(),
-    livekitUrl: LIVEKIT_URL,
+    livekitUrl: settings.LIVEKIT_URL,
     agentId: agentId
   };
 }
@@ -279,16 +302,21 @@ export async function endVoiceSession(sessionId: string, studentId: string) {
 
   // 3. Update voice platform session if reference exists
   if (session.metadata?.voice_platform_ref) {
-    const { error: voiceError } = await voiceSupabase
-      .from('platform_sessions')
-      .update({
-        status: 'completed',
-        ended_at: new Date().toISOString()
-      })
-      .eq('session_id', session.metadata.voice_platform_ref);
+    try {
+      const voiceSupabase = getVoiceSupabase();
+      const { error: voiceError } = await voiceSupabase
+        .from('platform_sessions')
+        .update({
+          status: 'completed',
+          ended_at: new Date().toISOString()
+        })
+        .eq('session_id', session.metadata.voice_platform_ref);
 
-    if (voiceError) {
-      console.error('Error updating voice platform session:', voiceError);
+      if (voiceError) {
+        console.error('Error updating voice platform session:', voiceError);
+      }
+    } catch (error) {
+      console.error('Could not update voice platform session:', error);
     }
   }
 
@@ -313,12 +341,18 @@ export async function getSessionAnalytics(sessionId: string) {
   }
 
   // Fetch analytics from voice platform
-  const { data: analytics } = await voiceSupabase
-    .from('usage_metrics')
-    .select('*')
-    .eq('session_id', session.metadata.voice_platform_ref);
+  try {
+    const voiceSupabase = getVoiceSupabase();
+    const { data: analytics } = await voiceSupabase
+      .from('usage_metrics')
+      .select('*')
+      .eq('session_id', session.metadata.voice_platform_ref);
 
-  return analytics;
+    return analytics;
+  } catch (error) {
+    console.error('Could not fetch analytics from voice platform:', error);
+    return null;
+  }
 }
 
 // Helper function to build yoga-specific system prompt
