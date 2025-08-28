@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server';
+import { createServerSupabaseClient } from '@/lib/supabase/server';
 import { AccessToken } from 'livekit-server-sdk';
 
 // Configuration for both Supabase instances
@@ -190,7 +190,7 @@ export async function createVoiceSession(config: YogaVoiceSessionConfig) {
   // 5. Store session reference in BOTH databases
   
   // Store in yoga platform database
-  const yogaSupabase = await createClient();
+  const yogaSupabase = await createServerSupabaseClient();
   const { data: yogaSession, error: yogaError } = await yogaSupabase
     .from('voice_sessions')
     .insert({
@@ -250,7 +250,7 @@ export async function createVoiceSession(config: YogaVoiceSessionConfig) {
  * Ends a voice session and syncs status between platforms
  */
 export async function endVoiceSession(sessionId: string, studentId: string) {
-  const yogaSupabase = await createClient();
+  const yogaSupabase = await createServerSupabaseClient();
   
   // 1. Get session details from yoga platform
   const { data: session, error: fetchError } = await yogaSupabase
@@ -299,7 +299,7 @@ export async function endVoiceSession(sessionId: string, studentId: string) {
  * Fetches session analytics from voice platform
  */
 export async function getSessionAnalytics(sessionId: string) {
-  const yogaSupabase = await createClient();
+  const yogaSupabase = await createServerSupabaseClient();
   
   // Get session from yoga platform
   const { data: session } = await yogaSupabase
