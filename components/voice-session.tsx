@@ -1,7 +1,16 @@
 'use client';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { Room, RoomEvent, Track, RemoteTrack, RemoteParticipant, ConnectionState } from 'livekit-client';
+import { 
+  Room, 
+  RoomEvent, 
+  Track, 
+  RemoteTrack, 
+  RemoteTrackPublication,
+  RemoteParticipant,
+  Participant,
+  ConnectionState 
+} from 'livekit-client';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -112,7 +121,11 @@ export function VoiceSession({ classId, classTitle, teacherName, onSessionEnd }:
         stopMetricsTracking();
       });
 
-      room.on(RoomEvent.TrackSubscribed, (track: RemoteTrack, participant: RemoteParticipant) => {
+      room.on(RoomEvent.TrackSubscribed, (
+        track: RemoteTrack,
+        publication: RemoteTrackPublication,
+        participant: RemoteParticipant
+      ) => {
         if (track.kind === Track.Kind.Audio) {
           // Attach audio track to play agent's voice
           const audioElement = track.attach();
@@ -121,11 +134,15 @@ export function VoiceSession({ classId, classTitle, teacherName, onSessionEnd }:
         }
       });
 
-      room.on(RoomEvent.TrackUnsubscribed, (track: RemoteTrack) => {
+      room.on(RoomEvent.TrackUnsubscribed, (
+        track: RemoteTrack,
+        publication: RemoteTrackPublication,
+        participant: RemoteParticipant
+      ) => {
         track.detach();
       });
 
-      room.on(RoomEvent.ActiveSpeakersChanged, (speakers: RemoteParticipant[]) => {
+      room.on(RoomEvent.ActiveSpeakersChanged, (speakers: Participant[]) => {
         // Check if agent is speaking
         const agentSpeaking = speakers.some(p => p.identity.includes('agent'));
         setState(prev => ({ ...prev, agentSpeaking }));
