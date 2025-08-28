@@ -65,7 +65,13 @@ export function SimpleIntlProvider({ children }: { children: React.ReactNode }) 
 export function useIntl() {
   const context = useContext(IntlContext);
   if (!context) {
-    throw new Error('useIntl must be used within SimpleIntlProvider');
+    // Return a fallback context instead of throwing during SSR or when provider is missing
+    console.warn('useIntl called outside of SimpleIntlProvider, using fallback');
+    return {
+      locale: 'ru' as Locale,
+      messages: ruMessages,
+      setLocale: () => {}
+    };
   }
   return context;
 }

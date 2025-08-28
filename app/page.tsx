@@ -4,8 +4,7 @@ import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { SimpleLanguageToggle } from '@/components/simple-language-toggle';
-import { MobileNav } from '@/components/mobile-nav';
+import { LandingPageHeader, LandingPageNav } from '@/components/landing-page-wrapper';
 import { HeroSimple } from '@/components/ui/hero-simple';
 import { EnhancedCardSimple } from '@/components/ui/enhanced-card-simple';
 import { getUser } from '@/lib/db/queries';
@@ -264,7 +263,7 @@ export default async function LandingPage({ params }: { params?: { locale?: stri
               <span className="text-white font-bold text-lg">Dzen Yoga</span>
             </div>
             <div className="animate-fade-in-delay">
-              <SimpleLanguageToggle />
+              <LandingPageHeader />
             </div>
           </div>
         </div>
@@ -550,7 +549,7 @@ export default async function LandingPage({ params }: { params?: { locale?: stri
       </main>
 
       {/* Mobile Navigation */}
-      <MobileNav />
+      <LandingPageNav />
     </div>
   );
 }
