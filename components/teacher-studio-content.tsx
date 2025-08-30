@@ -68,6 +68,7 @@ interface TeacherStudioContentProps {
   user: any;
   courses: Course[];
   standaloneClasses: Class[];
+  allClasses: Class[];
   playlists: any[];
   stats: Stats;
   recentActivity: any[];
@@ -78,6 +79,7 @@ export function TeacherStudioContent({
   user,
   courses,
   standaloneClasses,
+  allClasses,
   playlists,
   stats,
   recentActivity,
@@ -85,6 +87,9 @@ export function TeacherStudioContent({
 }: TeacherStudioContentProps) {
   const t = useTranslations('teacher');
   const tCommon = useTranslations('common');
+  
+  // Use allClasses if available, otherwise fall back to standaloneClasses
+  const classesToShow = allClasses || standaloneClasses;
   
   const [showCourseManager, setShowCourseManager] = useState(false);
   const [showClassManager, setShowClassManager] = useState(false);
@@ -314,9 +319,9 @@ export function TeacherStudioContent({
               </Button>
             </div>
           </div>
-          {standaloneClasses.length > 0 ? (
+          {classesToShow.length > 0 ? (
             <div className="flex gap-3 overflow-x-auto pb-2 px-4 snap-x snap-mandatory scrollbar-hide">
-              {standaloneClasses.map((cls) => (
+              {classesToShow.map((cls) => (
                 <Card key={cls.id} className="min-w-[200px] snap-center overflow-hidden border-0 shadow-sm">
                   <div className="aspect-video bg-gradient-to-br from-blue-100 to-cyan-100 relative">
                     {cls.thumbnailUrl ? (

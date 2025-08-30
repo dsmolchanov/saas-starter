@@ -61,15 +61,20 @@ export default async function TeacherStudioPage() {
       },
       orderBy: [desc(courses.id)],
     });
+    
+    console.log('Teacher courses found:', teacherCourses.length);
+    console.log('Teacher ID:', user.id);
 
-    // Get teacher's standalone classes (not part of any course)
-    const standaloneClasses = await db.query.classes.findMany({
-      where: and(
-        eq(classes.teacherId, user.id),
-        sql`${classes.courseId} IS NULL`
-      ),
+    // Get ALL teacher's classes (including those in courses)
+    const allClasses = await db.query.classes.findMany({
+      where: eq(classes.teacherId, user.id),
       orderBy: [desc(classes.createdAt)],
     });
+    
+    console.log('All classes found:', allClasses.length);
+    
+    // Filter standalone classes for the specific section
+    const standaloneClasses = allClasses.filter(c => !c.courseId);
 
     // Get teacher's playlists (exclude system "Liked" playlist)
     const teacherPlaylists = await db.query.playlists.findMany({
@@ -152,6 +157,7 @@ export default async function TeacherStudioPage() {
         user={userProfile!}
         courses={teacherCourses}
         standaloneClasses={standaloneClasses}
+        allClasses={allClasses}
         playlists={teacherPlaylists}
         stats={{
           totalCourses: teacherCourses.length,
@@ -173,6 +179,7 @@ export default async function TeacherStudioPage() {
         user={userProfile!}
         courses={[]}
         standaloneClasses={[]}
+        allClasses={[]}
         playlists={[]}
         stats={{
           totalCourses: 0,
