@@ -231,7 +231,7 @@ export function HomeContent({
                 )}
               </div>
 
-              <Link href={`/lesson/${recommendedClass.id}`}>
+              <Link href={`/classes/${recommendedClass.id}`}>
                 <Button className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700">
                   <Play className="w-4 h-4 mr-2" />
                   {t('startPractice')}

@@ -5,7 +5,7 @@ import { redirect } from 'next/navigation';
 import { getUser } from '@/lib/db/queries';
 import { db } from '@/lib/db/drizzle';
 import { contentItems } from '@/lib/db/schema-content';
-import { eq, desc, sql } from 'drizzle-orm';
+import { eq, and, desc, sql } from 'drizzle-orm';
 import { TeacherStudioDashboard } from '@/components/teacher-studio/dashboard';
 
 export default async function TeacherStudioPage() {
@@ -31,30 +31,135 @@ export default async function TeacherStudioPage() {
     .from(contentItems)
     .where(eq(contentItems.teacherId, user.id));
   
-  // Get recent content
-  const recentContent = await db
-    .select()
-    .from(contentItems)
-    .where(eq(contentItems.teacherId, user.id))
-    .orderBy(desc(contentItems.updatedAt))
-    .limit(5);
-  
-  // Get content type distribution
-  const contentTypes = await db
-    .select({
-      contentType: contentItems.contentType,
-      count: sql<number>`count(*)`,
-    })
-    .from(contentItems)
-    .where(eq(contentItems.teacherId, user.id))
-    .groupBy(contentItems.contentType);
+  // Get content grouped by type for Netflix-style display
+  const contentByType = await Promise.all([
+    // Courses
+    db
+      .select()
+      .from(contentItems)
+      .where(
+        and(
+          eq(contentItems.teacherId, user.id),
+          eq(contentItems.contentType, 'course')
+        )
+      )
+      .orderBy(desc(contentItems.updatedAt))
+      .limit(10),
+    // Classes
+    db
+      .select()
+      .from(contentItems)
+      .where(
+        and(
+          eq(contentItems.teacherId, user.id),
+          eq(contentItems.contentType, 'class')
+        )
+      )
+      .orderBy(desc(contentItems.updatedAt))
+      .limit(10),
+    // Meditations
+    db
+      .select()
+      .from(contentItems)
+      .where(
+        and(
+          eq(contentItems.teacherId, user.id),
+          eq(contentItems.contentType, 'meditation')
+        )
+      )
+      .orderBy(desc(contentItems.updatedAt))
+      .limit(10),
+    // Quick Flows
+    db
+      .select()
+      .from(contentItems)
+      .where(
+        and(
+          eq(contentItems.teacherId, user.id),
+          eq(contentItems.contentType, 'quick_flow')
+        )
+      )
+      .orderBy(desc(contentItems.updatedAt))
+      .limit(10),
+    // Breathing Exercises
+    db
+      .select()
+      .from(contentItems)
+      .where(
+        and(
+          eq(contentItems.teacherId, user.id),
+          eq(contentItems.contentType, 'breathing')
+        )
+      )
+      .orderBy(desc(contentItems.updatedAt))
+      .limit(10),
+    // Challenges
+    db
+      .select()
+      .from(contentItems)
+      .where(
+        and(
+          eq(contentItems.teacherId, user.id),
+          eq(contentItems.contentType, 'challenge')
+        )
+      )
+      .orderBy(desc(contentItems.updatedAt))
+      .limit(10),
+    // Workshops
+    db
+      .select()
+      .from(contentItems)
+      .where(
+        and(
+          eq(contentItems.teacherId, user.id),
+          eq(contentItems.contentType, 'workshop')
+        )
+      )
+      .orderBy(desc(contentItems.updatedAt))
+      .limit(10),
+    // Programs
+    db
+      .select()
+      .from(contentItems)
+      .where(
+        and(
+          eq(contentItems.teacherId, user.id),
+          eq(contentItems.contentType, 'program')
+        )
+      )
+      .orderBy(desc(contentItems.updatedAt))
+      .limit(10),
+    // Asanas
+    db
+      .select()
+      .from(contentItems)
+      .where(
+        and(
+          eq(contentItems.teacherId, user.id),
+          eq(contentItems.contentType, 'asana')
+        )
+      )
+      .orderBy(desc(contentItems.updatedAt))
+      .limit(10),
+  ]);
+
+  const [courses, classes, meditations, quickFlows, breathing, challenges, workshops, programs, asanas] = contentByType;
   
   return (
     <TeacherStudioDashboard
       user={user}
       stats={stats[0]}
-      recentContent={recentContent}
-      contentTypes={contentTypes}
+      contentByType={{
+        courses,
+        classes,
+        meditations,
+        quickFlows,
+        breathing,
+        challenges,
+        workshops,
+        programs,
+        asanas
+      }}
     />
   );
 }

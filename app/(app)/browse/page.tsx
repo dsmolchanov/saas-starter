@@ -306,7 +306,7 @@ export default function BrowsePage() {
         <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide">
           {teachers.map((teacher) => (
             <div key={teacher.id} className="flex-shrink-0 w-24 text-center">
-              <Link href="/teachers">
+              <Link href={`/teacher/${teacher.id}`}>
                 <Avatar className="w-16 h-16 mx-auto mb-2">
                   <AvatarImage src={teacher.user?.avatarUrl || undefined} className="object-cover" />
                   <AvatarFallback>
@@ -332,7 +332,7 @@ export default function BrowsePage() {
         <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide">
           {filteredLessons.slice(0, 10).map((lesson, index) => (
             <div key={lesson.id} className="flex-shrink-0 w-64">
-              <Link href={`/lesson/${lesson.id}`}>
+              <Link href={`/classes/${lesson.id}`}>
                 <div className="aspect-video rounded-lg overflow-hidden bg-muted mb-3 relative group">
                   {lesson.imageUrl || lesson.thumbnailUrl ? (
                     <Image
