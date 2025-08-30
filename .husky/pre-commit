@@ -1,0 +1,23 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+# Run i18n validation
+echo "🌍 Validating i18n translations..."
+npx tsx scripts/validate-i18n.ts
+
+# If validation fails, prevent commit
+if [ $? -ne 0 ]; then
+  echo "❌ i18n validation failed. Please fix the errors before committing."
+  exit 1
+fi
+
+# Run TypeScript type checking
+echo "📝 Running TypeScript type check..."
+npx tsc --noEmit
+
+if [ $? -ne 0 ]; then
+  echo "❌ TypeScript type check failed. Please fix the errors before committing."
+  exit 1
+fi
+
+echo "✅ All pre-commit checks passed!"

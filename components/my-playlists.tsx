@@ -227,7 +227,7 @@ export function MyPlaylists({ userId, isTeacher }: MyPlaylistsProps) {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-semibold">My Playlists</h2>
+          <h2 className="text-2xl font-semibold">{t('title')}</h2>
           <p className="text-sm text-gray-600 mt-1">
             Create and manage your practice collections
           </p>
@@ -255,24 +255,24 @@ export function MyPlaylists({ userId, isTeacher }: MyPlaylistsProps) {
             </DialogHeader>
             <div className="space-y-4">
               <div>
-                <label className="text-sm font-medium">Name</label>
+                <label className="text-sm font-medium">{t('name')}</label>
                 <Input
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  placeholder="Morning Flow"
+                  placeholder={t('namePlaceholder')}
                 />
               </div>
               <div>
-                <label className="text-sm font-medium">Description</label>
+                <label className="text-sm font-medium">{t('description')}</label>
                 <Textarea
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                  placeholder="My favorite morning yoga routines"
+                  placeholder={t('descriptionPlaceholder')}
                   rows={3}
                 />
               </div>
               <div>
-                <label className="text-sm font-medium">Visibility</label>
+                <label className="text-sm font-medium">{t('visibility')}</label>
                 <Select 
                   value={formData.visibility} 
                   onValueChange={(value: 'private' | 'public' | 'unlisted') => 
@@ -305,11 +305,11 @@ export function MyPlaylists({ userId, isTeacher }: MyPlaylistsProps) {
                 </Select>
               </div>
               <div>
-                <label className="text-sm font-medium">Tags (comma separated)</label>
+                <label className="text-sm font-medium">{t('tags')}</label>
                 <Input
                   value={formData.tags}
                   onChange={(e) => setFormData({ ...formData, tags: e.target.value })}
-                  placeholder="morning, energizing, vinyasa"
+                  placeholder={t('tagsPlaceholder')}
                 />
               </div>
             </div>
@@ -379,7 +379,7 @@ export function MyPlaylists({ userId, isTeacher }: MyPlaylistsProps) {
             <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto">
               <Heart className="w-8 h-8 text-gray-400" />
             </div>
-            <h3 className="text-lg font-medium">No playlists yet</h3>
+            <h3 className="text-lg font-medium">{t('noPlaylistsYet')}</h3>
             <p className="text-sm text-gray-600">
               Create your first playlist to organize your favorite classes and meditations
             </p>

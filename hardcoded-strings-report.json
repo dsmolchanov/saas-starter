@@ -1,0 +1,214 @@
+{
+  "components/voice-mode-button.tsx": [
+    "Line 67: JSX text: \"Personalize Your Voice Session\"",
+    "Line 76: JSX text: \"Your Experience Level\""
+  ],
+  "components/teacher-onboarding.tsx": [
+    "Line 262: JSX text: \"Current Offline Practice\"",
+    "Line 265: Placeholder: \"e.g., I teach at [Studio Name] in [City], private sessions at home, outdoor classes in the park...\"",
+    "Line 341: JSX text: \"Recommended\"",
+    "Line 388: JSX text: \"Your Motivation\"",
+    "Line 391: Placeholder: \"Tell us why you\"",
+    "Line 533: Common UI string: \"Cancel\"",
+    "Line 533: Common UI string: \"Previous\""
+  ],
+  "components/teacher-dashboard.tsx": [
+    "Line 36: Common UI string: \"Profile\""
+  ],
+  "components/my-practice-ui.tsx": [
+    "Line 73: Common UI string: \"Pending\"",
+    "Line 74: Common UI string: \"Approved\"",
+    "Line 75: Common UI string: \"Rejected\""
+  ],
+  "components/my-playlists.tsx": [
+    "Line 262: Placeholder: \"Morning Flow\"",
+    "Line 270: Placeholder: \"My favorite morning yoga routines\"",
+    "Line 312: Placeholder: \"morning, energizing, vinyasa\"",
+    "Line 325: Common UI string: \"Create\"",
+    "Line 325: Common UI string: \"Update\""
+  ],
+  "components/my-library-content.tsx": [
+    "Line 124: Common UI string: \"Today\"",
+    "Line 125: Common UI string: \"Yesterday\"",
+    "Line 262: JSX text: \"Recents\""
+  ],
+  "components/meditation-card.tsx": [
+    "Line 152: JSX text: \"Meditation\""
+  ],
+  "components/lesson-upload-form.tsx": [
+    "Line 106: JSX text: \"Save Lesson\""
+  ],
+  "components/course-manager.tsx": [
+    "Line 139: Common UI string: \"Published\"",
+    "Line 140: Common UI string: \"Draft\"",
+    "Line 142: Common UI string: \"Cancel\"",
+    "Line 143: Common UI string: \"Delete\"",
+    "Line 152: Common UI string: \"Title\"",
+    "Line 153: Common UI string: \"Description\"",
+    "Line 650: Title attribute: \"Delete course\"",
+    "Line 657: JSX text: \"Delete Course\"",
+    "Line 668: JSX text: \"Cancel\"",
+    "Line 712: JSX text: \"Course Title\"",
+    "Line 717: Placeholder: \"e.g., Beginner Hatha Series\"",
+    "Line 723: JSX text: \"Category\"",
+    "Line 730: Placeholder: \"Select a category\"",
+    "Line 743: JSX text: \"Difficulty Level\"",
+    "Line 749: Placeholder: \"Select difficulty level\"",
+    "Line 762: JSX text: \"Description\"",
+    "Line 767: Placeholder: \"Describe what students will learn in this course...\""
+  ],
+  "components/class-manager.tsx": [
+    "Line 106: Common UI string: \"Description\"",
+    "Line 122: Common UI string: \"Cancel\"",
+    "Line 123: Common UI string: \"Save\"",
+    "Line 126: Common UI string: \"Delete\"",
+    "Line 127: Common UI string: \"Edit\""
+  ],
+  "components/browse-filters.tsx": [
+    "Line 96: JSX text: \"Filters\""
+  ],
+  "components/admin-dashboard.tsx": [
+    "Line 37: Common UI string: \"Email\"",
+    "Line 52: Common UI string: \"Pending\"",
+    "Line 53: Common UI string: \"Approved\"",
+    "Line 54: Common UI string: \"Rejected\"",
+    "Line 61: Common UI string: \"Email\"",
+    "Line 85: Common UI string: \"Email\""
+  ],
+  "app/not-found.tsx": [
+    "Line 101: JSX text: \"Page Not Found\""
+  ],
+  "lib/auth/middleware.ts": [
+    "Line 15: JSX text: \"Promise\"",
+    "Line 35: JSX text: \"Promise\"",
+    "Line 59: JSX text: \"Promise\""
+  ],
+  "lib/email/resend.ts": [
+    "Line 98: JSX text: \"The Dzen Yoga Team\"",
+    "Line 149: JSX text: \"Complete your teacher profile\"",
+    "Line 171: JSX text: \"The Dzen Yoga Team\"",
+    "Line 198: JSX text: \"The Dzen Yoga Team\""
+  ],
+  "components/content/MeditationManager.tsx": [
+    "Line 122: Placeholder: \"Search meditations...\""
+  ],
+  "components/content/MeditationForm.tsx": [
+    "Line 141: Placeholder: \"e.g., Morning Mindfulness Journey\"",
+    "Line 146: JSX text: \"Description\"",
+    "Line 151: Placeholder: \"Describe the journey and benefits of this meditation...\"",
+    "Line 158: JSX text: \"Meditation Type\"",
+    "Line 177: JSX text: \"Focus Area\"",
+    "Line 196: JSX text: \"Duration\"",
+    "Line 275: JSX text: \"Preview\"",
+    "Line 315: Common UI string: \"Create\"",
+    "Line 315: Common UI string: \"Update\""
+  ],
+  "components/content/BreathingManager.tsx": [
+    "Line 114: Placeholder: \"Search breathing exercises...\""
+  ],
+  "components/content/BreathingForm.tsx": [
+    "Line 206: Placeholder: \"e.g., Morning Energy Boost\"",
+    "Line 211: JSX text: \"Description\"",
+    "Line 216: Placeholder: \"Describe the purpose and effects of this breathing exercise...\"",
+    "Line 223: JSX text: \"Breathing Pattern Template\"",
+    "Line 305: JSX text: \"Number of Rounds\"",
+    "Line 315: JSX text: \"Total Duration\"",
+    "Line 325: JSX text: \"Difficulty Level\"",
+    "Line 348: Placeholder: \"Add an instruction...\"",
+    "Line 383: JSX text: \"Benefits\"",
+    "Line 388: Placeholder: \"Add a benefit...\"",
+    "Line 422: JSX text: \"Contraindications\"",
+    "Line 427: Placeholder: \"Add a contraindication...\"",
+    "Line 477: Common UI string: \"Create\"",
+    "Line 477: Common UI string: \"Update\""
+  ],
+  "components/content/AsanaForm.tsx": [
+    "Line 162: Placeholder: \"e.g., Tadasana\"",
+    "Line 171: Placeholder: \"e.g., Mountain Pose\"",
+    "Line 185: Placeholder: \"Select category\"",
+    "Line 197: JSX text: \"Difficulty\"",
+    "Line 216: JSX text: \"Description\"",
+    "Line 238: JSX text: \"Breath Pattern\"",
+    "Line 243: Placeholder: \"e.g., Normal, Ujjayi\"",
+    "Line 252: Placeholder: \"e.g., Third eye, Nose tip\"",
+    "Line 259: JSX text: \"Benefits\"",
+    "Line 264: Placeholder: \"Add a benefit...\"",
+    "Line 298: JSX text: \"Contraindications\"",
+    "Line 303: Placeholder: \"Add a contraindication...\"",
+    "Line 337: JSX text: \"Alignment Cues\"",
+    "Line 342: Placeholder: \"Add an alignment cue...\"",
+    "Line 376: JSX text: \"Images\"",
+    "Line 392: Common UI string: \"Create\"",
+    "Line 392: Common UI string: \"Update\""
+  ],
+  "app/(login)/login.tsx": [
+    "Line 94: Placeholder: \"Enter your email\"",
+    "Line 120: Placeholder: \"Enter your password\"",
+    "Line 142: Common UI string: \"Sign in\"",
+    "Line 144: Common UI string: \"Sign up\""
+  ],
+  "app/(login)/login-passwordless.tsx": [
+    "Line 86: Placeholder: \"you@example.com\"",
+    "Line 107: JSX text: \"Send Magic Link\"",
+    "Line 182: Common UI string: \"Sign in\"",
+    "Line 182: Common UI string: \"Sign up\""
+  ],
+  "app/(dashboard)/layout.tsx": [
+    "Line 65: JSX text: \"Dashboard\"",
+    "Line 72: JSX text: \"Sign out\""
+  ],
+  "app/(dashboard)/dashboard/page.tsx": [
+    "Line 34: JSX text: \"Team Subscription\"",
+    "Line 46: JSX text: \"Team Subscription\"",
+    "Line 79: JSX text: \"Team Members\"",
+    "Line 111: JSX text: \"Team Members\"",
+    "Line 123: JSX text: \"Team Members\"",
+    "Line 165: Common UI string: \"Remove\"",
+    "Line 184: JSX text: \"Invite Team Member\"",
+    "Line 201: JSX text: \"Invite Team Member\"",
+    "Line 213: Placeholder: \"Enter email\"",
+    "Line 219: JSX text: \"Role\"",
+    "Line 228: JSX text: \"Member\"",
+    "Line 232: JSX text: \"Owner\""
+  ],
+  "app/(app)/support/page.tsx": [
+    "Line 57: JSX text: \"Subject\"",
+    "Line 60: Placeholder: \"What can we help you with?\"",
+    "Line 65: JSX text: \"Category\"",
+    "Line 70: JSX text: \"Technical Issue\"",
+    "Line 71: JSX text: \"Billing Question\"",
+    "Line 72: JSX text: \"Account Help\"",
+    "Line 73: JSX text: \"Feature Request\"",
+    "Line 74: JSX text: \"Other\"",
+    "Line 79: JSX text: \"Message\"",
+    "Line 82: Placeholder: \"Please describe your issue or question in detail...\""
+  ],
+  "app/(app)/help/page.tsx": [
+    "Line 91: Placeholder: \"Search for help...\""
+  ],
+  "app/(app)/community/page.tsx": [
+    "Line 64: JSX text: \"Joined\"",
+    "Line 77: JSX text: \"Join\"",
+    "Line 91: JSX text: \"View All\""
+  ],
+  "app/(dashboard)/admin/teacher-applications/page.tsx": [
+    "Line 195: Placeholder: \"Add any feedback or notes for the applicant...\""
+  ],
+  "app/(dashboard)/dashboard/security/page.tsx": [
+    "Line 43: JSX text: \"Password\"",
+    "Line 120: JSX text: \"Delete Account\""
+  ],
+  "app/(dashboard)/dashboard/general/page.tsx": [
+    "Line 55: Placeholder: \"Enter your email\"",
+    "Line 89: JSX text: \"Account Information\""
+  ],
+  "app/(dashboard)/dashboard/activity/page.tsx": [
+    "Line 81: JSX text: \"Recent Activity\""
+  ],
+  "app/(dashboard)/dashboard/activity/loading.tsx": [
+    "Line 11: JSX text: \"Recent Activity\""
+  ],
+  "app/(app)/settings/account/page.tsx": [
+    "Line 58: JSX text: \"Email\""
+  ]
+}

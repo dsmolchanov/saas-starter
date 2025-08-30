@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useRouter } from 'next/navigation';
+import { useTranslations } from '@/components/providers/simple-intl-provider';
 
 const FOCUS_AREAS = [
   { id: 1, name: 'Core' },
@@ -16,6 +17,7 @@ const FOCUS_AREAS = [
 ];
 
 export function LessonUploadForm({ userId }: { userId: string }) {
+  const t = useTranslations('common');
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [duration, setDuration] = useState(0);
@@ -103,7 +105,7 @@ export function LessonUploadForm({ userId }: { userId: string }) {
           {uploading ? 'Uploading...' : filePath ? 'Replace Video' : 'Upload Video'}
         </Button>
       </div>
-      <Button onClick={handleSave}>Save Lesson</Button>
+      <Button onClick={handleSave}>{t('save')}</Button>
     </div>
   );
 } 
