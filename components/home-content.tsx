@@ -358,24 +358,24 @@ export function HomeContent({
               {tCommon('seeAll')}
             </Link>
           </div>
-          <div className="space-y-2">
-            {popularClasses.slice(0, 3).map((cls) => (
-              <Link key={cls.id} href={`/lesson/${cls.id}`}>
-                <Card className="p-4 border-0 shadow-sm hover:shadow-md transition-shadow">
-                  <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-purple-100 to-pink-100 flex items-center justify-center">
-                      <Play className="w-5 h-5 text-purple-600" />
+          <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
+            {popularClasses.map((cls) => (
+              <Link key={cls.id} href={`/classes/${cls.id}`}>
+                <Card className="w-36 p-3 border-0 shadow-sm hover:shadow-md transition-shadow flex-shrink-0">
+                  <div className="aspect-video rounded-lg bg-gradient-to-br from-purple-100 to-pink-100 mb-2 flex items-center justify-center relative">
+                    {cls.thumbnailUrl ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={cls.thumbnailUrl} alt={cls.title} className="w-full h-full object-cover rounded-lg" />
+                    ) : (
+                      <Play className="w-6 h-6 text-purple-600" />
+                    )}
+                    <div className="absolute top-1 right-1 bg-green-500 text-white text-xs px-1.5 py-0.5 rounded flex items-center gap-0.5">
+                      <TrendingUp className="w-3 h-3" />
+                      <span className="text-[10px]">#{popularClasses.indexOf(cls) + 1}</span>
                     </div>
-                    <div className="flex-1">
-                      <p className="font-medium text-sm text-gray-900 line-clamp-1">{cls.title}</p>
-                      <div className="flex items-center gap-2 mt-0.5">
-                        <p className="text-xs text-gray-500">{cls.teacher?.name}</p>
-                        <span className="text-xs text-gray-400">•</span>
-                        <p className="text-xs text-gray-500">{cls.durationMin} min</p>
-                      </div>
-                    </div>
-                    <TrendingUp className="w-4 h-4 text-green-500" />
                   </div>
+                  <p className="font-medium text-xs text-gray-900 line-clamp-2">{cls.title}</p>
+                  <p className="text-xs text-gray-500 mt-1">{cls.durationMin} min</p>
                 </Card>
               </Link>
             ))}
@@ -392,7 +392,7 @@ export function HomeContent({
           </div>
           <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
             {latestClasses.map((cls) => (
-              <Link key={cls.id} href={`/lesson/${cls.id}`}>
+              <Link key={cls.id} href={`/classes/${cls.id}`}>
                 <Card className="w-36 p-3 border-0 shadow-sm hover:shadow-md transition-shadow flex-shrink-0">
                   <div className="aspect-video rounded-lg bg-gradient-to-br from-indigo-100 to-purple-100 mb-2 flex items-center justify-center">
                     {cls.thumbnailUrl ? (
