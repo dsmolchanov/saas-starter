@@ -220,15 +220,26 @@ export function TeacherAdminContent({
         </div>
 
         {/* Your Courses - Horizontal Scroll */}
-        {courses.length > 0 && (
-          <div>
-            <div className="flex items-center justify-between px-4 mb-3">
-              <h2 className="text-sm font-semibold text-gray-700">{t('yourCourses')}</h2>
+        <div>
+          <div className="flex items-center justify-between px-4 mb-3">
+            <h2 className="text-sm font-semibold text-gray-700">{t('yourCourses')}</h2>
+            <div className="flex gap-2">
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="text-xs"
+                onClick={() => setShowCourseManager(true)}
+              >
+                <Plus className="w-3 h-3 mr-1" />
+                {t('createNewCourse')}
+              </Button>
               <Button variant="ghost" size="sm" className="text-xs">
-                {t('seeAll')}
+                {t('browseAll')}
                 <ChevronRight className="w-3 h-3 ml-1" />
               </Button>
             </div>
+          </div>
+          {courses.length > 0 ? (
             <div className="flex gap-3 overflow-x-auto pb-2 px-4 snap-x snap-mandatory scrollbar-hide">
               {courses.map((course) => (
                 <Card key={course.id} className="min-w-[240px] snap-center overflow-hidden border-0 shadow-sm">
@@ -266,19 +277,44 @@ export function TeacherAdminContent({
                 </Card>
               ))}
             </div>
-          </div>
-        )}
+          ) : (
+            <div className="px-4">
+              <Card className="p-8 text-center bg-gray-50 border-dashed">
+                <BookOpen className="w-12 h-12 text-gray-400 mx-auto mb-3" />
+                <p className="text-sm text-gray-600 mb-3">{t('noCourses')}</p>
+                <Button 
+                  size="sm"
+                  onClick={() => setShowCourseManager(true)}
+                >
+                  <Plus className="w-4 h-4 mr-1" />
+                  {t('createFirstCourse')}
+                </Button>
+              </Card>
+            </div>
+          )}
+        </div>
 
         {/* Your Classes - Horizontal Scroll */}
-        {standaloneClasses.length > 0 && (
-          <div>
-            <div className="flex items-center justify-between px-4 mb-3">
-              <h2 className="text-sm font-semibold text-gray-700">{t('yourClasses')}</h2>
+        <div>
+          <div className="flex items-center justify-between px-4 mb-3">
+            <h2 className="text-sm font-semibold text-gray-700">{t('yourClasses')}</h2>
+            <div className="flex gap-2">
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="text-xs"
+                onClick={() => setShowClassManager(true)}
+              >
+                <Plus className="w-3 h-3 mr-1" />
+                {t('createNewClass')}
+              </Button>
               <Button variant="ghost" size="sm" className="text-xs">
-                {t('seeAll')}
+                {t('browseAll')}
                 <ChevronRight className="w-3 h-3 ml-1" />
               </Button>
             </div>
+          </div>
+          {standaloneClasses.length > 0 ? (
             <div className="flex gap-3 overflow-x-auto pb-2 px-4 snap-x snap-mandatory scrollbar-hide">
               {standaloneClasses.map((cls) => (
                 <Card key={cls.id} className="min-w-[200px] snap-center overflow-hidden border-0 shadow-sm">
@@ -313,8 +349,22 @@ export function TeacherAdminContent({
                 </Card>
               ))}
             </div>
-          </div>
-        )}
+          ) : (
+            <div className="px-4">
+              <Card className="p-8 text-center bg-gray-50 border-dashed">
+                <Video className="w-12 h-12 text-gray-400 mx-auto mb-3" />
+                <p className="text-sm text-gray-600 mb-3">{t('noClasses')}</p>
+                <Button 
+                  size="sm"
+                  onClick={() => setShowClassManager(true)}
+                >
+                  <Plus className="w-4 h-4 mr-1" />
+                  {t('createFirstClass')}
+                </Button>
+              </Card>
+            </div>
+          )}
+        </div>
 
         {/* Popular Content - Horizontal Scroll */}
         {popularClasses.length > 0 && (
@@ -349,15 +399,25 @@ export function TeacherAdminContent({
         )}
 
         {/* Playlists - Horizontal Scroll */}
-        {playlists.length > 0 && (
-          <div>
-            <div className="flex items-center justify-between px-4 mb-3">
-              <h2 className="text-sm font-semibold text-gray-700">{t('yourPlaylists')}</h2>
+        <div>
+          <div className="flex items-center justify-between px-4 mb-3">
+            <h2 className="text-sm font-semibold text-gray-700">{t('yourPlaylists')}</h2>
+            <div className="flex gap-2">
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="text-xs"
+              >
+                <Plus className="w-3 h-3 mr-1" />
+                {t('createNewPlaylist')}
+              </Button>
               <Button variant="ghost" size="sm" className="text-xs">
-                {t('seeAll')}
+                {t('browseAll')}
                 <ChevronRight className="w-3 h-3 ml-1" />
               </Button>
             </div>
+          </div>
+          {playlists.length > 0 ? (
             <div className="flex gap-3 overflow-x-auto pb-2 px-4 snap-x snap-mandatory scrollbar-hide">
               {playlists.map((playlist) => (
                 <Card key={playlist.id} className="min-w-[160px] snap-center p-4 bg-gradient-to-br from-indigo-50 to-purple-50 border-0">
@@ -367,8 +427,21 @@ export function TeacherAdminContent({
                 </Card>
               ))}
             </div>
-          </div>
-        )}
+          ) : (
+            <div className="px-4">
+              <Card className="p-8 text-center bg-gray-50 border-dashed">
+                <ListMusic className="w-12 h-12 text-gray-400 mx-auto mb-3" />
+                <p className="text-sm text-gray-600 mb-3">{t('noPlaylists')}</p>
+                <Button 
+                  size="sm"
+                >
+                  <Plus className="w-4 h-4 mr-1" />
+                  {t('createFirstPlaylist')}
+                </Button>
+              </Card>
+            </div>
+          )}
+        </div>
 
         {/* Quick Actions */}
         <div>
