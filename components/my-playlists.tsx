@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useTranslations } from '@/components/providers/simple-intl-provider';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -74,6 +75,7 @@ interface MyPlaylistsProps {
 }
 
 export function MyPlaylists({ userId, isTeacher }: MyPlaylistsProps) {
+  const t = useTranslations('playlists');
   const [playlists, setPlaylists] = useState<Playlist[]>([]);
   const [loading, setLoading] = useState(true);
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
