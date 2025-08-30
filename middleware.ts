@@ -28,7 +28,7 @@ export async function middleware(request: NextRequest) {
     pathname.startsWith('/home') ||        // Skip (app) route group routes
     pathname.startsWith('/more') ||        // Skip (app) route group routes
     pathname.startsWith('/admin') ||       // Skip (app) route group routes
-    pathname.startsWith('/teacher-admin') || // Skip (app) route group routes
+    pathname.startsWith('/teacher-studio') || // Skip (app) route group routes
     pathname.startsWith('/lesson/') ||
     pathname.startsWith('/teacher/') ||
     pathname.startsWith('/course/') ||

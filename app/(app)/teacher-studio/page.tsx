@@ -1,165 +1,189 @@
-// Server component for teacher studio dashboard
-export const dynamic = 'force-dynamic';
-
-import { redirect } from 'next/navigation';
 import { getUser } from '@/lib/db/queries';
+import { redirect } from 'next/navigation';
+import { TeacherStudioContent } from '@/components/teacher-studio-content';
 import { db } from '@/lib/db/drizzle';
-import { contentItems } from '@/lib/db/schema-content';
-import { eq, and, desc, sql } from 'drizzle-orm';
-import { TeacherStudioDashboard } from '@/components/teacher-studio/dashboard';
+import { courses, classes, users, progress, teachers, playlists } from '@/lib/db/schema';
+import { eq, desc, sql, and } from 'drizzle-orm';
+
+export const dynamic = 'force-dynamic';
 
 export default async function TeacherStudioPage() {
   const user = await getUser();
   
   if (!user) {
-    redirect('/login');
+    console.error('No user found in teacher-studio page, redirecting to sign-in');
+    redirect('/sign-in?redirect=/teacher-studio');
   }
-  
-  // Check if user is a teacher
-  if (user.role !== 'teacher' && user.role !== 'admin') {
-    redirect('/dashboard');
-  }
-  
-  // Get teacher's content statistics
-  const stats = await db
-    .select({
-      totalContent: sql<number>`count(*)`,
-      publishedContent: sql<number>`count(*) filter (where status = 'published')`,
-      draftContent: sql<number>`count(*) filter (where status = 'draft')`,
-      totalViews: sql<number>`sum(COALESCE((metadata->>'views')::int, 0))`,
-    })
-    .from(contentItems)
-    .where(eq(contentItems.teacherId, user.id));
-  
-  // Get content grouped by type for Netflix-style display
-  const contentByType = await Promise.all([
-    // Courses
-    db
-      .select()
-      .from(contentItems)
-      .where(
-        and(
-          eq(contentItems.teacherId, user.id),
-          eq(contentItems.contentType, 'course')
-        )
-      )
-      .orderBy(desc(contentItems.updatedAt))
-      .limit(10),
-    // Classes
-    db
-      .select()
-      .from(contentItems)
-      .where(
-        and(
-          eq(contentItems.teacherId, user.id),
-          eq(contentItems.contentType, 'class')
-        )
-      )
-      .orderBy(desc(contentItems.updatedAt))
-      .limit(10),
-    // Meditations
-    db
-      .select()
-      .from(contentItems)
-      .where(
-        and(
-          eq(contentItems.teacherId, user.id),
-          eq(contentItems.contentType, 'meditation')
-        )
-      )
-      .orderBy(desc(contentItems.updatedAt))
-      .limit(10),
-    // Quick Flows
-    db
-      .select()
-      .from(contentItems)
-      .where(
-        and(
-          eq(contentItems.teacherId, user.id),
-          eq(contentItems.contentType, 'quick_flow')
-        )
-      )
-      .orderBy(desc(contentItems.updatedAt))
-      .limit(10),
-    // Breathing Exercises
-    db
-      .select()
-      .from(contentItems)
-      .where(
-        and(
-          eq(contentItems.teacherId, user.id),
-          eq(contentItems.contentType, 'breathing')
-        )
-      )
-      .orderBy(desc(contentItems.updatedAt))
-      .limit(10),
-    // Challenges
-    db
-      .select()
-      .from(contentItems)
-      .where(
-        and(
-          eq(contentItems.teacherId, user.id),
-          eq(contentItems.contentType, 'challenge')
-        )
-      )
-      .orderBy(desc(contentItems.updatedAt))
-      .limit(10),
-    // Workshops
-    db
-      .select()
-      .from(contentItems)
-      .where(
-        and(
-          eq(contentItems.teacherId, user.id),
-          eq(contentItems.contentType, 'workshop')
-        )
-      )
-      .orderBy(desc(contentItems.updatedAt))
-      .limit(10),
-    // Programs
-    db
-      .select()
-      .from(contentItems)
-      .where(
-        and(
-          eq(contentItems.teacherId, user.id),
-          eq(contentItems.contentType, 'program')
-        )
-      )
-      .orderBy(desc(contentItems.updatedAt))
-      .limit(10),
-    // Asanas
-    db
-      .select()
-      .from(contentItems)
-      .where(
-        and(
-          eq(contentItems.teacherId, user.id),
-          eq(contentItems.contentType, 'asana')
-        )
-      )
-      .orderBy(desc(contentItems.updatedAt))
-      .limit(10),
-  ]);
 
-  const [courses, classes, meditations, quickFlows, breathing, challenges, workshops, programs, asanas] = contentByType;
+  // Get user profile with teacher info
+  const userProfile = await db.query.users.findFirst({
+    where: eq(users.id, user.id),
+    with: {
+      teacherProfile: true,
+    }
+  });
+
+  // Check if user is a teacher - must have either teacher role or a valid teacher profile with ID
+  const isTeacher = userProfile?.role === 'teacher' || (userProfile?.teacherProfile && userProfile?.teacherProfile?.id);
   
-  return (
-    <TeacherStudioDashboard
-      user={user}
-      stats={stats[0]}
-      contentByType={{
-        courses,
-        classes,
-        meditations,
-        quickFlows,
-        breathing,
-        challenges,
-        workshops,
-        programs,
-        asanas
-      }}
-    />
-  );
+  if (!isTeacher) {
+    console.log('User is not a teacher, redirecting to more page');
+    redirect('/more');
+  }
+
+  // Ensure teacher profile exists before proceeding
+  if (!userProfile?.teacherProfile && userProfile?.role === 'teacher') {
+    // Create teacher profile if user has teacher role but no profile
+    await db.insert(teachers).values({
+      id: user.id,
+      bio: null,
+    }).onConflictDoNothing();
+    
+    // Refresh user profile
+    const refreshedProfile = await db.query.users.findFirst({
+      where: eq(users.id, user.id),
+      with: {
+        teacherProfile: true,
+      }
+    });
+    
+    if (refreshedProfile) {
+      Object.assign(userProfile, refreshedProfile);
+    }
+  }
+
+  try {
+    // Get teacher's courses
+    const teacherCourses = await db.query.courses.findMany({
+      where: eq(courses.teacherId, user.id),
+      with: {
+        classes: true,
+      },
+      orderBy: [desc(courses.id)],
+    });
+
+    // Get teacher's standalone classes (not part of any course)
+    const standaloneClasses = await db.query.classes.findMany({
+      where: and(
+        eq(classes.teacherId, user.id),
+        sql`${classes.courseId} IS NULL`
+      ),
+      orderBy: [desc(classes.createdAt)],
+    });
+
+    // Get teacher's playlists (exclude system "Liked" playlist)
+    const teacherPlaylists = await db.query.playlists.findMany({
+      where: and(
+        eq(playlists.userId, user.id),
+        sql`${playlists.playlistType} != 'liked' OR ${playlists.playlistType} IS NULL`
+      ),
+      orderBy: [desc(playlists.createdAt)],
+    });
+
+    // Calculate statistics
+    const totalClasses = standaloneClasses.length + 
+      teacherCourses.reduce((acc, course) => acc + course.classes.length, 0);
+
+    // Get view statistics (with safe defaults)
+    let viewStats = [{ totalViews: 0, uniqueStudents: 0, totalMinutesWatched: 0 }];
+    
+    if (totalClasses > 0) {
+      const stats = await db
+        .select({
+          totalViews: sql<number>`COUNT(DISTINCT ${progress.id})`.as('total_views'),
+          uniqueStudents: sql<number>`COUNT(DISTINCT ${progress.userId})`.as('unique_students'),
+          totalMinutesWatched: sql<number>`COALESCE(SUM(${classes.durationMin}), 0)`.as('total_minutes'),
+        })
+        .from(progress)
+        .innerJoin(classes, eq(progress.classId, classes.id))
+        .where(eq(classes.teacherId, user.id));
+      
+      if (stats.length > 0) {
+        viewStats = stats;
+      }
+    }
+
+    // Get recent activity (last 30 days)
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+    let recentActivity: any[] = [];
+    
+    if (totalClasses > 0) {
+      recentActivity = await db
+        .select({
+          date: sql<string>`DATE(${progress.completedAt})`.as('date'),
+          views: sql<number>`COUNT(*)`.as('views'),
+        })
+        .from(progress)
+        .innerJoin(classes, eq(progress.classId, classes.id))
+        .where(and(
+          eq(classes.teacherId, user.id),
+          sql`${progress.completedAt} >= ${thirtyDaysAgo}`
+        ))
+        .groupBy(sql`DATE(${progress.completedAt})`)
+        .orderBy(desc(sql`DATE(${progress.completedAt})`));
+    }
+
+    // Get popular classes
+    let popularClasses: any[] = [];
+    
+    if (totalClasses > 0) {
+      const popClasses = await db
+        .select({
+          class: classes,
+          viewCount: sql<number>`COUNT(${progress.id})`.as('view_count'),
+        })
+        .from(classes)
+        .leftJoin(progress, eq(progress.classId, classes.id))
+        .where(eq(classes.teacherId, user.id))
+        .groupBy(classes.id)
+        .orderBy(desc(sql`COUNT(${progress.id})`))
+        .limit(5);
+      
+      popularClasses = popClasses.map(p => ({
+        ...p.class,
+        viewCount: p.viewCount || 0,
+      }));
+    }
+
+    return (
+      <TeacherStudioContent 
+        user={userProfile!}
+        courses={teacherCourses}
+        standaloneClasses={standaloneClasses}
+        playlists={teacherPlaylists}
+        stats={{
+          totalCourses: teacherCourses.length,
+          totalClasses,
+          totalViews: viewStats[0]?.totalViews || 0,
+          uniqueStudents: viewStats[0]?.uniqueStudents || 0,
+          totalMinutesWatched: viewStats[0]?.totalMinutesWatched || 0,
+        }}
+        recentActivity={recentActivity}
+        popularClasses={popularClasses}
+      />
+    );
+  } catch (error) {
+    console.error('Error loading teacher studio data:', error);
+    
+    // Return a minimal version with empty data
+    return (
+      <TeacherStudioContent 
+        user={userProfile!}
+        courses={[]}
+        standaloneClasses={[]}
+        playlists={[]}
+        stats={{
+          totalCourses: 0,
+          totalClasses: 0,
+          totalViews: 0,
+          uniqueStudents: 0,
+          totalMinutesWatched: 0,
+        }}
+        recentActivity={[]}
+        popularClasses={[]}
+      />
+    );
+  }
 }

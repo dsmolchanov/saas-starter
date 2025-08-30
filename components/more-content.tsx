@@ -129,7 +129,7 @@ export function MoreContent({ user, stats }: MoreContentProps) {
     ...(isTeacher ? [{
       icon: LayoutDashboard,
       label: t('teacherAdmin'),
-      href: '/teacher-admin',
+      href: '/teacher-studio',
       description: t('teacherAdminDesc'),
       badge: t('teacherBadge'),
       badgeVariant: 'default' as const,

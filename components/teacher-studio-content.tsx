@@ -64,7 +64,7 @@ interface Stats {
   totalMinutesWatched: number;
 }
 
-interface TeacherAdminContentProps {
+interface TeacherStudioContentProps {
   user: any;
   courses: Course[];
   standaloneClasses: Class[];
@@ -74,7 +74,7 @@ interface TeacherAdminContentProps {
   popularClasses: Class[];
 }
 
-export function TeacherAdminContent({
+export function TeacherStudioContent({
   user,
   courses,
   standaloneClasses,
@@ -82,7 +82,7 @@ export function TeacherAdminContent({
   stats,
   recentActivity,
   popularClasses,
-}: TeacherAdminContentProps) {
+}: TeacherStudioContentProps) {
   const t = useTranslations('teacher');
   const tCommon = useTranslations('common');
   
