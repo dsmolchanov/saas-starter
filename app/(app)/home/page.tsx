@@ -50,54 +50,53 @@ export default async function HomePage() {
     }
   }
 
-  // Get today's recommended class based on user level and time
-  const recommendedClass = await db.query.classes.findFirst({
-    with: {
-      teacher: true,
-    },
-    where: (classes, { and, lte, gte }) => {
-      const hour = new Date().getHours();
-      const isEvening = hour >= 17;
-      const isMorning = hour < 10;
-      
-      // Different styles for different times
-      if (isMorning) {
-        return and(
-          sql`${classes.style} IN ('Vinyasa', 'Hatha', 'Power')`,
-          lte(classes.durationMin, 30)
-        );
-      } else if (isEvening) {
-        return and(
-          sql`${classes.style} IN ('Yin', 'Restorative', 'Hatha')`,
-          lte(classes.durationMin, 45)
-        );
-      }
-      return lte(classes.durationMin, 45);
-    },
+  // Get user's preferred language from cookies
+  const cookieStore = await cookies();
+  const locale = cookieStore.get('preferred-language')?.value || 'en';
+  
+  // Fetch spiritual content from Supabase
+  const supabase = await createServerSupabaseClient();
+  
+  // Get localized classes
+  const { data: localizedClasses } = await supabase
+    .rpc('get_classes_localized', {
+      p_locale: locale,
+      p_limit: 50
+    });
+
+  // Filter for recommended class based on time
+  const hour = new Date().getHours();
+  const isEvening = hour >= 17;
+  const isMorning = hour < 10;
+  
+  const recommendedClass = localizedClasses?.find((cls: any) => {
+    if (isMorning) {
+      return ['Vinyasa', 'Hatha', 'Power'].includes(cls.style) && cls.duration_min <= 30;
+    } else if (isEvening) {
+      return ['Yin', 'Restorative', 'Hatha'].includes(cls.style) && cls.duration_min <= 45;
+    }
+    return cls.duration_min <= 45;
   });
 
-  // Get popular classes (most completed)
-  const popularClasses = await db
+  // Get popular class IDs from progress
+  const popularClassIds = await db
     .select({
-      class: classes,
-      teacher: users,
+      classId: progress.classId,
       completionCount: sql<number>`count(${progress.id})`.as('completion_count'),
     })
-    .from(classes)
-    .leftJoin(progress, eq(progress.classId, classes.id))
-    .leftJoin(users, eq(classes.teacherId, users.id))
-    .groupBy(classes.id, users.id)
+    .from(progress)
+    .groupBy(progress.classId)
     .orderBy(desc(sql`count(${progress.id})`))
     .limit(5);
 
-  // Get latest classes
-  const latestClasses = await db.query.classes.findMany({
-    with: {
-      teacher: true,
-    },
-    orderBy: (classes, { desc }) => [desc(classes.id)],
-    limit: 5,
-  });
+  // Map to localized classes
+  const popularClasses = popularClassIds
+    .map(p => localizedClasses?.find((c: any) => c.id === p.classId))
+    .filter(Boolean)
+    .slice(0, 5);
+
+  // Get latest 5 localized classes (already sorted by the RPC)
+  const latestClasses = localizedClasses?.slice(0, 5) || [];
 
   // Get featured teacher (random each day based on date seed)
   const allTeachers = await db.query.teachers.findMany({
@@ -119,16 +118,9 @@ export default async function HomePage() {
 
   // Get user's total practice minutes
   const totalMinutes = recentProgress.reduce((sum, p) => {
-    const lesson = latestClasses.find(c => c.id === p.classId);
-    return sum + (lesson?.durationMin || 0);
+    const lesson = localizedClasses?.find((c: any) => c.id === p.classId);
+    return sum + (lesson?.duration_min || 0);
   }, 0);
-
-  // Fetch spiritual content from Supabase
-  const supabase = await createServerSupabaseClient();
-  
-  // Get user's preferred language from cookies
-  const cookieStore = await cookies();
-  const locale = cookieStore.get('preferred-language')?.value || 'en';
   
   // Fetch all spiritual content in one RPC call with proper localization
   const { data: spiritualData } = await supabase
@@ -142,13 +134,32 @@ export default async function HomePage() {
   const moonPhase = spiritualData?.moonPhase;
   const yogaQuote = spiritualData?.yogaQuote;
 
+  // Transform localized classes to match expected format
+  const transformClass = (cls: any) => ({
+    id: cls.id,
+    title: cls.title,
+    description: cls.description,
+    durationMin: cls.duration_min,
+    videoUrl: cls.video_url,
+    thumbnailUrl: cls.thumbnail_url,
+    coverUrl: cls.cover_url,
+    difficulty: cls.difficulty,
+    intensity: cls.intensity,
+    style: cls.style,
+    equipment: cls.equipment,
+    teacher: {
+      id: cls.teacher_id,
+      name: cls.teacher_name,
+    }
+  });
+
   return (
     <HomeContent 
       user={user}
       currentStreak={currentStreak}
-      recommendedClass={recommendedClass}
-      popularClasses={popularClasses.map(p => ({ ...p.class, teacher: p.teacher }))}
-      latestClasses={latestClasses}
+      recommendedClass={recommendedClass ? transformClass(recommendedClass) : undefined}
+      popularClasses={popularClasses.map(transformClass)}
+      latestClasses={latestClasses.map(transformClass)}
       featuredTeacher={featuredTeacher}
       practicedToday={!!practicedToday}
       totalMinutes={totalMinutes}

@@ -17,6 +17,25 @@ const intlMiddleware = createMiddleware({
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
+  
+  // Handle locale switching via query parameter
+  const newLocale = request.nextUrl.searchParams.get('setLocale');
+  if (newLocale && ['en', 'es', 'ru'].includes(newLocale)) {
+    const response = NextResponse.redirect(request.nextUrl);
+    
+    // Set the cookie
+    response.cookies.set('preferred-language', newLocale, {
+      path: '/',
+      maxAge: 60 * 60 * 24 * 365, // 1 year
+      sameSite: 'lax',
+    });
+    
+    // Remove the query parameter
+    const url = request.nextUrl.clone();
+    url.searchParams.delete('setLocale');
+    
+    return NextResponse.redirect(url);
+  }
 
   // Skip middleware for problematic routes and (app) route group routes
   if (

@@ -26,6 +26,15 @@ export function CompactLanguageSwitcher({
   const handleLanguageChange = (newLocale: Locale) => {
     setLocale(newLocale);
     setIsOpen(false);
+    
+    // Force a page refresh to update server-side rendered content
+    // This ensures all server components fetch new localized data
+    if (typeof window !== 'undefined') {
+      // Add a query parameter to trigger middleware and then reload
+      const url = new URL(window.location.href);
+      url.searchParams.set('setLocale', newLocale);
+      window.location.href = url.toString();
+    }
   };
 
   const getLanguageCode = (locale: Locale): string => {

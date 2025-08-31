@@ -15,7 +15,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Checkbox } from '@/components/ui/checkbox';
 import { ContentCard, ContentCardScroll, ContentCardGrid } from '@/components/ui/content-card';
 import { CompactLanguageSwitcher } from '@/components/ui/language-switcher-compact';
-import { useTranslations } from '@/components/providers/simple-intl-provider';
+import { useTranslations, useIntl } from '@/components/providers/simple-intl-provider';
 
 // Disable static prerendering for DB queries
 export const dynamic = 'force-dynamic';
@@ -66,6 +66,7 @@ interface Filters {
 }
 
 export default function BrowsePage() {
+  const { locale } = useIntl();
   const t = useTranslations('browse');
   const tCommon = useTranslations('common');
   const [teachers, setTeachers] = useState<Teacher[]>([]);
@@ -83,13 +84,12 @@ export default function BrowsePage() {
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [locale]); // Re-fetch when locale changes
 
   const fetchData = async () => {
     try {
-      // This would normally be server-side, but for now we'll use client-side fetching
-      // In production, create API routes for these
-      const response = await fetch('/api/browse-data');
+      // Pass locale to the API
+      const response = await fetch(`/api/browse-data?locale=${locale}`);
       const data = await response.json();
       
       setTeachers(data.teachers || []);

@@ -46,6 +46,9 @@ export function SimpleIntlProvider({ children }: { children: React.ReactNode }) 
       if (typeof window !== 'undefined') {
         localStorage.setItem('preferred-language', newLocale);
         document.documentElement.lang = newLocale;
+        
+        // Trigger a custom event for components to listen to
+        window.dispatchEvent(new CustomEvent('localechange', { detail: { locale: newLocale } }));
       }
     }
   };
