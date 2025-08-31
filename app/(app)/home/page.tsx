@@ -4,6 +4,7 @@ import { HomeContent } from '@/components/home-content';
 import { db } from '@/lib/db/drizzle';
 import { classes, courses, teachers, users, progress } from '@/lib/db/schema';
 import { eq, desc, sql, and, gte } from 'drizzle-orm';
+import { createServerSupabaseClient } from '@/lib/supabase/server';
 
 export const dynamic = 'force-dynamic';
 
@@ -121,6 +122,95 @@ export default async function HomePage() {
     return sum + (lesson?.durationMin || 0);
   }, 0);
 
+  // Fetch spiritual content from Supabase
+  const supabase = await createServerSupabaseClient();
+  
+  // Get today's chakra
+  const todayStr = new Date().toISOString().split('T')[0];
+  const { data: chakraFocus } = await supabase
+    .from('chakra_daily_focus')
+    .select(`
+      *,
+      chakra:chakras(*)
+    `)
+    .eq('date', todayStr)
+    .single();
+
+  // If no focus for today, get default based on day of week
+  let todayChakra = chakraFocus?.chakra;
+  if (!todayChakra) {
+    const dayOfWeek = new Date().getDay();
+    const chakraNumber = (dayOfWeek % 7) + 1;
+    const { data: defaultChakra } = await supabase
+      .from('chakras')
+      .select('*')
+      .eq('number', chakraNumber)
+      .single();
+    todayChakra = defaultChakra;
+  }
+
+  // Get today's moon phase
+  const { data: moonCalendar } = await supabase
+    .from('moon_calendar')
+    .select(`
+      *,
+      phase:moon_phases(*)
+    `)
+    .eq('date', todayStr)
+    .single();
+
+  let moonPhase = moonCalendar?.phase;
+  if (!moonPhase) {
+    // Calculate moon phase if no calendar entry
+    const lunarCycle = 29.53059;
+    const knownNewMoon = new Date('2024-01-11T00:00:00Z');
+    const daysSinceNewMoon = (today.getTime() - knownNewMoon.getTime()) / (1000 * 60 * 60 * 24);
+    const currentCycle = (daysSinceNewMoon % lunarCycle + lunarCycle) % lunarCycle;
+    const phaseValue = currentCycle / lunarCycle;
+    
+    // Get all moon phases and find closest
+    const { data: allPhases } = await supabase
+      .from('moon_phases')
+      .select('*')
+      .order('phase_value');
+    
+    if (allPhases && allPhases.length > 0) {
+      moonPhase = allPhases.reduce((closest, phase) => {
+        const closestDiff = Math.abs(phaseValue - closest.phase_value);
+        const phaseDiff = Math.abs(phaseValue - phase.phase_value);
+        return phaseDiff < closestDiff ? phase : closest;
+      }, allPhases[0]);
+    }
+  }
+
+  // Get today's quote
+  const { data: dailyQuote } = await supabase
+    .from('daily_quotes')
+    .select(`
+      *,
+      quote:yoga_quotes(
+        *,
+        text:yoga_texts(*)
+      )
+    `)
+    .eq('date', todayStr)
+    .single();
+
+  let yogaQuote = dailyQuote?.quote;
+  if (!yogaQuote) {
+    // Get a random quote if none for today
+    const { data: allQuotes } = await supabase
+      .from('yoga_quotes')
+      .select(`
+        *,
+        text:yoga_texts(*)
+      `);
+    
+    if (allQuotes && allQuotes.length > 0) {
+      yogaQuote = allQuotes[Math.floor(Math.random() * allQuotes.length)];
+    }
+  }
+
   return (
     <HomeContent 
       user={user}
@@ -131,6 +221,11 @@ export default async function HomePage() {
       featuredTeacher={featuredTeacher}
       practicedToday={!!practicedToday}
       totalMinutes={totalMinutes}
+      spiritualContent={{
+        chakra: todayChakra,
+        moonPhase: moonPhase,
+        yogaQuote: yogaQuote
+      }}
     />
   );
 }
