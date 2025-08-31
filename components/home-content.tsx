@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { useTranslations } from '@/components/providers/simple-intl-provider';
+import { useTranslations, useIntl } from '@/components/providers/simple-intl-provider';
 import { CompactLanguageSwitcher } from '@/components/ui/language-switcher-compact';
 import { 
   Play, 
@@ -99,11 +99,11 @@ export function HomeContent({
 }: HomeContentProps) {
   const t = useTranslations('home');
   const tCommon = useTranslations('common');
+  const { locale } = useIntl();
   const [greeting, setGreeting] = useState('goodMorning');
   const [timeOfDay, setTimeOfDay] = useState<'morning' | 'afternoon' | 'evening'>('morning');
   const [currentTime, setCurrentTime] = useState(new Date());
   const [breathingExercise, setBreathingExercise] = useState(breathingExercises[0]);
-  const [currentLang, setCurrentLang] = useState<'en' | 'ru' | 'es'>('en');
   
 
   useEffect(() => {
@@ -126,27 +126,11 @@ export function HomeContent({
       // Daily rotating content based on date
       const dayOfYear = Math.floor((now.getTime() - new Date(now.getFullYear(), 0, 0).getTime()) / 1000 / 60 / 60 / 24);
       setBreathingExercise(breathingExercises[dayOfYear % breathingExercises.length]);
-      
-      // Get current language from pathname or localStorage
-      const pathname = typeof window !== 'undefined' ? window.location.pathname : '';
-      let detectedLang: 'en' | 'ru' | 'es' = 'en';
-      
-      if (pathname.startsWith('/ru')) {
-        detectedLang = 'ru';
-      } else if (pathname.startsWith('/es')) {
-        detectedLang = 'es';
-      } else {
-        const storedLang = typeof window !== 'undefined' ? localStorage.getItem('locale') as 'en' | 'ru' | 'es' : null;
-        if (storedLang) {
-          detectedLang = storedLang;
-        }
-      }
-      
-      setCurrentLang(detectedLang);
     };
 
     updateTimeBasedContent();
-    const interval = setInterval(updateTimeBasedContent, 60000); // Update every minute
+    // Update time-based content every minute (for greeting changes)
+    const interval = setInterval(updateTimeBasedContent, 60000);
 
     return () => clearInterval(interval);
   }, []);
@@ -159,11 +143,11 @@ export function HomeContent({
     const snakeField = field.replace(/([A-Z])/g, '_$1').toLowerCase();
     
     // Try current language field first
-    const langField = `${snakeField}_${currentLang}`;
+    const langField = `${snakeField}_${locale}`;
     if (obj[langField]) return obj[langField];
     
     // Also try the original field name with language suffix (in case it's already snake_case)
-    const originalLangField = `${field}_${currentLang}`;
+    const originalLangField = `${field}_${locale}`;
     if (obj[originalLangField]) return obj[originalLangField];
     
     // Fallback to English
@@ -318,12 +302,12 @@ export function HomeContent({
               ) : (
                 <>
                   <p className="text-sm font-medium text-gray-900 italic">
-                    {currentLang === 'ru' 
+                    {locale === 'ru' 
                       ? '"Тело получает пользу от движения, а ум - от покоя."'
                       : '"The body benefits from movement, and the mind benefits from stillness."'}
                   </p>
                   <p className="text-xs text-gray-500 mt-1">
-                    {currentLang === 'ru' ? '— Сакйонг Мипам' : '— Sakyong Mipham'}
+                    {locale === 'ru' ? '— Сакйонг Мипам' : '— Sakyong Mipham'}
                   </p>
                 </>
               )}
@@ -371,9 +355,9 @@ export function HomeContent({
               </>
             ) : (
               <>
-                <p className="font-semibold text-sm">{currentLang === 'ru' ? 'Корневая чакра' : 'Root Chakra'}</p>
+                <p className="font-semibold text-sm">{locale === 'ru' ? 'Корневая чакра' : 'Root Chakra'}</p>
                 <p className="text-xs text-gray-500">Muladhara</p>
-                <p className="text-xs text-gray-400 mt-1">{currentLang === 'ru' ? 'Земля' : 'Earth'}</p>
+                <p className="text-xs text-gray-400 mt-1">{locale === 'ru' ? 'Земля' : 'Earth'}</p>
               </>
             )}
           </Card>
@@ -394,8 +378,8 @@ export function HomeContent({
               </>
             ) : (
               <>
-                <p className="font-semibold text-sm">{currentLang === 'ru' ? 'Растущая луна' : 'Waxing Moon'}</p>
-                <p className="text-xs text-gray-500">{currentLang === 'ru' ? 'Энергия роста' : 'Growth Energy'}</p>
+                <p className="font-semibold text-sm">{locale === 'ru' ? 'Растущая луна' : 'Waxing Moon'}</p>
+                <p className="text-xs text-gray-500">{locale === 'ru' ? 'Энергия роста' : 'Growth Energy'}</p>
               </>
             )}
           </Card>
