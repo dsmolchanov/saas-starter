@@ -118,7 +118,7 @@ function getExtendedTranslations(locale: string = 'ru') {
       customizeEverything: 'Customize Everything',
       customizeDesc: 'Filter by duration, intensity, style, focus area, and more. Every class perfectly matched to your needs and schedule.',
       perfectTiming: 'Perfect Timing',
-      perfectTimingDesc: 'From 5-minute morning stretches to 90-minute deep flows. Find classes that fit your schedule, not the other way around.',
+      perfectTimingDesc: 'From 5-minute morning stretches to 90-minute deep practices. Find classes that fit your schedule, not the other way around.',
       crystalClear: 'Crystal Clear HD',
       crystalClearDesc: 'Every pose, every alignment cue captured in beautiful detail. Never miss a movement with our studio-quality video.',
       smartPlaylists: 'Smart Playlists',
@@ -403,7 +403,7 @@ export default async function LandingPage({ params }: { params?: { locale?: stri
                 <div className="absolute -bottom-6 -right-6 bg-white rounded-xl shadow-lg p-4 max-w-xs">
                   <div className="flex items-center gap-2 mb-2">
                     <CirclePlay className="w-5 h-5 text-zen-dodger" />
-                    <span className="font-semibold">Morning Flow</span>
+                    <span className="font-semibold">Morning Practice</span>
                   </div>
                   <p className="text-sm text-gray-600">5 classes • 45 min total</p>
                 </div>

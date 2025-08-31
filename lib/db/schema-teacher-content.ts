@@ -19,7 +19,7 @@ import { users, classes, meditationSessions } from './schema';
 
 // Enums
 export const difficultyLevelEnum = pgEnum('difficulty_level', ['beginner', 'intermediate', 'advanced', 'all', 'progressive']);
-export const challengeTypeEnum = pgEnum('challenge_type', ['general', 'morning_flow', 'flexibility', 'strength', 'meditation']);
+export const challengeTypeEnum = pgEnum('challenge_type', ['general', 'morning_practice', 'flexibility', 'strength', 'meditation']);
 export const liveClassStatusEnum = pgEnum('live_class_status', ['scheduled', 'live', 'completed', 'cancelled']);
 export const workshopStatusEnum = pgEnum('workshop_status', ['draft', 'published', 'full', 'completed']);
 
@@ -278,14 +278,14 @@ export const programSessions = pgTable('program_sessions', {
   createdAt: timestamp('created_at').defaultNow(),
 });
 
-// 9. Quick Flows
-export const quickFlows = pgTable('quick_flows', {
+// 9. Quick Sequences
+export const quickSequences = pgTable('quick_sequences', {
   id: uuid('id').defaultRandom().primaryKey(),
   teacherId: uuid('teacher_id').references(() => users.id).notNull(),
   title: varchar('title', { length: 150 }).notNull(),
   description: text('description'),
   durationMin: integer('duration_min').notNull(),
-  flowType: varchar('flow_type', { length: 50 }),
+  sequenceType: varchar('sequence_type', { length: 50 }),
   targetArea: varchar('target_area', { length: 50 }),
   difficultyLevel: varchar('difficulty_level', { length: 20 }),
   videoUrl: text('video_url'),
@@ -400,7 +400,7 @@ export type PoseLibrary = typeof poseLibrary.$inferSelect;
 export type NewPoseLibrary = typeof poseLibrary.$inferInsert;
 export type Program = typeof programs.$inferSelect;
 export type NewProgram = typeof programs.$inferInsert;
-export type QuickFlow = typeof quickFlows.$inferSelect;
-export type NewQuickFlow = typeof quickFlows.$inferInsert;
+export type QuickSequence = typeof quickSequences.$inferSelect;
+export type NewQuickSequence = typeof quickSequences.$inferInsert;
 export type PhilosophyContent = typeof philosophyContent.$inferSelect;
 export type NewPhilosophyContent = typeof philosophyContent.$inferInsert;

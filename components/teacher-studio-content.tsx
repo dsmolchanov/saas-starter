@@ -194,7 +194,7 @@ export function TeacherStudioContent({
                 <Zap className="w-8 h-8 text-yellow-600" />
                 <Plus className="w-4 h-4 text-gray-400" />
               </div>
-              <p className="font-semibold text-sm">{t('createFlow')}</p>
+              <p className="font-semibold text-sm">{t('createSequence')}</p>
               <p className="text-xs text-gray-500 mt-1">{t('quickSequence')}</p>
             </Card>
             <Card className="min-w-[160px] snap-center p-4 bg-white border border-gray-200 hover:shadow-md transition-shadow cursor-pointer">

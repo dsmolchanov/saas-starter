@@ -49,7 +49,7 @@ async function seedYogaData() {
     console.log('Creating categories...');
     const categoriesData = [
       { slug: 'hatha', title: 'Hatha Yoga', icon: 'lotus' },
-      { slug: 'vinyasa', title: 'Vinyasa Flow', icon: 'waves' },
+      { slug: 'vinyasa', title: 'Vinyasa', icon: 'waves' },
       { slug: 'yin', title: 'Yin Yoga', icon: 'moon' },
       { slug: 'power', title: 'Power Yoga', icon: 'zap' },
       { slug: 'restorative', title: 'Restorative', icon: 'heart' },
@@ -80,7 +80,7 @@ async function seedYogaData() {
       {
         categoryId: allCategories.find(c => c.slug === 'vinyasa')?.id!,
         teacherId: TEACHER_USER_ID,
-        title: 'Morning Flow Energizer',
+        title: 'Morning Energizer',
         description: 'Dynamic sequences to awaken your body and energize your day.',
         level: 'Intermediate',
         coverUrl: 'https://images.unsplash.com/photo-1545389336-cf090694435e?w=800',
@@ -120,14 +120,14 @@ async function seedYogaData() {
         imageUrl: 'https://images.unsplash.com/photo-1588286840104-8957b019727f?w=800',
         difficulty: 'Beginner',
         intensity: 'Low',
-        style: 'Gentle Flow',
+        style: 'Gentle',
         equipment: 'None',
         orderIndex: 1,
       },
       {
         courseId: null,
         teacherId: TEACHER_USER_ID,
-        title: 'Core Power Flow',
+        title: 'Core Power',
         description: 'Build strength and stability with this challenging core-focused sequence.',
         durationMin: 30,
         videoPath: '/videos/core-power.mp4',
@@ -172,10 +172,10 @@ async function seedYogaData() {
       {
         courseId: null,
         teacherId: TEACHER_USER_ID,
-        title: 'Warrior Flow Challenge',
+        title: 'Warrior Challenge',
         description: 'Build heat and strength with dynamic warrior pose variations.',
         durationMin: 40,
-        videoPath: '/videos/warrior-flow.mp4',
+        videoPath: '/videos/warrior-challenge.mp4',
         thumbnailUrl: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=400',
         imageUrl: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=800',
         difficulty: 'Intermediate',
@@ -226,7 +226,7 @@ async function seedYogaData() {
         style: 'Hatha',
         orderIndex: 2,
       },
-      // Morning Flow Energizer
+      // Morning Energizer
       {
         courseId: createdCourses[1].id,
         teacherId: TEACHER_USER_ID,
@@ -241,8 +241,8 @@ async function seedYogaData() {
       {
         courseId: createdCourses[1].id,
         teacherId: TEACHER_USER_ID,
-        title: 'Dynamic Standing Flow',
-        description: 'Flowing sequence linking standing poses.',
+        title: 'Dynamic Standing Sequence',
+        description: 'Dynamic sequence linking standing poses.',
         durationMin: 35,
         difficulty: 'Intermediate',
         intensity: 'High',
@@ -262,10 +262,10 @@ async function seedYogaData() {
     // Create focus area associations
     console.log('Creating focus area associations...');
     const focusAssociations = [
-      { classTitle: 'Core Power Flow', focusAreas: ['Core Strength', 'Arm Strength'] },
+      { classTitle: 'Core Power', focusAreas: ['Core Strength', 'Arm Strength'] },
       { classTitle: 'Hip Opening Bliss', focusAreas: ['Hip Opening', 'Flexibility'] },
       { classTitle: 'Evening Wind Down', focusAreas: ['Relaxation', 'Mindfulness'] },
-      { classTitle: 'Warrior Flow Challenge', focusAreas: ['Core Strength', 'Balance'] },
+      { classTitle: 'Warrior Challenge', focusAreas: ['Core Strength', 'Balance'] },
       { classTitle: 'Backbend Breakthrough', focusAreas: ['Back Bending', 'Flexibility'] },
       { classTitle: 'Quick Morning Stretch', focusAreas: ['Flexibility', 'Mindfulness'] },
     ];

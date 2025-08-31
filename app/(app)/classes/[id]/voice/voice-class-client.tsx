@@ -41,8 +41,8 @@ export default function VoiceClassClient({ classId }: VoiceClassClientProps) {
       // For now, using mock data
       setClassData({
         id: classId,
-        title: 'Morning Vinyasa Flow',
-        description: 'Start your day with this energizing vinyasa flow',
+        title: 'Morning Vinyasa Class',
+        description: 'Start your day with this energizing vinyasa practice',
         teacher_id: 'teacher-123',
         duration: 45,
         style: 'Vinyasa',

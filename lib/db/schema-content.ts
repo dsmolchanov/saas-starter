@@ -27,7 +27,7 @@ export const contentTypeEnum = pgEnum('content_type', [
   'asana',
   'breathing',
   'meditation',
-  'quick_flow',
+  'quick_sequence',
   'challenge',
   'live_class',
   'workshop',
@@ -177,16 +177,16 @@ export const breathingExercises = pgTable('breathing_exercises', {
 }));
 
 // ============================================
-// QUICK FLOWS
+// QUICK SEQUENCES
 // ============================================
 
-export const quickFlows = pgTable('quick_flows', {
+export const quickSequences = pgTable('quick_sequences', {
   id: uuid('id').defaultRandom().primaryKey(),
   contentItemId: uuid('content_item_id').references(() => contentItems.id, { onDelete: 'cascade' }),
   classId: uuid('class_id').references(() => classes.id),
   
   // Type
-  flowType: varchar('flow_type', { length: 50 }),
+  sequenceType: varchar('sequence_type', { length: 50 }),
   targetArea: varchar('target_area', { length: 50 }),
   
   // Sequence
@@ -462,8 +462,8 @@ export type Asana = typeof asanas.$inferSelect;
 export type NewAsana = typeof asanas.$inferInsert;
 export type BreathingExercise = typeof breathingExercises.$inferSelect;
 export type NewBreathingExercise = typeof breathingExercises.$inferInsert;
-export type QuickFlow = typeof quickFlows.$inferSelect;
-export type NewQuickFlow = typeof quickFlows.$inferInsert;
+export type QuickSequence = typeof quickSequences.$inferSelect;
+export type NewQuickSequence = typeof quickSequences.$inferInsert;
 export type Challenge = typeof challenges.$inferSelect;
 export type NewChallenge = typeof challenges.$inferInsert;
 export type ChallengeDay = typeof challengeDays.$inferSelect;

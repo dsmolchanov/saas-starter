@@ -58,7 +58,7 @@ export default async function CommunityPage() {
             <div className="p-3 bg-gray-50 rounded-lg">
               <div className="flex items-start justify-between">
                 <div>
-                  <p className="font-medium text-gray-900">30-Day Morning Flow</p>
+                  <p className="font-medium text-gray-900">30-Day Morning Practice</p>
                   <p className="text-xs text-gray-500">234 participants • 5 days left</p>
                 </div>
                 <Badge variant="secondary">Joined</Badge>

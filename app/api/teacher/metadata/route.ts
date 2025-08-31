@@ -55,7 +55,7 @@ export async function GET() {
       'Ashtanga',
       'Bikram',
       'Kundalini',
-      'Gentle Flow'
+      'Gentle'
     ];
 
     return NextResponse.json({ 
