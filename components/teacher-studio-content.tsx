@@ -68,7 +68,7 @@ interface TeacherStudioContentProps {
   user: any;
   courses: Course[];
   standaloneClasses: Class[];
-  allClasses: Class[];
+  allClasses: Class[] | null;
   playlists: any[];
   stats: Stats;
   recentActivity: any[];
@@ -88,8 +88,16 @@ export function TeacherStudioContent({
   const t = useTranslations('teacher');
   const tCommon = useTranslations('common');
   
+  // Debug logging
+  console.log('=== TEACHER STUDIO CONTENT DEBUG ===');
+  console.log('User in component:', user?.id, user?.name);
+  console.log('Courses received:', courses?.length);
+  console.log('All classes received:', allClasses?.length);
+  console.log('Standalone classes received:', standaloneClasses?.length);
+  
   // Use allClasses if available, otherwise fall back to standaloneClasses
-  const classesToShow = allClasses || standaloneClasses;
+  const classesToShow = allClasses || standaloneClasses || [];
+  console.log('Classes to show:', classesToShow?.length);
   
   const [showCourseManager, setShowCourseManager] = useState(false);
   const [showClassManager, setShowClassManager] = useState(false);
@@ -319,7 +327,7 @@ export function TeacherStudioContent({
               </Button>
             </div>
           </div>
-          {classesToShow.length > 0 ? (
+          {classesToShow && classesToShow.length > 0 ? (
             <div className="flex gap-3 overflow-x-auto pb-2 px-4 snap-x snap-mandatory scrollbar-hide">
               {classesToShow.map((cls) => (
                 <Card key={cls.id} className="min-w-[200px] snap-center overflow-hidden border-0 shadow-sm">

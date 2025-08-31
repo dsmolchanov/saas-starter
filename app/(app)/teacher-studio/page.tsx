@@ -15,12 +15,22 @@ export default async function TeacherStudioPage() {
     redirect('/sign-in?redirect=/teacher-studio');
   }
 
+  console.log('=== TEACHER STUDIO DEBUG ===');
+  console.log('Logged in user:', { id: user.id, name: user.name, email: user.email });
+
   // Get user profile with teacher info
   const userProfile = await db.query.users.findFirst({
     where: eq(users.id, user.id),
     with: {
       teacherProfile: true,
     }
+  });
+  
+  console.log('User profile:', {
+    id: userProfile?.id,
+    name: userProfile?.name,
+    role: userProfile?.role,
+    hasTeacherProfile: !!userProfile?.teacherProfile
   });
 
   // Check if user is a teacher - must have teacher/admin role or a valid teacher profile
@@ -70,8 +80,19 @@ export default async function TeacherStudioPage() {
       orderBy: [desc(classes.createdAt)],
     });
     
+    console.log('Teacher courses found:', teacherCourses.length);
+    console.log('All classes found:', allClasses.length);
+    if (allClasses.length > 0) {
+      console.log('Sample class:', {
+        id: allClasses[0].id,
+        title: allClasses[0].title,
+        teacherId: allClasses[0].teacherId
+      });
+    }
+    
     // Filter standalone classes for the specific section
     const standaloneClasses = allClasses.filter(c => !c.courseId);
+    console.log('Standalone classes:', standaloneClasses.length);
 
     // Get teacher's playlists (exclude system "Liked" playlist)
     const teacherPlaylists = await db.query.playlists.findMany({
@@ -108,6 +129,7 @@ export default async function TeacherStudioPage() {
     // Get recent activity (last 30 days)
     const thirtyDaysAgo = new Date();
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+    const thirtyDaysAgoStr = thirtyDaysAgo.toISOString();
 
     let recentActivity: any[] = [];
     
@@ -121,7 +143,7 @@ export default async function TeacherStudioPage() {
         .innerJoin(classes, eq(progress.classId, classes.id))
         .where(and(
           eq(classes.teacherId, user.id),
-          sql`${progress.completedAt} >= ${thirtyDaysAgo}`
+          sql`${progress.completedAt} >= ${thirtyDaysAgoStr}`
         ))
         .groupBy(sql`DATE(${progress.completedAt})`)
         .orderBy(desc(sql`DATE(${progress.completedAt})`));
