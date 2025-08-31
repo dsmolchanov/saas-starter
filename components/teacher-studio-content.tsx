@@ -43,6 +43,7 @@ interface Course {
   title: string;
   description?: string | null;
   imageUrl?: string | null;
+  coverUrl?: string | null;
   isPublished: number;
   classes: any[];
 }
@@ -257,8 +258,8 @@ export function TeacherStudioContent({
               {courses.map((course) => (
                 <Card key={course.id} className="min-w-[240px] snap-center overflow-hidden border-0 shadow-sm">
                   <div className="aspect-video bg-gradient-to-br from-purple-100 to-pink-100 relative">
-                    {course.imageUrl ? (
-                      <img src={course.imageUrl} alt={course.title} className="w-full h-full object-cover" />
+                    {(course.coverUrl || course.imageUrl) ? (
+                      <img src={course.coverUrl || course.imageUrl} alt={course.title} className="w-full h-full object-cover" />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center">
                         <BookOpen className="w-8 h-8 text-purple-500" />
