@@ -76,6 +76,7 @@ interface MyPlaylistsProps {
 
 export function MyPlaylists({ userId, isTeacher }: MyPlaylistsProps) {
   const t = useTranslations('playlists');
+  const tCommon = useTranslations('common');
   const [playlists, setPlaylists] = useState<Playlist[]>([]);
   const [loading, setLoading] = useState(true);
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
