@@ -155,16 +155,27 @@ export function HomeContent({
   const getLocalizedField = (obj: any, field: string) => {
     if (!obj) return '';
     
+    // Convert field name to snake_case if needed (e.g., 'energyType' -> 'energy_type')
+    const snakeField = field.replace(/([A-Z])/g, '_$1').toLowerCase();
+    
     // Try current language field first
-    const langField = `${field}_${currentLang}`;
+    const langField = `${snakeField}_${currentLang}`;
     if (obj[langField]) return obj[langField];
     
+    // Also try the original field name with language suffix (in case it's already snake_case)
+    const originalLangField = `${field}_${currentLang}`;
+    if (obj[originalLangField]) return obj[originalLangField];
+    
     // Fallback to English
-    const enField = `${field}_en`;
+    const enField = `${snakeField}_en`;
     if (obj[enField]) return obj[enField];
+    
+    const originalEnField = `${field}_en`;
+    if (obj[originalEnField]) return obj[originalEnField];
     
     // Try without language suffix (for legacy data)
     if (obj[field]) return obj[field];
+    if (obj[snakeField]) return obj[snakeField];
     
     // Return empty string if nothing found
     return '';
@@ -296,10 +307,10 @@ export function HomeContent({
               {spiritualContent?.yogaQuote ? (
                 <>
                   <p className="text-sm font-medium text-gray-900 italic">
-                    "{getLocalizedField(spiritualContent.yogaQuote, 'quote') || 'Yoga is the journey of the self, through the self, to the self.'}"
+                    "{getLocalizedField(spiritualContent.yogaQuote, 'quote') || spiritualContent.yogaQuote.text}"
                   </p>
                   <p className="text-xs text-gray-500 mt-1">
-                    — {spiritualContent.yogaQuote.text?.author || 'Ancient Wisdom'}
+                    — {spiritualContent.yogaQuote.author || spiritualContent.yogaQuote.text?.author || 'Ancient Wisdom'}
                     {spiritualContent.yogaQuote.chapter && spiritualContent.yogaQuote.verse && 
                       ` (${spiritualContent.yogaQuote.chapter}:${spiritualContent.yogaQuote.verse})`}
                   </p>
@@ -307,9 +318,13 @@ export function HomeContent({
               ) : (
                 <>
                   <p className="text-sm font-medium text-gray-900 italic">
-                    "The body benefits from movement, and the mind benefits from stillness."
+                    {currentLang === 'ru' 
+                      ? '"Тело получает пользу от движения, а ум - от покоя."'
+                      : '"The body benefits from movement, and the mind benefits from stillness."'}
                   </p>
-                  <p className="text-xs text-gray-500 mt-1">— Sakyong Mipham</p>
+                  <p className="text-xs text-gray-500 mt-1">
+                    {currentLang === 'ru' ? '— Сакйонг Мипам' : '— Sakyong Mipham'}
+                  </p>
                 </>
               )}
             </div>
@@ -347,18 +362,18 @@ export function HomeContent({
             {spiritualContent?.chakra ? (
               <>
                 <p className="font-semibold text-sm">
-                  {getLocalizedField(spiritualContent.chakra, 'name') || 'Root Chakra'}
+                  {getLocalizedField(spiritualContent.chakra, 'name')}
                 </p>
-                <p className="text-xs text-gray-500">{spiritualContent.chakra.sanskrit_name || 'Muladhara'}</p>
+                <p className="text-xs text-gray-500">{spiritualContent.chakra.sanskrit_name}</p>
                 <p className="text-xs text-gray-400 mt-1">
-                  {getLocalizedField(spiritualContent.chakra, 'element') || 'Earth'}
+                  {getLocalizedField(spiritualContent.chakra, 'element')}
                 </p>
               </>
             ) : (
               <>
-                <p className="font-semibold text-sm">Root Chakra</p>
+                <p className="font-semibold text-sm">{currentLang === 'ru' ? 'Корневая чакра' : 'Root Chakra'}</p>
                 <p className="text-xs text-gray-500">Muladhara</p>
-                <p className="text-xs text-gray-400 mt-1">Earth</p>
+                <p className="text-xs text-gray-400 mt-1">{currentLang === 'ru' ? 'Земля' : 'Earth'}</p>
               </>
             )}
           </Card>
@@ -371,16 +386,16 @@ export function HomeContent({
             {spiritualContent?.moonPhase ? (
               <>
                 <p className="font-semibold text-sm">
-                  {getLocalizedField(spiritualContent.moonPhase, 'name') || 'Waxing Moon'}
+                  {getLocalizedField(spiritualContent.moonPhase, 'name')}
                 </p>
                 <p className="text-xs text-gray-500">
-                  {getLocalizedField(spiritualContent.moonPhase, 'energy_type') || 'Growth Energy'}
+                  {getLocalizedField(spiritualContent.moonPhase, 'energy_type')}
                 </p>
               </>
             ) : (
               <>
-                <p className="font-semibold text-sm">Waxing Moon</p>
-                <p className="text-xs text-gray-500">Growth Energy</p>
+                <p className="font-semibold text-sm">{currentLang === 'ru' ? 'Растущая луна' : 'Waxing Moon'}</p>
+                <p className="text-xs text-gray-500">{currentLang === 'ru' ? 'Энергия роста' : 'Growth Energy'}</p>
               </>
             )}
           </Card>
