@@ -135,35 +135,8 @@ export function HomeContent({
     return () => clearInterval(interval);
   }, []);
 
-  // Helper functions to get localized content
-  const getLocalizedField = (obj: any, field: string) => {
-    if (!obj) return '';
-    
-    // Convert field name to snake_case if needed (e.g., 'energyType' -> 'energy_type')
-    const snakeField = field.replace(/([A-Z])/g, '_$1').toLowerCase();
-    
-    // Try current language field first
-    const langField = `${snakeField}_${locale}`;
-    if (obj[langField]) return obj[langField];
-    
-    // Also try the original field name with language suffix (in case it's already snake_case)
-    const originalLangField = `${field}_${locale}`;
-    if (obj[originalLangField]) return obj[originalLangField];
-    
-    // Fallback to English
-    const enField = `${snakeField}_en`;
-    if (obj[enField]) return obj[enField];
-    
-    const originalEnField = `${field}_en`;
-    if (obj[originalEnField]) return obj[originalEnField];
-    
-    // Try without language suffix (for legacy data)
-    if (obj[field]) return obj[field];
-    if (obj[snakeField]) return obj[snakeField];
-    
-    // Return empty string if nothing found
-    return '';
-  };
+  // With the new RPC approach, data comes pre-localized
+  // No need for complex field mapping
 
   const getChakraColorClass = (hex: string) => {
     if (!hex) return 'bg-gray-500';
@@ -291,10 +264,10 @@ export function HomeContent({
               {spiritualContent?.yogaQuote ? (
                 <>
                   <p className="text-sm font-medium text-gray-900 italic">
-                    "{getLocalizedField(spiritualContent.yogaQuote, 'quote') || spiritualContent.yogaQuote.text}"
+                    "{spiritualContent.yogaQuote.quote}"
                   </p>
                   <p className="text-xs text-gray-500 mt-1">
-                    — {spiritualContent.yogaQuote.author || spiritualContent.yogaQuote.text?.author || 'Ancient Wisdom'}
+                    — {spiritualContent.yogaQuote.author || 'Ancient Wisdom'}
                     {spiritualContent.yogaQuote.chapter && spiritualContent.yogaQuote.verse && 
                       ` (${spiritualContent.yogaQuote.chapter}:${spiritualContent.yogaQuote.verse})`}
                   </p>
@@ -346,11 +319,11 @@ export function HomeContent({
             {spiritualContent?.chakra ? (
               <>
                 <p className="font-semibold text-sm">
-                  {getLocalizedField(spiritualContent.chakra, 'name')}
+                  {spiritualContent.chakra.name}
                 </p>
                 <p className="text-xs text-gray-500">{spiritualContent.chakra.sanskrit_name}</p>
                 <p className="text-xs text-gray-400 mt-1">
-                  {getLocalizedField(spiritualContent.chakra, 'element')}
+                  {spiritualContent.chakra.element}
                 </p>
               </>
             ) : (
@@ -370,10 +343,10 @@ export function HomeContent({
             {spiritualContent?.moonPhase ? (
               <>
                 <p className="font-semibold text-sm">
-                  {getLocalizedField(spiritualContent.moonPhase, 'name')}
+                  {spiritualContent.moonPhase.name}
                 </p>
                 <p className="text-xs text-gray-500">
-                  {getLocalizedField(spiritualContent.moonPhase, 'energy_type')}
+                  {spiritualContent.moonPhase.energy_type}
                 </p>
               </>
             ) : (
