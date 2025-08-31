@@ -93,8 +93,8 @@ export async function GET() {
         })),
       },
       rawSqlResult: {
-        count: rawQuery.rows.length,
-        rows: rawQuery.rows,
+        count: rawQuery.length,
+        rows: rawQuery,
       }
     });
   } catch (error) {
