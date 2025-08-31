@@ -44,13 +44,13 @@ export async function GET() {
       })
       .filter(Boolean);
   } else {
-    popularClasses = localizedClasses?.slice(0, 5).map(c => ({
+    popularClasses = localizedClasses?.slice(0, 5).map((c: any) => ({
       id: c.id,
       title: c.title
     })) || [];
   }
   
-  const latestClasses = localizedClasses?.slice(0, 5).map(c => ({
+  const latestClasses = localizedClasses?.slice(0, 5).map((c: any) => ({
     id: c.id,
     title: c.title
   })) || [];

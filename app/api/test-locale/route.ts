@@ -18,7 +18,7 @@ export async function GET(request: NextRequest) {
   
   return NextResponse.json({
     locale,
-    classes: localizedClasses?.map(c => ({
+    classes: localizedClasses?.map((c: any) => ({
       id: c.id,
       title: c.title,
       locale_used: locale
