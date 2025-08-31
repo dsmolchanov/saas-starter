@@ -105,6 +105,11 @@ export function HomeContent({
   const [breathingExercise, setBreathingExercise] = useState(breathingExercises[0]);
   const [currentLang, setCurrentLang] = useState<'en' | 'ru' | 'es'>('en');
 
+  // Debug logging
+  useEffect(() => {
+    console.log('Spiritual Content:', spiritualContent);
+  }, [spiritualContent]);
+
   useEffect(() => {
     const updateTimeBasedContent = () => {
       const now = new Date();
@@ -126,10 +131,20 @@ export function HomeContent({
       const dayOfYear = Math.floor((now.getTime() - new Date(now.getFullYear(), 0, 0).getTime()) / 1000 / 60 / 60 / 24);
       setBreathingExercise(breathingExercises[dayOfYear % breathingExercises.length]);
       
-      // Get current language from localStorage or navigator
-      const storedLang = localStorage.getItem('locale') as 'en' | 'ru' | 'es';
+      // Get current language from localStorage or default to 'en'
+      const storedLang = typeof window !== 'undefined' ? localStorage.getItem('locale') as 'en' | 'ru' | 'es' : null;
       if (storedLang) {
         setCurrentLang(storedLang);
+      } else {
+        // Try to detect from navigator language
+        const browserLang = typeof window !== 'undefined' ? navigator.language.toLowerCase() : '';
+        if (browserLang.startsWith('ru')) {
+          setCurrentLang('ru');
+        } else if (browserLang.startsWith('es')) {
+          setCurrentLang('es');
+        } else {
+          setCurrentLang('en');
+        }
       }
     };
 
@@ -265,23 +280,32 @@ export function HomeContent({
         </div>
 
         {/* Daily Wisdom */}
-        {spiritualContent?.yogaQuote && (
-          <Card className="p-5 border-0 shadow-sm bg-gradient-to-r from-indigo-50 to-purple-50">
-            <div className="flex items-start gap-3">
-              <Sparkles className="w-5 h-5 text-indigo-500 mt-0.5" />
-              <div className="flex-1">
-                <p className="text-sm font-medium text-gray-900 italic">
-                  "{getLocalizedField(spiritualContent.yogaQuote, 'quote') || spiritualContent.yogaQuote.quote_en}"
-                </p>
-                <p className="text-xs text-gray-500 mt-1">
-                  — {spiritualContent.yogaQuote.text?.author || 'Ancient Wisdom'}
-                  {spiritualContent.yogaQuote.chapter && spiritualContent.yogaQuote.verse && 
-                    ` (${spiritualContent.yogaQuote.chapter}:${spiritualContent.yogaQuote.verse})`}
-                </p>
-              </div>
+        <Card className="p-5 border-0 shadow-sm bg-gradient-to-r from-indigo-50 to-purple-50">
+          <div className="flex items-start gap-3">
+            <Sparkles className="w-5 h-5 text-indigo-500 mt-0.5" />
+            <div className="flex-1">
+              {spiritualContent?.yogaQuote ? (
+                <>
+                  <p className="text-sm font-medium text-gray-900 italic">
+                    "{getLocalizedField(spiritualContent.yogaQuote, 'quote') || spiritualContent.yogaQuote.quote_en || 'Yoga is the journey of the self, through the self, to the self.'}"
+                  </p>
+                  <p className="text-xs text-gray-500 mt-1">
+                    — {spiritualContent.yogaQuote.text?.author || 'Bhagavad Gita'}
+                    {spiritualContent.yogaQuote.chapter && spiritualContent.yogaQuote.verse && 
+                      ` (${spiritualContent.yogaQuote.chapter}:${spiritualContent.yogaQuote.verse})`}
+                  </p>
+                </>
+              ) : (
+                <>
+                  <p className="text-sm font-medium text-gray-900 italic">
+                    "The body benefits from movement, and the mind benefits from stillness."
+                  </p>
+                  <p className="text-xs text-gray-500 mt-1">— Sakyong Mipham</p>
+                </>
+              )}
             </div>
-          </Card>
-        )}
+          </div>
+        </Card>
 
         {/* Breathing Exercise */}
         <Card className="p-5 border-0 shadow-sm bg-gradient-to-r from-cyan-50 to-blue-50">
@@ -306,36 +330,51 @@ export function HomeContent({
 
         {/* Today's Focus - Chakra & Moon */}
         <div className="grid grid-cols-2 gap-3">
-          {spiritualContent?.chakra && (
-            <Card className="p-4 border-0 shadow-sm">
-              <div className="flex items-center gap-2 mb-2">
-                <div className={`w-3 h-3 rounded-full ${getChakraColorClass(spiritualContent.chakra.color_hex)}`} />
-                <p className="text-xs font-medium text-gray-600">{t('chakraFocus')}</p>
-              </div>
-              <p className="font-semibold text-sm">
-                {getLocalizedField(spiritualContent.chakra, 'name')}
-              </p>
-              <p className="text-xs text-gray-500">{spiritualContent.chakra.sanskrit_name}</p>
-              <p className="text-xs text-gray-400 mt-1">
-                {getLocalizedField(spiritualContent.chakra, 'element')}
-              </p>
-            </Card>
-          )}
+          <Card className="p-4 border-0 shadow-sm">
+            <div className="flex items-center gap-2 mb-2">
+              <div className={`w-3 h-3 rounded-full ${spiritualContent?.chakra ? getChakraColorClass(spiritualContent.chakra.color_hex) : 'bg-purple-500'}`} />
+              <p className="text-xs font-medium text-gray-600">{t('chakraFocus')}</p>
+            </div>
+            {spiritualContent?.chakra ? (
+              <>
+                <p className="font-semibold text-sm">
+                  {getLocalizedField(spiritualContent.chakra, 'name') || spiritualContent.chakra.name_en || 'Root Chakra'}
+                </p>
+                <p className="text-xs text-gray-500">{spiritualContent.chakra.sanskrit_name || 'Muladhara'}</p>
+                <p className="text-xs text-gray-400 mt-1">
+                  {getLocalizedField(spiritualContent.chakra, 'element') || spiritualContent.chakra.element_en || 'Earth'}
+                </p>
+              </>
+            ) : (
+              <>
+                <p className="font-semibold text-sm">Root Chakra</p>
+                <p className="text-xs text-gray-500">Muladhara</p>
+                <p className="text-xs text-gray-400 mt-1">Earth</p>
+              </>
+            )}
+          </Card>
 
-          {spiritualContent?.moonPhase && (
-            <Card className="p-4 border-0 shadow-sm">
-              <div className="flex items-center gap-2 mb-2">
-                <span className="text-lg">{spiritualContent.moonPhase.emoji}</span>
-                <p className="text-xs font-medium text-gray-600">{t('moonPhase')}</p>
-              </div>
-              <p className="font-semibold text-sm">
-                {getLocalizedField(spiritualContent.moonPhase, 'name')}
-              </p>
-              <p className="text-xs text-gray-500">
-                {getLocalizedField(spiritualContent.moonPhase, 'energy_type')}
-              </p>
-            </Card>
-          )}
+          <Card className="p-4 border-0 shadow-sm">
+            <div className="flex items-center gap-2 mb-2">
+              <span className="text-lg">{spiritualContent?.moonPhase?.emoji || '🌙'}</span>
+              <p className="text-xs font-medium text-gray-600">{t('moonPhase')}</p>
+            </div>
+            {spiritualContent?.moonPhase ? (
+              <>
+                <p className="font-semibold text-sm">
+                  {getLocalizedField(spiritualContent.moonPhase, 'name') || spiritualContent.moonPhase.name_en || 'Waxing Moon'}
+                </p>
+                <p className="text-xs text-gray-500">
+                  {getLocalizedField(spiritualContent.moonPhase, 'energy_type') || spiritualContent.moonPhase.energy_type_en || 'Growth Energy'}
+                </p>
+              </>
+            ) : (
+              <>
+                <p className="font-semibold text-sm">Waxing Moon</p>
+                <p className="text-xs text-gray-500">Growth Energy</p>
+              </>
+            )}
+          </Card>
         </div>
 
         {/* Featured Teacher */}
