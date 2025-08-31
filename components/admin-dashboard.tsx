@@ -16,8 +16,12 @@ import {
   User,
   Mail,
   Calendar,
-  MessageSquare
+  MessageSquare,
+  Sparkles,
+  Moon,
+  Settings
 } from 'lucide-react';
+import Link from 'next/link';
 
 // Simple fallback translations for when next-intl context is not available
 const getFallbackTranslations = (locale: string = 'ru') => {
@@ -223,7 +227,36 @@ export function AdminDashboard({ locale = 'ru' }: AdminDashboardProps = {}) {
 
   return (
     <div className="space-y-6">
-      {applications.map((application) => (
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-3xl font-bold">{t('adminDashboard')}</h1>
+      </div>
+
+      <Tabs defaultValue="applications" className="space-y-4">
+        <TabsList className="grid w-full grid-cols-3">
+          <TabsTrigger value="applications" className="flex items-center gap-2">
+            <Users className="w-4 h-4" />
+            {t('teacherApplications')}
+          </TabsTrigger>
+          <TabsTrigger value="spiritual" className="flex items-center gap-2">
+            <Sparkles className="w-4 h-4" />
+            Spiritual Content
+          </TabsTrigger>
+          <TabsTrigger value="settings" className="flex items-center gap-2">
+            <Settings className="w-4 h-4" />
+            Settings
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="applications" className="space-y-4">
+          {applications.length === 0 ? (
+            <Card>
+              <CardContent className="p-8 text-center">
+                <h3 className="text-lg font-semibold mb-2">{t('noApplications')}</h3>
+                <p className="text-muted-foreground">Applications will appear here when teachers apply</p>
+              </CardContent>
+            </Card>
+          ) : (
+            applications.map((application) => (
         <Card key={application.id}>
           <CardHeader>
             <div className="flex items-start justify-between">
@@ -306,7 +339,79 @@ export function AdminDashboard({ locale = 'ru' }: AdminDashboardProps = {}) {
             )}
           </CardContent>
         </Card>
-      ))}
+            ))
+          )}
+        </TabsContent>
+
+        <TabsContent value="spiritual" className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <Link href="/admin/spiritual/chakras">
+              <Card className="p-6 hover:shadow-lg transition-shadow cursor-pointer group">
+                <div className="flex items-start justify-between">
+                  <div className="flex-1">
+                    <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                      <Sparkles className="w-6 h-6 text-white" />
+                    </div>
+                    <h2 className="text-xl font-semibold mb-2">Chakra Management</h2>
+                    <p className="text-gray-600">Manage chakra information and daily focus schedule</p>
+                  </div>
+                </div>
+              </Card>
+            </Link>
+
+            <Link href="/admin/spiritual/moon-phases">
+              <Card className="p-6 hover:shadow-lg transition-shadow cursor-pointer group">
+                <div className="flex items-start justify-between">
+                  <div className="flex-1">
+                    <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-blue-500 to-indigo-500 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                      <Moon className="w-6 h-6 text-white" />
+                    </div>
+                    <h2 className="text-xl font-semibold mb-2">Moon Phases</h2>
+                    <p className="text-gray-600">Configure moon phase data and practice guidelines</p>
+                  </div>
+                </div>
+              </Card>
+            </Link>
+
+            <Link href="/admin/spiritual/quotes">
+              <Card className="p-6 hover:shadow-lg transition-shadow cursor-pointer group">
+                <div className="flex items-start justify-between">
+                  <div className="flex-1">
+                    <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-green-500 to-teal-500 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                      <BookOpen className="w-6 h-6 text-white" />
+                    </div>
+                    <h2 className="text-xl font-semibold mb-2">Yoga Quotes</h2>
+                    <p className="text-gray-600">Manage daily quotes and inspirational texts</p>
+                  </div>
+                </div>
+              </Card>
+            </Link>
+
+            <Link href="/admin/spiritual/calendar">
+              <Card className="p-6 hover:shadow-lg transition-shadow cursor-pointer group">
+                <div className="flex items-start justify-between">
+                  <div className="flex-1">
+                    <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-orange-500 to-red-500 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                      <Calendar className="w-6 h-6 text-white" />
+                    </div>
+                    <h2 className="text-xl font-semibold mb-2">Schedule Overview</h2>
+                    <p className="text-gray-600">View and manage the spiritual content calendar</p>
+                  </div>
+                </div>
+              </Card>
+            </Link>
+          </div>
+        </TabsContent>
+
+        <TabsContent value="settings" className="space-y-4">
+          <Card>
+            <CardContent className="p-6">
+              <h3 className="text-lg font-semibold mb-4">Admin Settings</h3>
+              <p className="text-gray-600">Configure admin panel settings and preferences</p>
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }
