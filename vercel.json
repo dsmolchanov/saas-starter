@@ -1,0 +1,8 @@
+{
+  "crons": [
+    {
+      "path": "/api/spiritual/populate",
+      "schedule": "0 3 * * *"
+    }
+  ]
+}

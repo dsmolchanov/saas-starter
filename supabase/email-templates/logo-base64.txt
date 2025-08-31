@@ -1,5 +1,0 @@
-For email templates, replace the SVG logo with this img tag:
-
-<img src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIHZpZXdCb3g9IjAgMCA2NCA2NCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8cGF0aCBkPSJNMzIgNEMyNiAxMSAyMiAxOSAyMiAyNkMyMiAzNyAyOCA0NCAzMiA0NEMzNiA0NCA0MiAzNyA0MiAyNkM0MiAxOSAzOCAxMSAzMiA0WiIgZmlsbD0iIzRhOWNiMCIvPgogIDxwYXRoIGQ9Ik0xMCA0MEMxNiAzNiAyMiAzNCAzMiAzNEM0MiAzNCA0OCAzNiA1NCA0MEM0OCA0OCA0MCA1MiAzMiA1MkMyNCA1MiAxNiA0OCAxMCA0MFoiIGZpbGw9IiM0YTljYjAiLz4KPC9zdmc+" alt="Logo" class="logo" style="width: 48px; height: 48px; margin: 0 auto 32px; display: block;">
-
-This is the base64-encoded version of your logo.svg that will work better in email clients.

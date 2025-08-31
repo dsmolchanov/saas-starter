@@ -104,11 +104,7 @@ export function HomeContent({
   const [currentTime, setCurrentTime] = useState(new Date());
   const [breathingExercise, setBreathingExercise] = useState(breathingExercises[0]);
   const [currentLang, setCurrentLang] = useState<'en' | 'ru' | 'es'>('en');
-
-  // Debug logging
-  useEffect(() => {
-    console.log('Spiritual Content:', spiritualContent);
-  }, [spiritualContent]);
+  
 
   useEffect(() => {
     const updateTimeBasedContent = () => {
@@ -131,21 +127,22 @@ export function HomeContent({
       const dayOfYear = Math.floor((now.getTime() - new Date(now.getFullYear(), 0, 0).getTime()) / 1000 / 60 / 60 / 24);
       setBreathingExercise(breathingExercises[dayOfYear % breathingExercises.length]);
       
-      // Get current language from localStorage or default to 'en'
-      const storedLang = typeof window !== 'undefined' ? localStorage.getItem('locale') as 'en' | 'ru' | 'es' : null;
-      if (storedLang) {
-        setCurrentLang(storedLang);
+      // Get current language from pathname or localStorage
+      const pathname = typeof window !== 'undefined' ? window.location.pathname : '';
+      let detectedLang: 'en' | 'ru' | 'es' = 'en';
+      
+      if (pathname.startsWith('/ru')) {
+        detectedLang = 'ru';
+      } else if (pathname.startsWith('/es')) {
+        detectedLang = 'es';
       } else {
-        // Try to detect from navigator language
-        const browserLang = typeof window !== 'undefined' ? navigator.language.toLowerCase() : '';
-        if (browserLang.startsWith('ru')) {
-          setCurrentLang('ru');
-        } else if (browserLang.startsWith('es')) {
-          setCurrentLang('es');
-        } else {
-          setCurrentLang('en');
+        const storedLang = typeof window !== 'undefined' ? localStorage.getItem('locale') as 'en' | 'ru' | 'es' : null;
+        if (storedLang) {
+          detectedLang = storedLang;
         }
       }
+      
+      setCurrentLang(detectedLang);
     };
 
     updateTimeBasedContent();
@@ -157,8 +154,20 @@ export function HomeContent({
   // Helper functions to get localized content
   const getLocalizedField = (obj: any, field: string) => {
     if (!obj) return '';
+    
+    // Try current language field first
     const langField = `${field}_${currentLang}`;
-    return obj[langField] || obj[`${field}_en`] || '';
+    if (obj[langField]) return obj[langField];
+    
+    // Fallback to English
+    const enField = `${field}_en`;
+    if (obj[enField]) return obj[enField];
+    
+    // Try without language suffix (for legacy data)
+    if (obj[field]) return obj[field];
+    
+    // Return empty string if nothing found
+    return '';
   };
 
   const getChakraColorClass = (hex: string) => {
@@ -287,10 +296,10 @@ export function HomeContent({
               {spiritualContent?.yogaQuote ? (
                 <>
                   <p className="text-sm font-medium text-gray-900 italic">
-                    "{getLocalizedField(spiritualContent.yogaQuote, 'quote') || spiritualContent.yogaQuote.quote_en || 'Yoga is the journey of the self, through the self, to the self.'}"
+                    "{getLocalizedField(spiritualContent.yogaQuote, 'quote') || 'Yoga is the journey of the self, through the self, to the self.'}"
                   </p>
                   <p className="text-xs text-gray-500 mt-1">
-                    — {spiritualContent.yogaQuote.text?.author || 'Bhagavad Gita'}
+                    — {spiritualContent.yogaQuote.text?.author || 'Ancient Wisdom'}
                     {spiritualContent.yogaQuote.chapter && spiritualContent.yogaQuote.verse && 
                       ` (${spiritualContent.yogaQuote.chapter}:${spiritualContent.yogaQuote.verse})`}
                   </p>
@@ -338,11 +347,11 @@ export function HomeContent({
             {spiritualContent?.chakra ? (
               <>
                 <p className="font-semibold text-sm">
-                  {getLocalizedField(spiritualContent.chakra, 'name') || spiritualContent.chakra.name_en || 'Root Chakra'}
+                  {getLocalizedField(spiritualContent.chakra, 'name') || 'Root Chakra'}
                 </p>
                 <p className="text-xs text-gray-500">{spiritualContent.chakra.sanskrit_name || 'Muladhara'}</p>
                 <p className="text-xs text-gray-400 mt-1">
-                  {getLocalizedField(spiritualContent.chakra, 'element') || spiritualContent.chakra.element_en || 'Earth'}
+                  {getLocalizedField(spiritualContent.chakra, 'element') || 'Earth'}
                 </p>
               </>
             ) : (
@@ -362,10 +371,10 @@ export function HomeContent({
             {spiritualContent?.moonPhase ? (
               <>
                 <p className="font-semibold text-sm">
-                  {getLocalizedField(spiritualContent.moonPhase, 'name') || spiritualContent.moonPhase.name_en || 'Waxing Moon'}
+                  {getLocalizedField(spiritualContent.moonPhase, 'name') || 'Waxing Moon'}
                 </p>
                 <p className="text-xs text-gray-500">
-                  {getLocalizedField(spiritualContent.moonPhase, 'energy_type') || spiritualContent.moonPhase.energy_type_en || 'Growth Energy'}
+                  {getLocalizedField(spiritualContent.moonPhase, 'energy_type') || 'Growth Energy'}
                 </p>
               </>
             ) : (

@@ -482,19 +482,26 @@ export function TeacherStudioContent({
       {/* Course Manager Modal */}
       {showCourseManager && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto relative">
-            <Button
-              onClick={() => {
-                setShowCourseManager(false);
-                setSelectedCourse(null);
-              }}
-              className="absolute top-4 right-4 z-10"
-              variant="ghost"
-              size="icon"
-            >
-              <X className="w-5 h-5" />
-            </Button>
-            <CourseManager />
+          <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col">
+            {/* Modal Header with Close Button */}
+            <div className="flex items-center justify-between p-4 border-b">
+              <h2 className="text-lg font-semibold">Create a Course</h2>
+              <Button
+                onClick={() => {
+                  setShowCourseManager(false);
+                  setSelectedCourse(null);
+                }}
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 hover:bg-gray-100"
+              >
+                <X className="w-5 h-5" />
+              </Button>
+            </div>
+            {/* Modal Content */}
+            <div className="flex-1 overflow-y-auto">
+              <CourseManager />
+            </div>
           </div>
         </div>
       )}
@@ -502,19 +509,37 @@ export function TeacherStudioContent({
       {/* Class Manager Modal */}
       {showClassManager && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto relative">
-            <Button
-              onClick={() => {
-                setShowClassManager(false);
-                setSelectedClass(null);
-              }}
-              className="absolute top-4 right-4 z-10"
-              variant="ghost"
-              size="icon"
-            >
-              <X className="w-5 h-5" />
-            </Button>
-            <ClassManager userId={user.id} />
+          <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col">
+            {/* Modal Header with Close Button */}
+            <div className="flex items-center justify-between p-4 border-b">
+              <h2 className="text-lg font-semibold">Create a Class</h2>
+              <Button
+                onClick={() => {
+                  setShowClassManager(false);
+                  setSelectedClass(null);
+                }}
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 hover:bg-gray-100"
+              >
+                <X className="w-5 h-5" />
+              </Button>
+            </div>
+            {/* Modal Content */}
+            <div className="flex-1 overflow-y-auto">
+              <ClassManager 
+                userId={user.id} 
+                onClose={() => {
+                  setShowClassManager(false);
+                  setSelectedClass(null);
+                }}
+                onClassSaved={() => {
+                  setShowClassManager(false);
+                  setSelectedClass(null);
+                  // Optionally refresh classes list here if needed
+                }}
+              />
+            </div>
           </div>
         </div>
       )}

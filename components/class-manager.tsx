@@ -11,7 +11,7 @@ import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ClassVideoInputMux } from '@/components/class-video-input-mux';
 import { CoverImageUpload } from '@/components/cover-image-upload';
-import { Plus, Play, Edit, Trash2, Clock } from 'lucide-react';
+import { Plus, Play, Edit, Trash2, Clock, X } from 'lucide-react';
 import Link from 'next/link';
 
 interface ClassItem {
@@ -46,6 +46,8 @@ interface ClassManagerProps {
   userId: string;
   locale?: string;
   editClassId?: string;
+  onClose?: () => void;
+  onClassSaved?: () => void;
 }
 
 // Enum definitions
@@ -177,7 +179,7 @@ function getTranslations(locale: string = 'ru') {
   return translations[locale as keyof typeof translations] || translations.ru;
 }
 
-export function ClassManager({ userId, locale = 'ru', editClassId }: ClassManagerProps) {
+export function ClassManager({ userId, locale = 'ru', editClassId, onClose, onClassSaved }: ClassManagerProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [classes, setClasses] = useState<ClassItem[]>([]);
@@ -330,6 +332,11 @@ export function ClassManager({ userId, locale = 'ru', editClassId }: ClassManage
       if (classesData.classes) setClasses(classesData.classes);
 
       resetForm();
+      
+      // Notify parent that class was saved
+      if (onClassSaved) {
+        onClassSaved();
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to save class');
     }
@@ -406,9 +413,21 @@ export function ClassManager({ userId, locale = 'ru', editClassId }: ClassManage
       {showForm && (
         <Card>
           <CardHeader>
-            <CardTitle>
-              {editingClass ? t.edit : t.createNewClass}
-            </CardTitle>
+            <div className="flex items-center justify-between">
+              <CardTitle>
+                {editingClass ? t.edit : t.createNewClass}
+              </CardTitle>
+              {onClose && (
+                <Button
+                  onClick={onClose}
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8"
+                >
+                  <X className="w-4 h-4" />
+                </Button>
+              )}
+            </div>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">

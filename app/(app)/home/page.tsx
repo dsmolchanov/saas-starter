@@ -125,6 +125,9 @@ export default async function HomePage() {
   // Fetch spiritual content from Supabase
   const supabase = await createServerSupabaseClient();
   
+  // Ensure spiritual content is available (this will auto-populate if needed)
+  await supabase.rpc('ensure_spiritual_content_available');
+  
   // Get today's chakra
   const todayStr = new Date().toISOString().split('T')[0];
   const { data: chakraFocus } = await supabase
