@@ -23,8 +23,10 @@ export default async function TeacherStudioPage() {
     }
   });
 
-  // Check if user is a teacher - must have either teacher role or a valid teacher profile with ID
-  const isTeacher = userProfile?.role === 'teacher' || (userProfile?.teacherProfile && userProfile?.teacherProfile?.id);
+  // Check if user is a teacher - must have teacher/admin role or a valid teacher profile
+  const isTeacher = userProfile?.role === 'teacher' || 
+                    userProfile?.role === 'admin' || 
+                    (userProfile?.teacherProfile && userProfile?.teacherProfile?.id);
   
   if (!isTeacher) {
     console.log('User is not a teacher, redirecting to more page');
@@ -32,8 +34,8 @@ export default async function TeacherStudioPage() {
   }
 
   // Ensure teacher profile exists before proceeding
-  if (!userProfile?.teacherProfile && userProfile?.role === 'teacher') {
-    // Create teacher profile if user has teacher role but no profile
+  if (!userProfile?.teacherProfile && (userProfile?.role === 'teacher' || userProfile?.role === 'admin')) {
+    // Create teacher profile if user has teacher/admin role but no profile
     await db.insert(teachers).values({
       id: user.id,
       bio: null,
@@ -62,8 +64,9 @@ export default async function TeacherStudioPage() {
       orderBy: [desc(courses.id)],
     });
     
-    console.log('Teacher courses found:', teacherCourses.length);
-    console.log('Teacher ID:', user.id);
+    // Debug: Uncomment to troubleshoot
+    // console.log('Teacher courses found:', teacherCourses.length);
+    // console.log('Teacher ID:', user.id);
 
     // Get ALL teacher's classes (including those in courses)
     const allClasses = await db.query.classes.findMany({
@@ -71,7 +74,7 @@ export default async function TeacherStudioPage() {
       orderBy: [desc(classes.createdAt)],
     });
     
-    console.log('All classes found:', allClasses.length);
+    // console.log('All classes found:', allClasses.length);
     
     // Filter standalone classes for the specific section
     const standaloneClasses = allClasses.filter(c => !c.courseId);
