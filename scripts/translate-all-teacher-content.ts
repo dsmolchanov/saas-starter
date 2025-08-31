@@ -158,7 +158,7 @@ async function translateTeacherProfiles() {
   
   const { data: teachers, error } = await supabase
     .from('teachers')
-    .select('id, bio, specialties, user:users(name)');
+    .select('id, bio');
   
   if (error) {
     console.error('Error fetching teachers:', error);
@@ -166,8 +166,7 @@ async function translateTeacherProfiles() {
   }
 
   for (const teacher of teachers || []) {
-    const teacherName = teacher.user?.name || 'Unknown Teacher';
-    console.log(`\nProcessing teacher: ${teacherName}`);
+    console.log(`\nProcessing teacher: ${teacher.id}`);
     
     if (!teacher.bio) {
       console.log(`  No bio to translate`);
@@ -175,7 +174,7 @@ async function translateTeacherProfiles() {
     }
     
     // Detect source language
-    const sourceLocale = detectSourceLanguage(teacher.bio);
+    const sourceLocale = await detectSourceLanguage(teacher.bio);
     console.log(`  Detected language: ${sourceLocale}`);
     
     // Add bio to i18n_translations
@@ -192,25 +191,6 @@ async function translateTeacherProfiles() {
         onConflict: 'entity_type,entity_id,field_name,locale'
       });
     
-    // Add specialties if exists
-    if (teacher.specialties) {
-      const specialtiesText = Array.isArray(teacher.specialties) 
-        ? teacher.specialties.join(', ') 
-        : teacher.specialties;
-        
-      await supabase
-        .from('i18n_translations')
-        .upsert({
-          entity_type: 'teacher',
-          entity_id: teacher.id,
-          field_name: 'specialties',
-          locale: sourceLocale,
-          translation: specialtiesText,
-          is_auto_translated: false
-        }, {
-          onConflict: 'entity_type,entity_id,field_name,locale'
-        });
-    }
     
     // Trigger translation
     console.log(`  Triggering translation...`);
@@ -240,7 +220,7 @@ async function getTranslationStats() {
   
   const { data: stats, error } = await supabase
     .from('i18n_translations')
-    .select('entity_type, locale')
+    .select('entity_type, locale, is_auto_translated')
     .in('entity_type', ['course', 'class', 'teacher']);
   
   if (error) {

@@ -2,7 +2,6 @@
 
 import { useEffect, useState, useCallback } from 'react';
 import { createClient } from '@/lib/supabase/client';
-import { useUser } from '@/lib/hooks/use-user';
 
 interface TranslationData {
   translation: string;
@@ -32,8 +31,17 @@ export function useTranslations({
   const [translations, setTranslations] = useState<Record<string, TranslationData>>({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const { user } = useUser();
+  const [user, setUser] = useState<any>(null);
   const supabase = createClient();
+
+  // Get current user
+  useEffect(() => {
+    const getUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      setUser(user);
+    };
+    getUser();
+  }, [supabase]);
 
   // Fetch translations
   const fetchTranslations = useCallback(async () => {
