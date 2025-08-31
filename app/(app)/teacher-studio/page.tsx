@@ -64,17 +64,11 @@ export default async function TeacherStudioPage() {
       orderBy: [desc(courses.id)],
     });
     
-    // Debug: Uncomment to troubleshoot
-    // console.log('Teacher courses found:', teacherCourses.length);
-    // console.log('Teacher ID:', user.id);
-
     // Get ALL teacher's classes (including those in courses)
     const allClasses = await db.query.classes.findMany({
       where: eq(classes.teacherId, user.id),
       orderBy: [desc(classes.createdAt)],
     });
-    
-    // console.log('All classes found:', allClasses.length);
     
     // Filter standalone classes for the specific section
     const standaloneClasses = allClasses.filter(c => !c.courseId);
