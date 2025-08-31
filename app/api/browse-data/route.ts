@@ -34,7 +34,7 @@ export async function GET(request: NextRequest) {
       });
 
     if (classesError) {
-      console.error('Error fetching localized classes:', classesError);
+      console.error('Error fetching localized classes:', JSON.stringify(classesError));
     }
 
     // Map classes data and fetch focus areas
@@ -60,7 +60,7 @@ export async function GET(request: NextRequest) {
       });
 
     if (coursesError) {
-      console.error('Error fetching localized courses:', coursesError);
+      console.error('Error fetching localized courses:', JSON.stringify(coursesError));
     }
 
     // Transform courses data to match expected format

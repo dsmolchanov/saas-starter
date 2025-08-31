@@ -92,6 +92,11 @@ export default function BrowsePage() {
       const response = await fetch(`/api/browse-data?locale=${locale}`);
       const data = await response.json();
       
+      console.log('Browse data received:', {
+        teachers: data.teachers?.length,
+        lessons: data.lessons?.length,
+        courses: data.courses?.length
+      });
       setTeachers(data.teachers || []);
       setLessons(data.lessons || []);
       setCourses(data.courses || []);

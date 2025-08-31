@@ -54,6 +54,8 @@ export default async function HomePage() {
   const cookieStore = await cookies();
   const locale = cookieStore.get('preferred-language')?.value || 'en';
   
+  console.log('Home page - Using locale:', locale);
+  
   // Fetch spiritual content from Supabase
   const supabase = await createServerSupabaseClient();
   
@@ -63,6 +65,8 @@ export default async function HomePage() {
       p_locale: locale,
       p_limit: 50
     });
+  
+  console.log('Home page - Fetched classes:', localizedClasses?.length, 'First class title:', localizedClasses?.[0]?.title);
 
   // Filter for recommended class based on time
   const hour = new Date().getHours();
@@ -89,11 +93,27 @@ export default async function HomePage() {
     .orderBy(desc(sql`count(${progress.id})`))
     .limit(5);
 
-  // Map to localized classes
-  const popularClasses = popularClassIds
-    .map(p => localizedClasses?.find((c: any) => c.id === p.classId))
-    .filter(Boolean)
-    .slice(0, 5);
+  console.log('Popular class IDs:', popularClassIds);
+
+  // Map to localized classes, or use first 5 if no progress data
+  let popularClasses: any[] = [];
+  if (popularClassIds.length > 0) {
+    popularClasses = popularClassIds
+      .map(p => {
+        const found = localizedClasses?.find((c: any) => c.id === p.classId);
+        if (found) {
+          console.log(`Found class ${p.classId}: ${found.title}`);
+        }
+        return found;
+      })
+      .filter(Boolean)
+      .slice(0, 5);
+  } else {
+    // If no progress data, just show first 5 classes as popular
+    popularClasses = localizedClasses?.slice(0, 5) || [];
+  }
+  
+  console.log('Popular classes:', popularClasses.length, 'First title:', popularClasses[0]?.title);
 
   // Get latest 5 localized classes (already sorted by the RPC)
   const latestClasses = localizedClasses?.slice(0, 5) || [];
