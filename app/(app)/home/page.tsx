@@ -60,11 +60,15 @@ export default async function HomePage() {
   const supabase = await createServerSupabaseClient();
   
   // Get localized classes
-  const { data: localizedClasses } = await supabase
+  const { data: localizedClasses, error: classesError } = await supabase
     .rpc('get_classes_localized', {
       p_locale: locale,
       p_limit: 50
     });
+  
+  if (classesError) {
+    console.error('Error fetching localized classes:', classesError);
+  }
   
   console.log('Home page - Fetched classes:', localizedClasses?.length, 'First class title:', localizedClasses?.[0]?.title);
 
@@ -97,26 +101,32 @@ export default async function HomePage() {
 
   // Map to localized classes, or use first 5 if no progress data
   let popularClasses: any[] = [];
-  if (popularClassIds.length > 0) {
-    popularClasses = popularClassIds
-      .map(p => {
-        const found = localizedClasses?.find((c: any) => c.id === p.classId);
-        if (found) {
-          console.log(`Found class ${p.classId}: ${found.title}`);
-        }
-        return found;
-      })
-      .filter(Boolean)
-      .slice(0, 5);
-  } else {
-    // If no progress data, just show first 5 classes as popular
-    popularClasses = localizedClasses?.slice(0, 5) || [];
+  if (localizedClasses && localizedClasses.length > 0) {
+    if (popularClassIds.length > 0) {
+      popularClasses = popularClassIds
+        .map(p => {
+          const found = localizedClasses.find((c: any) => c.id === p.classId);
+          if (found) {
+            console.log(`Found class ${p.classId}: ${found.title}`);
+          }
+          return found;
+        })
+        .filter(Boolean)
+        .slice(0, 5);
+    } else {
+      // If no progress data, just show first 5 classes as popular
+      popularClasses = localizedClasses.slice(0, 5);
+    }
   }
   
   console.log('Popular classes:', popularClasses.length, 'First title:', popularClasses[0]?.title);
 
   // Get latest 5 localized classes (already sorted by the RPC)
-  const latestClasses = localizedClasses?.slice(0, 5) || [];
+  const latestClasses = (localizedClasses && localizedClasses.length > 0) 
+    ? localizedClasses.slice(0, 5) 
+    : [];
+  
+  console.log('Latest classes:', latestClasses.length, 'First title:', latestClasses[0]?.title);
 
   // Get featured teacher (random each day based on date seed)
   const allTeachers = await db.query.teachers.findMany({
@@ -173,13 +183,19 @@ export default async function HomePage() {
     }
   });
 
+  // Only transform if we have data
+  const transformedPopularClasses = popularClasses?.length > 0 ? popularClasses.map(transformClass) : [];
+  const transformedLatestClasses = latestClasses?.length > 0 ? latestClasses.map(transformClass) : [];
+  
+  console.log('Passing to HomeContent - Popular:', transformedPopularClasses.length, 'Latest:', transformedLatestClasses.length);
+  
   return (
     <HomeContent 
       user={user}
       currentStreak={currentStreak}
       recommendedClass={recommendedClass ? transformClass(recommendedClass) : undefined}
-      popularClasses={popularClasses.map(transformClass)}
-      latestClasses={latestClasses.map(transformClass)}
+      popularClasses={transformedPopularClasses}
+      latestClasses={transformedLatestClasses}
       featuredTeacher={featuredTeacher}
       practicedToday={!!practicedToday}
       totalMinutes={totalMinutes}
