@@ -1,12 +1,12 @@
 'use client';
 
-import { ClassCard } from '@/components/class-card';
 import { Button } from '@/components/ui/button';
 import { List, LayoutGrid } from 'lucide-react';
 import Link from 'next/link';
 import { BrowseFilters } from '@/components/browse-filters';
 import { BrowseSearch } from '@/components/browse-search';
 import { useTranslations } from '@/components/providers/simple-intl-provider';
+import { ContentCard, ContentCardGrid } from '@/components/ui/content-card';
 
 interface ClassData {
   id: string;
@@ -115,22 +115,25 @@ export function ClassesContent({ filteredClasses, availableFilters, searchQuery 
               </p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <ContentCardGrid>
               {filteredClasses.map((lesson) => (
-                <ClassCard
+                <ContentCard
                   key={lesson.id}
-                  id={lesson.id}
+                  href={`/classes/${lesson.id}`}
                   title={lesson.title}
-                  instructor={lesson.teacher?.name || t('instructor')}
+                  subtitle={lesson.teacher?.name || t('instructor')}
+                  description={lesson.description}
+                  image={lesson.thumbnailUrl || lesson.coverUrl}
                   duration={lesson.durationMin || 0}
                   difficulty={lesson.difficulty || t('allLevels')}
-                  intensity={lesson.intensity?.toLowerCase() || 'moderate'}
-                  focusAreas={lesson.focusAreas.map(fa => fa.focusArea.name)}
-                  thumbnailUrl={lesson.thumbnailUrl || undefined}
-                  likes={Math.floor(Math.random() * 1000)}
+                  instructor={lesson.teacher?.name}
+                  badge={lesson.difficulty || 'All Levels'}
+                  badgeVariant="secondary"
+                  aspectRatio="video"
+                  size="md"
                 />
               ))}
-            </div>
+            </ContentCardGrid>
           )}
         </div>
       </div>

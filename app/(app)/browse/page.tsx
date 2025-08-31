@@ -13,6 +13,7 @@ import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTr
 import { Home, Filter, Play, Clock, User } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Checkbox } from '@/components/ui/checkbox';
+import { ContentCard, ContentCardScroll, ContentCardGrid } from '@/components/ui/content-card';
 import { CompactLanguageSwitcher } from '@/components/ui/language-switcher-compact';
 import { useTranslations } from '@/components/providers/simple-intl-provider';
 
@@ -329,61 +330,22 @@ export default function BrowsePage() {
           </Link>
         </div>
 
-        <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide">
-          {filteredLessons.slice(0, 10).map((lesson, index) => (
-            <div key={lesson.id} className="flex-shrink-0 w-64">
-              <Link href={`/classes/${lesson.id}`}>
-                <div className="aspect-video rounded-lg overflow-hidden bg-muted mb-3 relative group">
-                  {lesson.coverUrl || lesson.thumbnailUrl ? (
-                    <Image
-                      src={lesson.coverUrl || lesson.thumbnailUrl || ''}
-                      alt={lesson.title}
-                      fill
-                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                      priority={index < 2}
-                      className="object-cover group-hover:scale-105 transition-transform"
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center bg-primary/10">
-                      <Play className="w-8 h-8 text-primary" />
-                    </div>
-                  )}
-                  <div className="absolute bottom-2 right-2 bg-black/70 text-white text-xs px-2 py-1 rounded">
-                    {lesson.durationMin}min
-                  </div>
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-3">
-                    <Button size="sm" className="gap-1">
-                      <Play className="w-3 h-3" />
-                      {t('play')}
-                    </Button>
-                  </div>
-                </div>
-                <div>
-                  <h3 className="font-medium line-clamp-2 mb-1">{lesson.title}</h3>
-                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                    <Clock className="w-3 h-3" />
-                    <span>{lesson.durationMin}min</span>
-                    {lesson.difficulty && (
-                      <>
-                        <span>•</span>
-                        <span>{lesson.difficulty}</span>
-                      </>
-                    )}
-                  </div>
-                  {lesson.focusAreas.length > 0 && (
-                    <div className="flex flex-wrap gap-1 mt-2">
-                      {lesson.focusAreas.slice(0, 2).map(fa => (
-                        <Badge key={fa.focusArea.id} variant="outline" className="text-xs px-1 py-0">
-                          {fa.focusArea.name}
-                        </Badge>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </Link>
-            </div>
+        <ContentCardScroll>
+          {filteredLessons.slice(0, 10).map((lesson) => (
+            <ContentCard
+              key={lesson.id}
+              href={`/classes/${lesson.id}`}
+              title={lesson.title}
+              image={lesson.coverUrl || lesson.thumbnailUrl}
+              duration={lesson.durationMin}
+              difficulty={lesson.difficulty}
+              badge={lesson.difficulty || 'All Levels'}
+              badgeVariant="secondary"
+              size="sm"
+              aspectRatio="video"
+            />
           ))}
-        </div>
+        </ContentCardScroll>
       </section>
 
       {/* Courses Section */}

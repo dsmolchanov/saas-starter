@@ -6,6 +6,7 @@ import { useTranslations } from '@/components/providers/simple-intl-provider';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { ContentCard, ContentCardScroll } from '@/components/ui/content-card';
 import { 
   Plus,
   Edit,
@@ -254,43 +255,40 @@ export function TeacherStudioContent({
             </div>
           </div>
           {courses.length > 0 ? (
-            <div className="flex gap-3 overflow-x-auto pb-2 px-4 snap-x snap-mandatory scrollbar-hide">
+            <ContentCardScroll className="px-4">
               {courses.map((course) => (
-                <Card key={course.id} className="min-w-[240px] snap-center overflow-hidden border-0 shadow-sm">
-                  <div className="aspect-video bg-gradient-to-br from-purple-100 to-pink-100 relative">
-                    {course.coverUrl ? (
-                      <img src={course.coverUrl} alt={course.title} className="w-full h-full object-cover" />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center">
-                        <BookOpen className="w-8 h-8 text-purple-500" />
-                      </div>
-                    )}
-                    <Badge className="absolute top-2 right-2 bg-black/50 text-white border-0">
-                      {course.classes.length} {t('classes')}
+                <div key={course.id} className="relative">
+                  <ContentCard
+                    href="#"
+                    title={course.title}
+                    description={course.description}
+                    image={course.coverUrl}
+                    badge={`${course.classes.length} ${t('classes')}`}
+                    badgeVariant="secondary"
+                    size="sm"
+                    aspectRatio="video"
+                    showHoverEffect={false}
+                  />
+                  <div className="absolute bottom-2 left-2 right-2 flex items-center justify-between px-2">
+                    <Badge variant={course.isPublished ? 'default' : 'secondary'} className="text-xs">
+                      {course.isPublished ? t('live') : t('draft')}
                     </Badge>
+                    <Button 
+                      variant="ghost" 
+                      size="sm"
+                      className="h-7 w-7 p-0"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setSelectedCourse(course);
+                        setShowCourseManager(true);
+                      }}
+                    >
+                      <Edit className="w-3 h-3" />
+                    </Button>
                   </div>
-                  <div className="p-3">
-                    <h3 className="font-semibold text-sm mb-1 line-clamp-1">{course.title}</h3>
-                    <p className="text-xs text-gray-500 line-clamp-2">{course.description}</p>
-                    <div className="flex items-center justify-between mt-3">
-                      <Badge variant={course.isPublished ? 'default' : 'secondary'} className="text-xs">
-                        {course.isPublished ? t('live') : t('draft')}
-                      </Badge>
-                      <Button 
-                        variant="ghost" 
-                        size="sm"
-                        onClick={() => {
-                          setSelectedCourse(course);
-                          setShowCourseManager(true);
-                        }}
-                      >
-                        <Edit className="w-3 h-3" />
-                      </Button>
-                    </div>
-                  </div>
-                </Card>
+                </div>
               ))}
-            </div>
+            </ContentCardScroll>
           ) : (
             <div className="px-4">
               <Card className="p-8 text-center bg-gray-50 border-dashed">
