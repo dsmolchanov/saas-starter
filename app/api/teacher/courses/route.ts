@@ -73,7 +73,7 @@ export async function POST(request: NextRequest) {
       const firstClassWithCover = await db.query.classes.findFirst({
         where: eq(classes.teacherId, user.id),
         columns: {
-          imageUrl: true,
+          coverUrl: true,
           thumbnailUrl: true,
         },
         orderBy: (classes, { desc }) => [desc(classes.createdAt)],
@@ -81,7 +81,7 @@ export async function POST(request: NextRequest) {
       
       // Use cover image or thumbnail from the first available class
       if (firstClassWithCover) {
-        finalCoverUrl = firstClassWithCover.imageUrl || firstClassWithCover.thumbnailUrl || null;
+        finalCoverUrl = firstClassWithCover.coverUrl || firstClassWithCover.thumbnailUrl || null;
       }
     }
 
@@ -93,7 +93,6 @@ export async function POST(request: NextRequest) {
         title: title.trim(),
         description: description?.trim() || null,
         level: level?.trim() || null,
-        imageUrl: imageUrl?.trim() || null,
         coverUrl: finalCoverUrl,
         isPublished: 0, // Default to draft
       })

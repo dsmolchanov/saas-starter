@@ -12,7 +12,6 @@ interface CourseData {
   id: string;
   title: string;
   coverUrl: string | null;
-  imageUrl: string | null;
   classes?: Array<{ id: string }> | null;
   category?: {
     id: string;
@@ -91,9 +90,9 @@ export function CoursesContent({ allCourses, availableFilters, searchQuery }: Co
           <div key={course.id} className="group">
             <Link href={`/course/${course.id}`}>
               <div className="aspect-video rounded-lg overflow-hidden bg-muted mb-3 relative">
-                {course.coverUrl || course.imageUrl ? (
+                {course.coverUrl ? (
                   <Image
-                    src={course.coverUrl || course.imageUrl || ''}
+                    src={course.coverUrl || ''}
                     alt={course.title}
                     fill
                     className="object-cover group-hover:scale-105 transition-transform"

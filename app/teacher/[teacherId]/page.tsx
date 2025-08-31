@@ -340,10 +340,10 @@ export default async function TeacherPage({ params }: { params: Promise<{ teache
                     {teacherCourses.map((course) => (
                       <Link key={course.id} href={`/course/${course.id}`} className="group">
                         <div className="border rounded-lg p-6 hover:bg-muted/50 transition-colors">
-                          {course.imageUrl && (
+                          {course.coverUrl && (
                             <div className="aspect-video rounded-lg overflow-hidden mb-4">
                               <Image
-                                src={course.imageUrl}
+                                src={course.coverUrl}
                                 alt={course.title}
                                 width={400}
                                 height={225}

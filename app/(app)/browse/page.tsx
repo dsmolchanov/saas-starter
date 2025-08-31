@@ -35,7 +35,7 @@ interface Lesson {
   title: string;
   description: string | null;
   durationMin: number;
-  imageUrl: string | null; // High-res image for detailed views (800px+)
+  coverUrl: string | null; // High-res image for detailed views (800px+)
   thumbnailUrl: string | null; // Smaller image for grid/card views (400px)
   difficulty: string | null;
   intensity: string | null;
@@ -334,9 +334,9 @@ export default function BrowsePage() {
             <div key={lesson.id} className="flex-shrink-0 w-64">
               <Link href={`/classes/${lesson.id}`}>
                 <div className="aspect-video rounded-lg overflow-hidden bg-muted mb-3 relative group">
-                  {lesson.imageUrl || lesson.thumbnailUrl ? (
+                  {lesson.coverUrl || lesson.thumbnailUrl ? (
                     <Image
-                      src={lesson.imageUrl || lesson.thumbnailUrl || ''}
+                      src={lesson.coverUrl || lesson.thumbnailUrl || ''}
                       alt={lesson.title}
                       fill
                       sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"

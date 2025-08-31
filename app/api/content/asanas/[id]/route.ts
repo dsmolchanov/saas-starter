@@ -83,7 +83,7 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
               status: body.status,
               difficulty: body.difficulty,
               tags: body.tags,
-              thumbnailUrl: body.imageUrls?.[0],
+              thumbnailUrl: body.coverUrls?.[0],
               updatedAt: new Date(),
             })
             .where(eq(contentItems.id, contentId));
@@ -105,7 +105,7 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
           holdDurationSeconds: body.holdDurationSeconds,
           breathPattern: body.breathPattern,
           drishti: body.drishti,
-          imageUrls: body.imageUrls,
+          coverUrls: body.coverUrls,
           videoUrl: body.videoUrl,
           updatedAt: new Date(),
         })

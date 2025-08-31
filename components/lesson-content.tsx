@@ -21,7 +21,7 @@ interface LessonContentProps {
     style: string | null;
     equipment: string | null;
     videoPath: string | null;
-    imageUrl: string | null;
+    coverUrl: string | null;
     thumbnailUrl: string | null;
     createdAt: Date;
     course?: {
@@ -65,7 +65,7 @@ export function LessonContent({ lesson, videoUrl, videoType, muxPlaybackId }: Le
           videoUrl={videoUrl}
           videoType={videoType}
           muxPlaybackId={muxPlaybackId}
-          thumbnailUrl={lesson.imageUrl || lesson.thumbnailUrl}
+          thumbnailUrl={lesson.coverUrl || lesson.thumbnailUrl}
           title={lesson.title}
           className="w-full h-full"
         />

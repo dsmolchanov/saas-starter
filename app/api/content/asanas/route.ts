@@ -96,7 +96,7 @@ export async function POST(request: NextRequest) {
       holdDurationSeconds,
       breathPattern,
       drishti,
-      imageUrls,
+      coverUrls,
       videoUrl,
       difficulty,
       tags,
@@ -123,7 +123,7 @@ export async function POST(request: NextRequest) {
           visibility: 'public',
           difficulty,
           tags,
-          thumbnailUrl: imageUrls?.[0],
+          thumbnailUrl: coverUrls?.[0],
         })
         .returning();
       
@@ -143,7 +143,7 @@ export async function POST(request: NextRequest) {
           holdDurationSeconds,
           breathPattern,
           drishti,
-          imageUrls,
+          coverUrls,
           videoUrl,
         })
         .returning();

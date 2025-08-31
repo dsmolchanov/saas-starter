@@ -131,9 +131,9 @@ export const asanas = pgTable('asanas', {
   drishti: varchar('drishti', { length: 50 }),
   
   // Media
-  imageUrls: text('image_urls').array(),
+  coverUrls: text('cover_urls').array(),
   videoUrl: text('video_url'),
-  anatomyImageUrl: text('anatomy_image_url'),
+  anatomyUrl: text('anatomy_url'),
   
   createdAt: timestamp('created_at').notNull().defaultNow(),
   updatedAt: timestamp('updated_at').notNull().defaultNow(),

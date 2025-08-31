@@ -80,7 +80,6 @@ export const courses = pgTable('courses', {
   description: text('description'),
   level: varchar('level', { length: 50 }),
   coverUrl: text('cover_url'),
-  imageUrl: text('image_url'),
   isPublished: integer('is_published').notNull().default(0),
 });
 
@@ -95,7 +94,7 @@ export const classes = pgTable('classes', {
   videoUrl: text('video_url'), // For external URLs (YouTube, Vimeo, etc.)
   videoType: varchar('video_type', { length: 20 }).default('upload'), // 'upload', 'youtube', 'vimeo', 'external', 'mux'
   thumbnailUrl: text('thumbnail_url'),
-  imageUrl: text('image_url'),
+  coverUrl: text('cover_url'),
   // MUX integration fields
   muxAssetId: text('mux_asset_id'), // MUX Asset ID
   muxPlaybackId: text('mux_playback_id'), // MUX Playback ID for streaming

@@ -57,7 +57,7 @@ export default async function PlaylistPage({ params }: PageProps) {
           title: classData.title,
           description: classData.description,
           duration: classData.durationMin,
-          thumbnailUrl: classData.thumbnailUrl || classData.imageUrl,
+          thumbnailUrl: classData.thumbnailUrl || classData.coverUrl,
           teacherId: classData.teacherId,
         };
       } else if (item.itemType === 'meditation' && meditation) {

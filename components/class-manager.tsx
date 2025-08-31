@@ -28,7 +28,7 @@ interface ClassItem {
   muxPlaybackId: string | null;
   muxUploadId: string | null;
   muxStatus: string | null;
-  imageUrl: string | null;
+  coverUrl: string | null;
   thumbnailUrl: string | null;
   course: {
     id: string;
@@ -199,7 +199,7 @@ export function ClassManager({ userId, locale = 'ru', editClassId, onClose, onCl
     muxPlaybackId: '',
     muxUploadId: '',
     muxStatus: '',
-    imageUrl: '', // This is our cover image
+    coverUrl: '', // This is our cover image
     thumbnailUrl: '',
   });
   const [saving, setSaving] = useState(false);
@@ -245,7 +245,7 @@ export function ClassManager({ userId, locale = 'ru', editClassId, onClose, onCl
       muxPlaybackId: '',
       muxUploadId: '',
       muxStatus: '',
-      imageUrl: '',
+      coverUrl: '',
       thumbnailUrl: '',
     });
     setEditingClass(null);
@@ -282,7 +282,7 @@ export function ClassManager({ userId, locale = 'ru', editClassId, onClose, onCl
       muxPlaybackId: classItem.muxPlaybackId || '',
       muxUploadId: classItem.muxUploadId || '',
       muxStatus: classItem.muxStatus || '',
-      imageUrl: classItem.imageUrl || '',
+      coverUrl: classItem.coverUrl || '',
       thumbnailUrl: classItem.thumbnailUrl || '',
     });
     setShowForm(true);
@@ -313,7 +313,7 @@ export function ClassManager({ userId, locale = 'ru', editClassId, onClose, onCl
           muxPlaybackId: formData.muxPlaybackId || null,
           muxUploadId: formData.muxUploadId || null,
           muxStatus: formData.muxStatus || null,
-          imageUrl: formData.imageUrl || null,
+          coverUrl: formData.coverUrl || null,
           thumbnailUrl: formData.thumbnailUrl || null,
         }),
       });
@@ -503,9 +503,9 @@ export function ClassManager({ userId, locale = 'ru', editClassId, onClose, onCl
               {editingClass && (
                 <div className="border-t pt-6">
                   <CoverImageUpload
-                    key={formData.imageUrl} // Force re-render when imageUrl changes
-                    initialImage={formData.imageUrl}
-                    onImageChange={(imageUrl) => setFormData(prev => ({...prev, imageUrl: imageUrl || ''}))}
+                    key={formData.coverUrl} // Force re-render when coverUrl changes
+                    initialImage={formData.coverUrl}
+                    onImageChange={(coverUrl) => setFormData(prev => ({...prev, coverUrl: coverUrl || ''}))}
                     locale={locale}
                   />
                 </div>
@@ -539,7 +539,7 @@ export function ClassManager({ userId, locale = 'ru', editClassId, onClose, onCl
                     // Auto-fill cover image from video thumbnail
                     // This will be called when a new video is uploaded
                     if (coverImage) {
-                      setFormData(prev => ({...prev, imageUrl: coverImage}));
+                      setFormData(prev => ({...prev, coverUrl: coverImage}));
                     }
                   }}
                   onDurationChange={(durationMinutes) => {
@@ -547,7 +547,7 @@ export function ClassManager({ userId, locale = 'ru', editClassId, onClose, onCl
                       setFormData(prev => ({...prev, durationMin: durationMinutes.toString()}));
                     }
                   }}
-                  initialCoverImage={formData.imageUrl}
+                  initialCoverImage={formData.coverUrl}
                   locale={locale}
                 />
               </div>
@@ -595,10 +595,10 @@ export function ClassManager({ userId, locale = 'ru', editClassId, onClose, onCl
                 <Link href={`/classes/${classItem.id}`} className="block">
                   {/* Class Thumbnail */}
                   <div className="relative aspect-video bg-muted">
-                    {classItem.thumbnailUrl || classItem.imageUrl ? (
+                    {classItem.thumbnailUrl || classItem.coverUrl ? (
                       // eslint-disable-next-line @next/next/no-img-element
                       <img
-                        src={classItem.thumbnailUrl || classItem.imageUrl || ''}
+                        src={classItem.thumbnailUrl || classItem.coverUrl || ''}
                         alt={classItem.title}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform"
                       />

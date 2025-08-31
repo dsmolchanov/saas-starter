@@ -137,7 +137,7 @@ export async function POST(request: NextRequest) {
         muxUploadId: muxUploadId?.trim() || null,
         muxStatus: muxStatus?.trim() || null,
         thumbnailUrl: thumbnailUrl?.trim() || null,
-        imageUrl: (coverImage || imageUrl)?.trim() || null,
+        coverUrl: (coverImage || imageUrl)?.trim() || null,
         difficulty: difficulty?.trim() || null,
         intensity: intensity?.trim() || null,
         style: style?.trim() || null,

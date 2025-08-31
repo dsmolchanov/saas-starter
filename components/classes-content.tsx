@@ -15,7 +15,7 @@ interface ClassData {
   title: string;
   teacherId: string;
   description: string | null;
-  imageUrl: string | null;
+  coverUrl: string | null;
   courseId: string | null;
   durationMin: number;
   difficulty: string | null;

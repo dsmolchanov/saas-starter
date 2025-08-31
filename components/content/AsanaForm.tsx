@@ -46,7 +46,7 @@ export function AsanaForm({ open, onOpenChange, onSuccess, editingAsana }: Asana
     contraindications: editingAsana?.contraindications || [],
     alignmentCues: editingAsana?.alignmentCues || [],
     commonMistakes: editingAsana?.commonMistakes || [],
-    imageUrls: editingAsana?.imageUrls || [],
+    coverUrls: editingAsana?.coverUrls || [],
     videoUrl: editingAsana?.videoUrl || '',
   });
 
@@ -105,7 +105,7 @@ export function AsanaForm({ open, onOpenChange, onSuccess, editingAsana }: Asana
             contraindications: [],
             alignmentCues: [],
             commonMistakes: [],
-            imageUrls: [],
+            coverUrls: [],
             videoUrl: '',
           });
         }

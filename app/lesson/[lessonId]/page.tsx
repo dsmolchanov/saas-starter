@@ -101,7 +101,7 @@ export default async function LessonPage({ params }: { params: Promise<{ lessonI
     style: lesson.style,
     equipment: lesson.equipment,
     videoPath: lesson.videoPath,
-    imageUrl: lesson.imageUrl,
+    coverUrl: lesson.coverUrl,
     thumbnailUrl: lesson.thumbnailUrl,
     createdAt: lesson.createdAt,
     course: lesson.course ? {

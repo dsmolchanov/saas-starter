@@ -182,14 +182,14 @@ export async function getPlaylistWithItems(playlistId: string) {
         durationMin: classes.durationMin,
         difficulty: classes.difficulty,
         thumbnailUrl: classes.thumbnailUrl,
-        imageUrl: classes.imageUrl,
+        coverUrl: classes.coverUrl,
       },
       course: {
         id: courses.id,
         title: courses.title,
         description: courses.description,
         level: courses.level,
-        imageUrl: courses.imageUrl,
+        coverUrl: courses.coverUrl,
       },
       teacher: {
         id: teachers.id,

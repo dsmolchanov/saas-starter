@@ -155,7 +155,7 @@ export async function PUT(
         muxUploadId: muxUploadId?.trim() || null,
         muxStatus: muxStatus?.trim() || null,
         thumbnailUrl: thumbnailUrl?.trim() || null,
-        imageUrl: imageUrl?.trim() || null,
+        coverUrl: imageUrl?.trim() || null,
         difficulty: difficulty?.trim() || null,
         intensity: intensity?.trim() || null,
         style: style?.trim() || null,
@@ -229,10 +229,10 @@ export async function DELETE(
     }
 
     // Delete cover image from Supabase if it exists
-    if (existingClass.imageUrl) {
+    if (existingClass.coverUrl) {
       try {
         // Extract the file path from the URL
-        const url = new URL(existingClass.imageUrl);
+        const url = new URL(existingClass.coverUrl);
         const pathParts = url.pathname.split('/');
         const bucketIndex = pathParts.indexOf('images');
         

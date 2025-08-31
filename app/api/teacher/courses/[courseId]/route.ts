@@ -97,8 +97,7 @@ export async function PUT(
         description: description?.trim() || null,
         level: level?.trim() || null,
         categoryId,
-        imageUrl: imageUrl?.trim() || null,
-        coverUrl: coverUrl?.trim() || null,
+        coverUrl: (coverUrl || imageUrl)?.trim() || null,
         isPublished: isPublished ? 1 : 0,
       })
       .where(eq(courses.id, courseId))
